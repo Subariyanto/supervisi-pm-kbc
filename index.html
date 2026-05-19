@@ -2340,8 +2340,8 @@ var modal=document.getElementById('modalPenggalian');
 if(!modal)return;
 var title=EKSTRAKURIKULER[idx]||'';
 var content=PENGGALIAN_EKSTRAKURIKULER[idx]||'Tidak ada data penggalian.';
-modal.querySelector('.modal-title').innerHTML='<b>'+(idx+1)+'. '+title+'</b>';
-modal.querySelector('.modal-body').innerHTML=content;
+document.getElementById('modalTitle').innerHTML='<b>'+(idx+1)+'. '+title+'</b>';
+document.getElementById('modalContent').innerHTML=content;
 modal.style.display='flex';
 }
 
