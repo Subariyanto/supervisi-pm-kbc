@@ -1852,10 +1852,10 @@ html+='<textarea rows="4" onchange="setRekapKokurikuler('+idx+',\'catatan\',this
 html+='<div class="form-group"><label>Rencana Tindak Lanjut</label>';
 html+='<textarea rows="4" onchange="setRekapKokurikuler('+idx+',\'tindakLanjut\',this.value)">'+escHtml(rekap.tindakLanjut||'')+'</textarea></div>';
 html+='<div class="btn-group no-print" style="justify-content:center">';
+html+='<button class="btn btn-primary" onclick="navigate(\'kokurikuler\')">✔ Simpan</button>';
 html+='<button class="btn btn-info" onclick="cetakKokurikuler('+idx+')">🖨️ Cetak</button>';
 html+='<button class="btn btn-danger" onclick="navigate(\'kokurikuler\')">✕ Tutup</button>';
 html+='</div></div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'kokurikuler\')" style="padding:8px 20px">✕ Tutup</button></div>';
 return html;
 }
 
