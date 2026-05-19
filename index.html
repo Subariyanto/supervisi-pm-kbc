@@ -146,6 +146,7 @@ const APP_KEY='supervisi_data_v1';
 const MADRASAH_KEY='supervisi_madrasah';
 const GURU_KEY='supervisi_guru';
 const PENGAWAS_KEY='supervisi_pengawas';
+const INDIKATOR_KEY='supervisi_indikator';
 
 const PERENCANAAN=[
 'Identifikasi Murid: Sesuai kondisi obyektif dan menunjukkan kesiapan belajar',
@@ -215,6 +216,222 @@ const ASESMEN=[
 const SKOR_LABELS=['1 - Kurang','2 - Cukup','3 - Baik','4 - Sangat Baik'];
 const SKOR_CATATAN=['Belum terlaksana/tidak sesuai','Terlaksana sebagian kecil','Terlaksana dengan baik','Terlaksana dengan sangat baik dan konsisten'];
 
+// ===== DEFAULT INDIKATOR (immutable reference) =====
+const DEFAULT_PERENCANAAN=[...PERENCANAAN];
+const DEFAULT_PELAKSANAAN=JSON.parse(JSON.stringify(PELAKSANAAN));
+const DEFAULT_ASESMEN=[...ASESMEN];
+
+// ===== INDIKATOR MANAGEMENT =====
+function getIndikatorData(){
+try{return JSON.parse(localStorage.getItem(INDIKATOR_KEY))||null}catch(e){return null}
+}
+function saveIndikatorData(data){
+localStorage.setItem(INDIKATOR_KEY,JSON.stringify(data));
+}
+function getIndikator(key){
+var data=getIndikatorData();
+if(data&&data[key]!==undefined)return data[key];
+if(key==='perencanaan')return DEFAULT_PERENCANAAN;
+if(key==='pelaksanaan')return JSON.parse(JSON.stringify(DEFAULT_PELAKSANAAN));
+if(key==='asesmen')return DEFAULT_ASESMEN;
+return null;
+}
+function saveIndikator(key,items){
+var data=getIndikatorData()||{};
+data[key]=items;
+saveIndikatorData(data);
+}
+function resetIndikator(key){
+var data=getIndikatorData()||{};
+delete data[key];
+saveIndikatorData(data);
+}
+function getIndikatorPelaksanaanFlat(){
+var pel=getIndikator('pelaksanaan');
+var items=[];
+Object.values(pel).forEach(function(arr){items=items.concat(arr)});
+return items;
+}
+
+// ===== EDIT INDIKATOR PANEL =====
+var editIndikatorState={active:null};
+
+function showEditIndikator(key){
+editIndikatorState.active=key;
+render();
+}
+function cancelEditIndikator(){
+editIndikatorState.active=null;
+render();
+}
+function saveEditIndikatorFlat(key){
+var container=document.getElementById('edit-indikator-panel');
+if(!container)return;
+var inputs=container.querySelectorAll('input[data-indikator-item]');
+var items=[];
+inputs.forEach(function(inp){
+var val=inp.value.trim();
+if(val)items.push(val);
+});
+if(items.length===0){alert('Minimal harus ada 1 indikator.');return;}
+saveIndikator(key,items);
+editIndikatorState.active=null;
+render();
+}
+function saveEditIndikatorGrouped(){
+var container=document.getElementById('edit-indikator-panel');
+if(!container)return;
+var groups=container.querySelectorAll('[data-tahap-group]');
+var result={};
+var valid=true;
+groups.forEach(function(grp){
+var tahap=grp.getAttribute('data-tahap-group');
+var inputs=grp.querySelectorAll('input[data-indikator-item]');
+var items=[];
+inputs.forEach(function(inp){
+var val=inp.value.trim();
+if(val)items.push(val);
+});
+if(items.length===0){valid=false;}
+result[tahap]=items;
+});
+if(!valid){alert('Setiap tahap harus memiliki minimal 1 indikator.');return;}
+saveIndikator('pelaksanaan',result);
+editIndikatorState.active=null;
+render();
+}
+function resetIndikatorConfirm(key){
+if(!confirm('Reset indikator '+key+' ke default? Perubahan custom akan hilang.'))return;
+resetIndikator(key);
+editIndikatorState.active=null;
+render();
+}
+
+function renderEditPanelFlat(key){
+var items=getIndikator(key);
+var html='<div id="edit-indikator-panel" class="no-print" style="background:#f8fafc;border:2px solid #0ea5e9;border-radius:12px;padding:20px;margin-bottom:20px">';
+html+='<h3 style="margin-bottom:15px;color:#0d9488">✏️ Edit Indikator - '+key.charAt(0).toUpperCase()+key.slice(1)+'</h3>';
+html+='<p style="font-size:.8rem;color:#64748b;margin-bottom:12px">Edit teks, hapus, tambah, atau ubah urutan indikator.</p>';
+items.forEach(function(item,i){
+html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px" id="indikator-row-'+i+'">';
+html+='<span style="min-width:24px;color:#64748b;font-size:.85rem">'+(i+1)+'.</span>';
+html+='<input data-indikator-item="'+i+'" type="text" value="'+escHtml(item)+'" style="flex:1;padding:8px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem">';
+html+='<button class="btn btn-sm btn-secondary" onclick="moveIndikatorItem(\''+key+'\','+i+',-1)" title="Naik">&uarr;</button>';
+html+='<button class="btn btn-sm btn-secondary" onclick="moveIndikatorItem(\''+key+'\','+i+',1)" title="Turun">&darr;</button>';
+html+='<button class="btn btn-sm btn-danger" onclick="removeIndikatorItem(\''+key+'\','+i+')" title="Hapus">&times;</button>';
+html+='</div>';
+});
+html+='<div class="btn-group" style="margin-top:15px">';
+html+='<button class="btn btn-sm btn-primary" onclick="addIndikatorItem(\''+key+'\')">&plus; Tambah Indikator</button>';
+html+='<button class="btn btn-sm btn-success" onclick="saveEditIndikatorFlat(\''+key+'\')">💾 Simpan</button>';
+html+='<button class="btn btn-sm btn-secondary" onclick="cancelEditIndikator()">Batal</button>';
+html+='<button class="btn btn-sm btn-warning" onclick="resetIndikatorConfirm(\''+key+'\')">↺ Reset Default</button>';
+html+='</div></div>';
+return html;
+}
+
+function renderEditPanelGrouped(){
+var pel=getIndikator('pelaksanaan');
+var html='<div id="edit-indikator-panel" class="no-print" style="background:#f8fafc;border:2px solid #0ea5e9;border-radius:12px;padding:20px;margin-bottom:20px">';
+html+='<h3 style="margin-bottom:15px;color:#0d9488">✏️ Edit Indikator - Pelaksanaan</h3>';
+html+='<p style="font-size:.8rem;color:#64748b;margin-bottom:12px">Edit teks, hapus, tambah, atau ubah urutan indikator per tahap.</p>';
+var tahapKeys=Object.keys(pel);
+tahapKeys.forEach(function(tahap){
+var items=pel[tahap];
+html+='<div data-tahap-group="'+escHtml(tahap)+'" style="margin-bottom:16px">';
+html+='<div style="font-weight:600;color:#1e293b;margin-bottom:8px;padding:6px 10px;background:#e0f2fe;border-radius:6px">'+escHtml(tahap)+'</div>';
+items.forEach(function(item,i){
+html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding-left:10px">';
+html+='<span style="min-width:20px;color:#64748b;font-size:.8rem">'+(i+1)+'.</span>';
+html+='<input data-indikator-item="'+i+'" type="text" value="'+escHtml(item)+'" style="flex:1;padding:7px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.83rem">';
+html+='<button class="btn btn-sm btn-secondary" onclick="moveIndikatorGroupItem(\''+escHtml(tahap)+'\','+i+',-1)" title="Naik">&uarr;</button>';
+html+='<button class="btn btn-sm btn-secondary" onclick="moveIndikatorGroupItem(\''+escHtml(tahap)+'\','+i+',1)" title="Turun">&darr;</button>';
+html+='<button class="btn btn-sm btn-danger" onclick="removeIndikatorGroupItem(\''+escHtml(tahap)+'\','+i+')" title="Hapus">&times;</button>';
+html+='</div>';
+});
+html+='<div style="padding-left:10px;margin-top:6px"><button class="btn btn-sm btn-primary" onclick="addIndikatorGroupItem(\''+escHtml(tahap)+'\')">&plus; Tambah</button></div>';
+html+='</div>';
+});
+html+='<div class="btn-group" style="margin-top:15px">';
+html+='<button class="btn btn-sm btn-success" onclick="saveEditIndikatorGrouped()">💾 Simpan</button>';
+html+='<button class="btn btn-sm btn-secondary" onclick="cancelEditIndikator()">Batal</button>';
+html+='<button class="btn btn-sm btn-warning" onclick="resetIndikatorConfirm(\'pelaksanaan\')">↺ Reset Default</button>';
+html+='</div></div>';
+return html;
+}
+
+// Flat indikator manipulation (temp DOM-based)
+function addIndikatorItem(key){
+var container=document.getElementById('edit-indikator-panel');
+if(!container)return;
+var inputs=container.querySelectorAll('input[data-indikator-item]');
+var idx=inputs.length;
+var row=document.createElement('div');
+row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:8px';
+row.id='indikator-row-'+idx;
+row.innerHTML='<span style="min-width:24px;color:#64748b;font-size:.85rem">'+(idx+1)+'.</span>'+
+'<input data-indikator-item="'+idx+'" type="text" value="" style="flex:1;padding:8px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.85rem" placeholder="Ketik indikator baru...">'+
+'<button class="btn btn-sm btn-secondary" onclick="moveIndikatorItem(\''+key+'\','+idx+',-1)" title="Naik">&uarr;</button>'+
+'<button class="btn btn-sm btn-secondary" onclick="moveIndikatorItem(\''+key+'\','+idx+',1)" title="Turun">&darr;</button>'+
+'<button class="btn btn-sm btn-danger" onclick="removeIndikatorItem(\''+key+'\','+idx+')" title="Hapus">&times;</button>';
+var btnGroup=container.querySelector('.btn-group');
+container.insertBefore(row,btnGroup);
+row.querySelector('input').focus();
+}
+function removeIndikatorItem(key,idx){
+if(!confirm('Hapus indikator ini?'))return;
+var items=getCurrentFlatItems();
+items.splice(idx,1);
+saveIndikator(key,items);
+render();
+}
+function moveIndikatorItem(key,idx,dir){
+var items=getCurrentFlatItems();
+var newIdx=idx+dir;
+if(newIdx<0||newIdx>=items.length)return;
+var temp=items[idx];
+items[idx]=items[newIdx];
+items[newIdx]=temp;
+saveIndikator(key,items);
+render();
+}
+function getCurrentFlatItems(){
+var container=document.getElementById('edit-indikator-panel');
+if(!container)return[];
+var inputs=container.querySelectorAll('input[data-indikator-item]');
+var items=[];
+inputs.forEach(function(inp){items.push(inp.value)});
+return items;
+}
+
+// Grouped indikator manipulation
+function addIndikatorGroupItem(tahap){
+var pel=getIndikator('pelaksanaan');
+if(!pel[tahap])pel[tahap]=[];
+pel[tahap].push('');
+saveIndikator('pelaksanaan',pel);
+render();
+}
+function removeIndikatorGroupItem(tahap,idx){
+if(!confirm('Hapus indikator ini?'))return;
+var pel=getIndikator('pelaksanaan');
+if(pel[tahap])pel[tahap].splice(idx,1);
+saveIndikator('pelaksanaan',pel);
+render();
+}
+function moveIndikatorGroupItem(tahap,idx,dir){
+var pel=getIndikator('pelaksanaan');
+if(!pel[tahap])return;
+var items=pel[tahap];
+var newIdx=idx+dir;
+if(newIdx<0||newIdx>=items.length)return;
+var temp=items[idx];
+items[idx]=items[newIdx];
+items[newIdx]=temp;
+saveIndikator('pelaksanaan',pel);
+render();
+}
+
 // ===== STATE =====
 let state={view:'dashboard',editId:null,formData:{},currentStep:0,detailIdx:null};
 
@@ -232,10 +449,10 @@ function savePengawas(d){localStorage.setItem(PENGAWAS_KEY,JSON.stringify(d))}
 function getPredikat(pct){if(pct>=91)return'Sangat Baik';if(pct>=81)return'Baik';if(pct>=71)return'Cukup';return'Kurang'}
 function getAutoCatatan(skor){if(skor===null||skor===undefined)return'';return SKOR_CATATAN[skor]||''}
 function getPredikatClass(p){return'predikat-'+p.toLowerCase().replace(' ','-')}
-function calcTotal(d){let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].forEach(k=>{const scores=d[k]&&d[k].scores?d[k].scores:[];scores.forEach(s=>{if(s!==null&&s!==undefined){sum+=s+1;max+=4}})});return max>0?(sum/max)*100:0}
-function calcKomponen(d,key){const scores=d[key]&&d[key].scores?d[key].scores:[];let sum=0,max=0;scores.forEach(s=>{if(s!==null&&s!==undefined){sum+=s+1;max+=4}});return max>0?(sum/max)*100:0}
+function calcTotal(d){let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].forEach(k=>{const scores=d[k]&&d[k].scores?d[k].scores:[];const itemCount=k==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(k).length;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}});return max>0?(sum/max)*100:0}
+function calcKomponen(d,key){const scores=d[key]&&d[key].scores?d[key].scores:[];const itemCount=key==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(key).length;let sum=0,max=0;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}return max>0?(sum/max)*100:0}
 function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function getPelaksanaanFlat(){let items=[];Object.values(PELAKSANAAN).forEach(arr=>{items=items.concat(arr)});return items}
+function getPelaksanaanFlat(){return getIndikatorPelaksanaanFlat()}
 
 function showPenggalian(idx){
 var items=getPelaksanaanFlat();
@@ -615,9 +832,9 @@ progress+='<div class="step-indicator '+cls+'">'+(i+1)+'</div>';
 progress+='</div>';
 var content='';
 if(state.currentStep===0)content=renderIdentitas();
-else if(state.currentStep===1)content=renderInstrumen('perencanaan',PERENCANAAN);
+else if(state.currentStep===1)content=renderInstrumen('perencanaan',getIndikator('perencanaan'));
 else if(state.currentStep===2)content=renderPelaksanaan();
-else if(state.currentStep===3)content=renderInstrumen('asesmen',ASESMEN);
+else if(state.currentStep===3)content=renderInstrumen('asesmen',getIndikator('asesmen'));
 else if(state.currentStep===4)content=renderRekap();
 var isLast=state.currentStep===4;
 var nav='<div style="display:flex;justify-content:space-between;margin-top:20px">';
@@ -693,7 +910,14 @@ render();
 
 function renderInstrumen(key,items){
 var d=state.formData[key]||{scores:[],catatan:[]};
-var html='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Aspek yang Diamati</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
+var html='';
+// Edit indikator button and panel
+if(editIndikatorState.active===key){
+html+=renderEditPanelFlat(key);
+}else{
+html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\''+key+'\')">✏️ Edit Indikator</button></div>';
+}
+html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Aspek yang Diamati</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
 items.forEach(function(item,i){
 var score=(d.scores&&d.scores[i]!==undefined)?d.scores[i]:null;
 var cat=(d.catatan&&d.catatan[i])?d.catatan[i]:getAutoCatatan(score);
@@ -723,10 +947,18 @@ return html;
 
 function renderPelaksanaan(){
 var d=state.formData.pelaksanaan||{scores:[],catatan:[]};
-var html='';var idx=0;
-var tahapKeys=Object.keys(PELAKSANAAN);
+var html='';
+// Edit indikator button and panel
+if(editIndikatorState.active==='pelaksanaan'){
+html+=renderEditPanelGrouped();
+}else{
+html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\'pelaksanaan\')">✏️ Edit Indikator</button></div>';
+}
+var idx=0;
+var pelData=getIndikator('pelaksanaan');
+var tahapKeys=Object.keys(pelData);
 tahapKeys.forEach(function(tahap){
-var items=PELAKSANAAN[tahap];
+var items=pelData[tahap];
 html+='<div class="tahap-header">'+tahap+'</div>';
 html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Aspek yang Diamati</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
 items.forEach(function(item){
@@ -745,8 +977,9 @@ html+='</tbody></table>';
 });
 // Skor summary
 var scores=d.scores||[];
+var pelFlatItems=getIndikatorPelaksanaanFlat();
 var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
-var max=getPelaksanaanFlat().length*4;
+var max=pelFlatItems.length*4;
 var pct=max>0?(sum/max)*100:0;
 var pred=getPredikat(pct);
 html+='<p style="margin-top:10px;font-size:.9rem"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+pred+'</b></p>';
@@ -763,9 +996,9 @@ return html;
 // ===== REKAP =====
 function renderRekap(){
 var komps=[
-{key:'perencanaan',label:'Perencanaan Pembelajaran',max:9*4},
-{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:14*4},
-{key:'asesmen',label:'Asesmen Pembelajaran',max:7*4}
+{key:'perencanaan',label:'Perencanaan Pembelajaran',max:getIndikator('perencanaan').length*4},
+{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:getIndikatorPelaksanaanFlat().length*4},
+{key:'asesmen',label:'Asesmen Pembelajaran',max:getIndikator('asesmen').length*4}
 ];
 // Auto-generate catatan and tindak lanjut
 autoGenerateRekap();
@@ -799,9 +1032,9 @@ return html;
 function autoGenerateRekapForKey(key){
 if(!state.formData.rekap)state.formData.rekap={};
 var instrumenMap={
-perencanaan:{items:PERENCANAAN,label:'Perencanaan Pembelajaran'},
-pelaksanaan:{items:getPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
-asesmen:{items:ASESMEN,label:'Asesmen Pembelajaran'}
+perencanaan:{items:getIndikator('perencanaan'),label:'Perencanaan Pembelajaran'},
+pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
+asesmen:{items:getIndikator('asesmen'),label:'Asesmen Pembelajaran'}
 };
 var info=instrumenMap[key];
 if(!info)return;
@@ -871,9 +1104,9 @@ rekapObj.tindakLanjut=rtl;
 function autoGenerateRekap(){
 if(!state.formData.rekap)state.formData.rekap={};
 var instrumenMap={
-perencanaan:{items:PERENCANAAN,label:'Perencanaan Pembelajaran'},
-pelaksanaan:{items:getPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
-asesmen:{items:ASESMEN,label:'Asesmen Pembelajaran'}
+perencanaan:{items:getIndikator('perencanaan'),label:'Perencanaan Pembelajaran'},
+pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
+asesmen:{items:getIndikator('asesmen'),label:'Asesmen Pembelajaran'}
 };
 Object.keys(instrumenMap).forEach(function(key){
 if(!state.formData.rekap[key])state.formData.rekap[key]={};
@@ -948,9 +1181,9 @@ var data=getData();
 var d=data[state.detailIdx];
 if(!d){state.view='dashboard';render();return '';}
 var komps=[
-{key:'perencanaan',label:'Perencanaan Pembelajaran',max:9*4,items:PERENCANAAN},
-{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:14*4,items:getPelaksanaanFlat()},
-{key:'asesmen',label:'Asesmen Pembelajaran',max:7*4,items:ASESMEN}
+{key:'perencanaan',label:'Perencanaan Pembelajaran',max:getIndikator('perencanaan').length*4,items:getIndikator('perencanaan')},
+{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:getIndikatorPelaksanaanFlat().length*4,items:getIndikatorPelaksanaanFlat()},
+{key:'asesmen',label:'Asesmen Pembelajaran',max:getIndikator('asesmen').length*4,items:getIndikator('asesmen')}
 ];
 var html='<div class="card">';
 html+='<button class="btn btn-secondary btn-sm no-print" onclick="backToDashboard()">&#8592; Kembali</button>';
@@ -1104,7 +1337,7 @@ html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
 html+='</style></head><body>';
 var sections=['perencanaan','pelaksanaan','asesmen'];
 var labels={perencanaan:'Perencanaan Pembelajaran',pelaksanaan:'Pelaksanaan Pembelajaran',asesmen:'Asesmen Pembelajaran'};
-var itemsMap={perencanaan:PERENCANAAN,pelaksanaan:getPelaksanaanFlat(),asesmen:ASESMEN};
+var itemsMap={perencanaan:getIndikator('perencanaan'),pelaksanaan:getIndikatorPelaksanaanFlat(),asesmen:getIndikator('asesmen')};
 sections.forEach(function(key,si){
 if(si>0)html+='<div class="page-break"></div>';
 html+='<h2>INSTRUMEN SUPERVISI PEMBELAJARAN</h2>';
@@ -1178,7 +1411,7 @@ html+='<p><b>Madrasah:</b> '+(id.namaMadrasah||'-')+'</p>';
 html+='<p><b>Supervisor:</b> '+(id.namaSupervisor||'-')+' | <b>Tanggal:</b> '+(id.tanggalSupervisi||'-')+'</p>';
 html+='</div>';
 html+='<table><thead><tr><th>No</th><th>Komponen</th><th>Skor</th><th>Maks</th><th>%</th><th>Predikat</th></tr></thead><tbody>';
-var komps=[{key:'perencanaan',label:'Perencanaan Pembelajaran',max:9*4},{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:14*4},{key:'asesmen',label:'Asesmen Pembelajaran',max:7*4}];
+var komps=[{key:'perencanaan',label:'Perencanaan Pembelajaran',max:getIndikator('perencanaan').length*4},{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:getIndikatorPelaksanaanFlat().length*4},{key:'asesmen',label:'Asesmen Pembelajaran',max:getIndikator('asesmen').length*4}];
 var totalSum=0,totalMax=0;
 komps.forEach(function(k,i){
 var scores=(d[k.key]&&d[k.key].scores)?d[k.key].scores:[];
@@ -1218,9 +1451,9 @@ setTimeout(function(){w.print();},500);
 // ===== PRINT FUNCTIONS =====
 function printInstrumen(key){
 var instrumenMap={
-perencanaan:{items:PERENCANAAN,label:'Perencanaan Pembelajaran'},
-pelaksanaan:{items:getPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
-asesmen:{items:ASESMEN,label:'Asesmen Pembelajaran'}
+perencanaan:{items:getIndikator('perencanaan'),label:'Perencanaan Pembelajaran'},
+pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
+asesmen:{items:getIndikator('asesmen'),label:'Asesmen Pembelajaran'}
 };
 var info=instrumenMap[key];
 var id=state.formData.identitas||{};
@@ -1323,9 +1556,9 @@ if(typeof window.jspdf==='undefined'){alert('jsPDF belum dimuat. Pastikan koneks
 var jsPDF=window.jspdf.jsPDF;
 var doc=new jsPDF('p','mm','a4');
 var instrumenMap={
-perencanaan:{items:PERENCANAAN,label:'Perencanaan Pembelajaran'},
-pelaksanaan:{items:getPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
-asesmen:{items:ASESMEN,label:'Asesmen Pembelajaran'}
+perencanaan:{items:getIndikator('perencanaan'),label:'Perencanaan Pembelajaran'},
+pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
+asesmen:{items:getIndikator('asesmen'),label:'Asesmen Pembelajaran'}
 };
 var info=instrumenMap[key];
 var headerInfo=getHeaderInfo();
@@ -1375,9 +1608,9 @@ var doc=new jsPDF('p','mm','a4');
 var headerInfo=getHeaderInfo();
 var startY=addPDFHeader(doc,'Rekap Hasil Supervisi',headerInfo);
 var komps=[
-{key:'perencanaan',label:'Perencanaan Pembelajaran',max:9*4},
-{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:14*4},
-{key:'asesmen',label:'Asesmen Pembelajaran',max:7*4}
+{key:'perencanaan',label:'Perencanaan Pembelajaran',max:getIndikator('perencanaan').length*4},
+{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:getIndikatorPelaksanaanFlat().length*4},
+{key:'asesmen',label:'Asesmen Pembelajaran',max:getIndikator('asesmen').length*4}
 ];
 var rekapTable=[];
 komps.forEach(function(k){
