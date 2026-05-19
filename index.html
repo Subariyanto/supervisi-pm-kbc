@@ -793,14 +793,17 @@ html+='<td><b>'+pctT.toFixed(0)+'%</b></td>';
 html+='<td>'+pred+'</td></tr>';
 });
 html+='</tbody></table>';
-html+='<table class="ttd-table"><tr>';
-html+='<td style="width:50%"><p>Mengetahui,</p><p>Kepala Madrasah</p><br><br><br><br>';
-html+='<p style="font-weight:bold;text-decoration:underline">.........................</p>';
-html+='<p>NIP. .........................</p></td>';
+// Tanda tangan per guru
+filtered.forEach(function(d,i){
+html+='<table class="ttd-table" style="margin-top:'+(i===0?'40':'20')+'px"><tr>';
+html+='<td style="width:50%"><p>Guru Mata Pelajaran,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(d.identitas.namaGuru||'.........................')+'</p>';
+html+='<p>NIP. '+(d.identitas.nipGuru||'.........................')+'</p></td>';
 html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline">'+(pengawas.nama||'.........................')+'</p>';
 html+='<p>NIP. '+(pengawas.nip||'.........................')+'</p></td>';
 html+='</tr></table>';
+});
 html+='</body></html>';
 w.document.write(html);w.document.close();
 setTimeout(function(){w.print();},500);
