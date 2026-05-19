@@ -92,11 +92,28 @@ canvas{max-width:100%;margin:20px 0}
 .stat-card{background:linear-gradient(135deg,#f0f9ff,#f0fdfa);border:2px solid #e2e8f0;border-radius:12px;padding:20px;text-align:center}
 .stat-card .stat-number{font-size:2rem;font-weight:700;color:#0ea5e9}
 .stat-card .stat-label{color:#64748b;font-size:.85rem;margin-top:5px}
-@media print{.sidebar,.mobile-toggle,.no-print,.btn-group{display:none!important}.main-content{margin-left:0!important}.card{box-shadow:none;border:1px solid #ddd}body{background:#fff}.print-only{display:block!important}}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center}
+.modal-overlay.active{display:flex}
+.modal-box{background:#fff;border-radius:12px;padding:24px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative}
+.modal-box h3{margin:0 0 12px;color:#1e293b;font-size:1.1rem}
+.modal-box ul{margin:6px 0 12px 18px;padding:0;color:#334155}
+.modal-box ul li{margin-bottom:4px;line-height:1.5}
+.modal-box .modal-close{position:absolute;top:12px;right:16px;font-size:1.5rem;cursor:pointer;color:#64748b;border:none;background:none}
+.modal-box .modal-close:hover{color:#ef4444}
+.col-aspek.clickable{cursor:pointer;color:#2563eb;text-decoration:underline;text-decoration-style:dotted}
+.col-aspek.clickable:hover{color:#1d4ed8}
+@media print{.sidebar,.mobile-toggle,.no-print,.btn-group,.modal-overlay{display:none!important}.main-content{margin-left:0!important}.card{box-shadow:none;border:1px solid #ddd}body{background:#fff}.print-only{display:block!important}}
 .print-only{display:none}
 </style>
 </head>
 <body>
+<div class="modal-overlay" id="modalPenggalian" onclick="closeModal()">
+<div class="modal-box" onclick="event.stopPropagation()">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<h3 id="modalTitle">Penggalian Data</h3>
+<div id="modalContent"></div>
+</div>
+</div>
 <button class="mobile-toggle no-print" onclick="toggleSidebar()">&#9776;</button>
 <div class="app-layout">
 <nav class="sidebar" id="sidebar">
@@ -165,6 +182,26 @@ const PELAKSANAAN={
 ]
 };
 
+const PENGGALIAN_PELAKSANAAN=[
+// Tahap Memahami (0-4)
+'<b>Melalui pengamatan pembelajaran tampak:</b><ul><li>Guru membuka pembelajaran dengan apersepsi (menyapa dan berdoa)</li><li>Guru bersama murid membahas tujuan pembelajaran mengaitkan dengan nilai panca cinta</li></ul><b>Melalui telaah dokumen tentang:</b><ul><li>Tujuan pembelajaran dirumuskan memuat kompetensi Pembelajaran Mendalam (deep learning) dan menghubungkan dengan nilai panca cinta</li><li>RPP/Modul Ajar memuat Dimensi Profil Lulusan (DPL) dan mencantumkan nilai-nilai Panca Cinta yang sesuai dengan materi</li></ul>',
+'<b>Melalui pengamatan pembelajaran tampak:</b><ul><li>Guru membuka pembelajaran dengan apersepsi yang membangun suasana positif dan penuh kasih sayang</li><li>Guru menerapkan pendekatan disiplin positif dan dialogis ketika mengelola perilaku murid</li></ul><b>Melalui telaah dokumen tentang:</b><ul><li>Kesepakatan kelas yang disusun dengan melibatkan murid secara bermakna</li><li>Dokumen/catatan penegakan disiplin</li></ul>',
+'<b>Melalui pengamatan pembelajaran tampak:</b><ul><li>Siswa terlibat aktif dalam aktivitas yang menumbuhkan rasa ingin tahu</li><li>Guru memberi ruang dialog, umpan balik, refleksi, dan berpikir kritis</li></ul><b>Melalui telaah dokumen tentang:</b><ul><li>RPP yang memuat TP membangun pola pikir berkembang</li><li>Rapor, hasil asesmen, hasil karya murid yang diberikan umpan balik</li><li>Lembar refleksi murid dan guru</li></ul>',
+'<b>Melalui pengamatan dan wawancara dengan murid tampak:</b><ul><li>Pembelajaran memfasilitasi kolaborasi (peer learning)</li><li>Kegiatan belajar mendorong empati, penghargaan diri, dan penghargaan sesama</li><li>Siswa tampak percaya diri dan berani mengekspresikan pendapat</li><li>Terjadi komunikasi dua arah yang hangat dan saling menghormati</li></ul><b>Melalui telaah dokumen tentang:</b><ul><li>RPP kolaboratif learning</li><li>Hasil asesmen karakter nilai cinta</li><li>Hasil kerja kelompok</li></ul>',
+'<b>Melalui pengamatan tampak:</b><ul><li>Terdapat strategi diferensiasi dan personalisasi belajar</li><li>Guru menggunakan beragam metode (visual, audio, kinestetik)</li><li>Guru berkeliling dan memberi dukungan sesuai kebutuhan siswa</li></ul><b>Melalui telaah dokumen tentang:</b><ul><li>RPP pembelajaran diferensiasi</li><li>Lembar asesmen, catatan observasi, refleksi guru</li><li>Hasil karya siswa yang diberikan umpan balik</li><li>Catatan komunikasi atau diskusi dengan wali murid</li></ul>',
+// Tahap Mengaplikasi (5-9)
+'<b>Melalui pengamatan, wawancara dengan guru dan murid tentang:</b><ul><li>Strategi pembelajaran inovatif</li><li>Media digunakan secara efektif dan relevan dengan materi</li><li>Teknologi digunakan secara tepat guna dan mendukung pembelajaran</li></ul><b>Melalui telaah dokumen tentang:</b><ul><li>RPP yang memenuhi komponen</li></ul>',
+'<b>Melalui pengamatan tampak:</b><ul><li>Siswa terlibat aktif dalam aktivitas yang menumbuhkan rasa ingin tahu</li><li>Guru memberi ruang dialog, umpan balik, refleksi, dan berpikir kritis</li></ul><b>Melalui telaah dokumen tentang:</b><ul><li>RPP yang memuat TP membangun pola pikir berkembang</li><li>Hasil karya murid yang diberikan umpan balik</li></ul>',
+'<b>Melalui pengamatan dan wawancara dengan murid tampak:</b><ul><li>Pembelajaran memfasilitasi kolaborasi (peer learning)</li><li>Kegiatan belajar mendorong empati, penghargaan diri, dan penghargaan sesama</li><li>Siswa tampak percaya diri dan berani mengekspresikan pendapat</li><li>Terjadi komunikasi dua arah yang hangat dan saling menghormati</li></ul>',
+'<b>Melalui pengamatan tampak:</b><ul><li>Terdapat strategi diferensiasi dan personalisasi belajar</li><li>Guru menggunakan beragam metode (visual, audio, kinestetik)</li><li>Guru berkeliling dan memberi dukungan sesuai kebutuhan siswa</li></ul>',
+'<b>Melalui pengamatan tampak:</b><ul><li>Banyak siswa mengangkat tangan, terlibat diskusi, dan merespons arahan guru</li><li>Tidak tampak wajah tertekan; suasana kelas positif dan menyenangkan</li><li>Siswa saling membantu teman yang mengalami kesulitan</li></ul>',
+// Tahap Merefleksi (10-13)
+'<b>Melalui pengamatan pembelajaran:</b><ul><li>Guru dan Siswa melakukan refleksi belajar secara lisan atau tertulis</li><li>Interaksi antar siswa dan guru mencerminkan Cinta Diri & Sesama</li></ul><b>Melalui telaah dokumen tentang:</b><ul><li>Lembar refleksi guru</li><li>Lembar refleksi murid</li></ul>',
+'<b>Melalui telaah data dokumen tentang:</b><ul><li>Merancang asesmen autentik yang sejalan dengan tujuan pembelajaran yang holistik dan terintegrasi dengan topik cinta</li><li>Bentuk asesmen berorientasi pada proses dan perkembangan</li><li>Instrumen asesmen dilengkapi rubrik dan mencerminkan aspek pengetahuan, keterampilan dan karakter sesuai DPL dan nilai cinta</li><li>Tersedia catatan nilai, jurnal guru, atau rekap asesmen</li></ul>',
+'<b>Melalui pengamatan pembelajaran:</b><ul><li>Praktik pembelajaran memfasilitasi murid memaknai dan merefleksikan ajaran agama</li><li>Guru membangun keterhubungan antara materi dengan nilai cinta Allah dan RasulNya</li></ul><b>Melalui telaah data dokumen:</b><ul><li>RPP/Modul Ajar menentukan dimensi profil lulusan dan mencantumkan nilai cinta kepada Allah dan RasulNya</li><li>Rubrik dan asesmen</li><li>Hasil asesmen</li></ul>',
+'<b>Melalui pengamatan pembelajaran:</b><ul><li>Guru dan Siswa melakukan refleksi belajar secara lisan atau tertulis</li><li>Interaksi antar siswa dan guru mencerminkan nilai Panca Cinta</li></ul><b>Melalui telaah dokumen tentang:</b><ul><li>Lembar refleksi guru dan murid</li><li>Catatan tindak lanjut pembelajaran</li></ul>'
+];
+
 const ASESMEN=[
 'Terdapat KKTP yang dikembangkan dari Tujuan Pembelajaran',
 'Instrumen penilaian sesuai tujuan pembelajaran',
@@ -199,6 +236,17 @@ function calcTotal(d){let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].fo
 function calcKomponen(d,key){const scores=d[key]&&d[key].scores?d[key].scores:[];let sum=0,max=0;scores.forEach(s=>{if(s!==null&&s!==undefined){sum+=s+1;max+=4}});return max>0?(sum/max)*100:0}
 function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function getPelaksanaanFlat(){let items=[];Object.values(PELAKSANAAN).forEach(arr=>{items=items.concat(arr)});return items}
+
+function showPenggalian(idx){
+var items=getPelaksanaanFlat();
+var title=items[idx]||'Aspek';
+document.getElementById('modalTitle').textContent='Penggalian Data: '+(idx+1)+'. '+title;
+document.getElementById('modalContent').innerHTML=PENGGALIAN_PELAKSANAAN[idx]||'<p>Tidak ada data penggalian.</p>';
+document.getElementById('modalPenggalian').classList.add('active');
+}
+function closeModal(){
+document.getElementById('modalPenggalian').classList.remove('active');
+}
 
 // ===== NAVIGATION =====
 function navigate(view){
@@ -685,7 +733,8 @@ items.forEach(function(item){
 var gi=idx;
 var score=(d.scores&&d.scores[gi]!==undefined)?d.scores[gi]:null;
 var cat=(d.catatan&&d.catatan[gi])?d.catatan[gi]:getAutoCatatan(score);
-html+='<tr><td class="col-no">'+(gi+1)+'</td><td class="col-aspek">'+item+'</td>';
+var hasInfo=PENGGALIAN_PELAKSANAAN[gi]?true:false;
+html+='<tr><td class="col-no">'+(gi+1)+'</td><td class="col-aspek'+(hasInfo?' clickable':'')+'"'+(hasInfo?' onclick="showPenggalian('+gi+')" title="Klik untuk lihat penggalian data"':'')+'>'+(hasInfo?'\u{1F50D} ':'')+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\'pelaksanaan\','+gi+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
 }
