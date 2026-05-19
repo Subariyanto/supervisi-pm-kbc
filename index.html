@@ -135,8 +135,7 @@ canvas{max-width:100%;margin:20px 0}
 <div class="main-content">
 <div class="container">
 <header>
-<h1>&#128203; Supervisi Pembelajaran</h1>
-<p>Aplikasi Supervisi PM Integrasi KBC</p>
+<h1 id="pageTitle">&#128203; Supervisi Pembelajaran</h1>
 </header>
 <div id="app"></div>
 </div>
@@ -556,6 +555,11 @@ case 'kokurikuler':app.innerHTML=renderKokurikulerPage();break;
 case 'kokurikuler-form':app.innerHTML=renderKokurikulerForm(state.kokurikulerIdx);break;
 case 'rekap-kokurikuler':app.innerHTML=renderRekapKokurikulerPage();break;
 default:app.innerHTML=renderDashboard();
+}
+var titleEl=document.getElementById('pageTitle');
+if(titleEl){
+var isKoku=(state.view==='kokurikuler'||state.view==='kokurikuler-form'||state.view==='rekap-kokurikuler');
+titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':'\u{1F4CB} Supervisi Pembelajaran';
 }
 app.classList.add('fade-in');
 setTimeout(function(){app.classList.remove('fade-in')},300);
