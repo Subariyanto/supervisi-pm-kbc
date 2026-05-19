@@ -1844,7 +1844,9 @@ var pct=max>0?(sum/max)*100:0;
 var pred=getPredikat(pct);
 html+='<p style="margin-top:10px;font-size:.9rem"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+pred+'</b></p>';
 // Catatan Hasil Supervisi & RTL
+autoGenerateRekapKokurikuler(idx);
 var rekap=d.rekap||{};
+var data2=getKokurikuler();if(data2[idx])rekap=data2[idx].rekap||{};
 html+='<div class="form-group" style="margin-top:15px"><label>Catatan Hasil Supervisi</label>';
 html+='<textarea rows="4" onchange="setRekapKokurikuler('+idx+',\'catatan\',this.value)">'+escHtml(rekap.catatan||'')+'</textarea></div>';
 html+='<div class="form-group"><label>Rencana Tindak Lanjut</label>';
@@ -1886,6 +1888,71 @@ var data=getKokurikuler();
 if(!data[idx])return;
 if(!data[idx].rekap)data[idx].rekap={};
 data[idx].rekap[field]=val;
+if(field==='catatan')data[idx].rekap.manualCatatan=true;
+if(field==='tindakLanjut')data[idx].rekap.manualTindakLanjut=true;
+saveKokurikuler(data);
+}
+
+function autoGenerateRekapKokurikuler(idx){
+var data=getKokurikuler();
+if(!data[idx])return;
+var d=data[idx];
+if(!d.rekap)d.rekap={};
+var scores=d.scores||[];
+var items=KOKURIKULER;
+var label='Kokurikuler';
+var totalItems=items.length;
+var scoredItems=scores.filter(function(s){return s!==null&&s!==undefined});
+if(scoredItems.length===0)return;
+var totalSkor=scoredItems.reduce(function(a,b){return a+(b+1)},0);
+var maxSkor=totalItems*4;
+var pct=maxSkor>0?((totalSkor/maxSkor)*100).toFixed(1):0;
+var weakItems=[];
+var goodItems=[];
+scores.forEach(function(s,i){
+if(s!==null&&s!==undefined&&i<items.length){
+if(s<=1)weakItems.push({item:items[i],skor:s+1});
+else goodItems.push({item:items[i],skor:s+1});
+}
+});
+if(!d.rekap.manualCatatan){
+var catatan='Berdasarkan hasil supervisi kegiatan '+label+', diperoleh capaian sebesar '+pct+'% dari skor maksimal. ';
+if(goodItems.length>0){
+var goodAspek=goodItems.slice(0,3).map(function(g){return g.item.toLowerCase()}).join(', ');
+catatan+='Aspek yang sudah terlaksana dengan baik antara lain '+goodAspek+'. ';
+}
+if(weakItems.length>0){
+var weakAspek=weakItems.map(function(w){return w.item.toLowerCase()}).join(', ');
+catatan+='Namun demikian, masih terdapat beberapa aspek yang perlu ditingkatkan yaitu '+weakAspek+'. ';
+var kurangCount=weakItems.filter(function(w){return w.skor===1}).length;
+var cukupCount=weakItems.filter(function(w){return w.skor===2}).length;
+if(kurangCount>0)catatan+='Terdapat '+kurangCount+' aspek yang belum terlaksana dan memerlukan pembinaan intensif. ';
+if(cukupCount>0)catatan+='Terdapat '+cukupCount+' aspek yang baru terlaksana sebagian dan perlu pendampingan lebih lanjut.';
+}else{
+catatan+='Seluruh aspek sudah terlaksana dengan baik dan menunjukkan kinerja yang memuaskan.';
+}
+d.rekap.catatan=catatan;
+}
+if(!d.rekap.manualTindakLanjut){
+var rtl='';
+if(weakItems.length>0){
+var kurangItems=weakItems.filter(function(w){return w.skor===1});
+var cukupItems=weakItems.filter(function(w){return w.skor===2});
+rtl='Berdasarkan hasil supervisi kegiatan '+label+', rencana tindak lanjut yang perlu dilakukan adalah sebagai berikut. ';
+if(kurangItems.length>0){
+var kurangAspek=kurangItems.map(function(w){return w.item.toLowerCase()}).join(', ');
+rtl+='Perlu dilakukan pembinaan intensif melalui pendampingan langsung terkait '+kurangAspek+'. ';
+}
+if(cukupItems.length>0){
+var cukupAspek=cukupItems.map(function(w){return w.item.toLowerCase()}).join(', ');
+rtl+='Selain itu, perlu dilakukan pendampingan berkelanjutan untuk meningkatkan kualitas pada aspek '+cukupAspek+'. ';
+}
+rtl+='Supervisi lanjutan akan dilaksanakan untuk memastikan perbaikan yang telah direncanakan dapat terlaksana dengan optimal.';
+}else{
+rtl='Berdasarkan hasil supervisi kegiatan '+label+', seluruh aspek sudah terlaksana dengan baik. Rencana tindak lanjut adalah mempertahankan kualitas yang sudah tercapai dan terus melakukan inovasi dalam kegiatan kokurikuler.';
+}
+d.rekap.tindakLanjut=rtl;
+}
 saveKokurikuler(data);
 }
 
