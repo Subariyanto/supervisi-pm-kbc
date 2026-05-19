@@ -93,7 +93,6 @@ canvas{max-width:100%;margin:20px 0}
 .stat-card .stat-number{font-size:2rem;font-weight:700;color:#0ea5e9}
 .stat-card .stat-label{color:#64748b;font-size:.85rem;margin-top:5px}
 .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center}
-.modal-overlay.active{display:flex}
 .modal-box{background:#fff;border-radius:12px;padding:24px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative}
 .modal-box h3{margin:0 0 12px;color:#1e293b;font-size:1.1rem}
 .modal-box ul{margin:6px 0 12px 18px;padding:0;color:#334155}
@@ -107,12 +106,12 @@ canvas{max-width:100%;margin:20px 0}
 </style>
 </head>
 <body>
-<div class="modal-overlay" id="modalPenggalian" onclick="closeModal()">
+<div class="modal-overlay" id="modalPenggalian" onclick="document.getElementById('modalPenggalian').style.display='none'">
 <div class="modal-box" onclick="event.stopPropagation()">
-<button class="modal-close" onclick="closeModal()">&times;</button>
+<button class="modal-close" onclick="document.getElementById('modalPenggalian').style.display='none'">&times;</button>
 <h3 id="modalTitle">Penggalian Data</h3>
 <div id="modalContent"></div>
-<div style="margin-top:16px;text-align:right"><button class="btn btn-primary" onclick="closeModal()">Tutup</button></div>
+<div style="margin-top:16px;text-align:right"><button class="btn btn-primary" onclick="document.getElementById('modalPenggalian').style.display='none'">Tutup</button></div>
 </div>
 </div>
 <button class="mobile-toggle no-print" onclick="toggleSidebar()">&#9776;</button>
@@ -243,10 +242,10 @@ var items=getPelaksanaanFlat();
 var title=items[idx]||'Aspek';
 document.getElementById('modalTitle').textContent='Penggalian Data: '+(idx+1)+'. '+title;
 document.getElementById('modalContent').innerHTML=PENGGALIAN_PELAKSANAAN[idx]||'<p>Tidak ada data penggalian.</p>';
-document.getElementById('modalPenggalian').classList.add('active');
+document.getElementById('modalPenggalian').style.display='flex';
 }
 function closeModal(){
-document.getElementById('modalPenggalian').classList.remove('active');
+document.getElementById('modalPenggalian').style.display='none';
 }
 
 // ===== NAVIGATION =====
