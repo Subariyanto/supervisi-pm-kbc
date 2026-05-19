@@ -213,7 +213,15 @@ localStorage.setItem(INDIKATOR_KEY,JSON.stringify(data));
 }
 function getIndikator(key){
 var data=getIndikatorData();
-if(data&&data[key]!==undefined)return data[key];
+if(data&&data[key]!==undefined){
+// Migrasi: kalau pelaksanaan masih format object (lama), reset ke default array
+if(key==='pelaksanaan'&&!Array.isArray(data[key])){
+delete data[key];
+saveIndikatorData(data);
+return [...DEFAULT_PELAKSANAAN];
+}
+return data[key];
+}
 if(key==='perencanaan')return DEFAULT_PERENCANAAN;
 if(key==='pelaksanaan')return [...DEFAULT_PELAKSANAAN];
 if(key==='asesmen')return DEFAULT_ASESMEN;
