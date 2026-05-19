@@ -585,7 +585,7 @@ return html;
 function showMadrasahModal(idx){
 var m=(idx!==undefined)?getMadrasah()[idx]:{};
 var isEdit=(idx!==undefined);
-var modal='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">';
+var modal='<div class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal()">';
 modal+='<div class="modal"><h3>'+(isEdit?'Edit':'Tambah')+' Madrasah</h3>';
 modal+='<div class="form-group"><label>Nama Madrasah</label><input id="m-nama" value="'+escHtml(m.nama||'')+'"></div>';
 modal+='<div class="form-group"><label>NPSN</label><input id="m-npsn" value="'+escHtml(m.npsn||'')+'"></div>';
@@ -651,7 +651,7 @@ var isEdit=(idx!==undefined);
 var madrasahList=getMadrasah();
 var opts='<option value="">-- Pilih Madrasah --</option>';
 madrasahList.forEach(function(m){opts+='<option value="'+escHtml(m.nama)+'" '+(g.madrasah===m.nama?'selected':'')+'>'+escHtml(m.nama)+'</option>';});
-var modal='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">';
+var modal='<div class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal()">';
 modal+='<div class="modal"><h3>'+(isEdit?'Edit':'Tambah')+' Guru</h3>';
 modal+='<div class="form-group"><label>Nama Guru</label><input id="g-nama" value="'+escHtml(g.nama||'')+'"></div>';
 modal+='<div class="form-group"><label>NIP</label><input id="g-nip" value="'+escHtml(g.nip||'')+'"></div>';
