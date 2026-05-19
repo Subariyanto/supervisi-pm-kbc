@@ -486,6 +486,15 @@ document.getElementById('modalPenggalian').style.display='flex';
 function closeModal(){
 document.getElementById('modalPenggalian').style.display='none';
 }
+function resetSkor(key){
+if(!confirm('Reset semua skor '+key+'? Centang dan catatan akan dihapus.'))return;
+if(!state.formData[key])state.formData[key]={scores:[],catatan:[]};
+state.formData[key].scores=[];
+state.formData[key].catatan=[];
+if(state.formData[key].manualCatatan)state.formData[key].manualCatatan=[];
+if(state.formData.rekap&&state.formData.rekap[key])delete state.formData.rekap[key];
+render();
+}
 
 // ===== NAVIGATION =====
 function navigate(view){
@@ -944,7 +953,7 @@ var html='';
 if(editIndikatorState.active===key){
 html+=renderEditPanelFlat(key);
 }else{
-html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\''+key+'\')">✏️ Edit Indikator</button></div>';
+html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\''+key+'\')">✏️ Edit Indikator</button> <button class="btn btn-sm btn-warning" onclick="resetSkor(\''+key+'\')">🔄 Reset Skor</button></div>';
 }
 html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Aspek yang Diamati</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
 items.forEach(function(item,i){
@@ -982,7 +991,7 @@ var html='';
 if(editIndikatorState.active==='pelaksanaan'){
 html+=renderEditPanelGrouped();
 }else{
-html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\'pelaksanaan\')">✏️ Edit Indikator</button></div>';
+html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\'pelaksanaan\')">✏️ Edit Indikator</button> <button class="btn btn-sm btn-warning" onclick="resetSkor(\'pelaksanaan\')">🔄 Reset Skor</button></div>';
 }
 var idx=0;
 var pelItems=getIndikatorPelaksanaanFlat();
