@@ -128,6 +128,7 @@ canvas{max-width:100%;margin:20px 0}
 <li onclick="navigate('rekap')" data-nav="rekap">&#128202; Rekap Hasil Supervisi</li>
 <li onclick="navigate('cetak')" data-nav="cetak">&#128424; Cetak Hasil Supervisi</li>
 <li onclick="navigate('kokurikuler')" data-nav="kokurikuler">&#128203; Kokurikuler</li>
+<li onclick="navigate('rekap-kokurikuler')" data-nav="rekap-kokurikuler">&#128202; Rekap Kokurikuler</li>
 </ul>
 <p style="padding:15px 20px;font-size:.65rem;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.1);margin-top:auto;position:absolute;bottom:10px;left:0;right:0;white-space:normal;overflow:hidden;line-height:1.4;text-align:center">Aplikasi ini dibuat oleh : Subariyanto<br>Ketua Pokjawas Madrasah Kab. Jember</p>
 </nav>
@@ -553,6 +554,7 @@ case 'rekap':app.innerHTML=renderRekapAllPage();break;
 case 'cetak':app.innerHTML=renderCetakPage();break;
 case 'kokurikuler':app.innerHTML=renderKokurikulerPage();break;
 case 'kokurikuler-form':app.innerHTML=renderKokurikulerForm(state.kokurikulerIdx);break;
+case 'rekap-kokurikuler':app.innerHTML=renderRekapKokurikulerPage();break;
 default:app.innerHTML=renderDashboard();
 }
 app.classList.add('fade-in');
@@ -1973,6 +1975,93 @@ var title=KOKURIKULER[idx]||'Aspek';
 document.getElementById('modalTitle').textContent='Penggalian Data: '+(idx+1)+'. '+title;
 document.getElementById('modalContent').innerHTML=PENGGALIAN_KOKURIKULER[idx]||'<p>Tidak ada data penggalian.</p>';
 document.getElementById('modalPenggalian').style.display='flex';
+}
+
+function renderRekapKokurikulerPage(){
+var data=getKokurikuler();
+var madrasahList=getMadrasah();
+var pengawas=getPengawas();
+var html='<div class="card"><h2 style="margin-bottom:20px">📊 Rekap Kokurikuler</h2>';
+if(data.length===0){
+html+='<div class="empty-state"><p>Belum ada data kokurikuler.</p></div>';
+}else{
+// Group by madrasah
+var grouped={};
+data.forEach(function(d,i){d._idx=i;var key=d.madrasahNama||'Tanpa Madrasah';if(!grouped[key])grouped[key]=[];grouped[key].push(d);});
+Object.keys(grouped).forEach(function(madrasahNama){
+var items=grouped[madrasahNama];
+var madrasahData=madrasahList.find(function(m){return m.nama===madrasahNama})||{};
+html+='<div style="margin-bottom:25px;padding:15px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">';
+html+='<h3 style="margin-bottom:10px;color:#1e40af">'+escHtml(madrasahNama)+'</h3>';
+html+='<table class="instrumen-table"><thead><tr><th style="width:30px">No</th><th>Tanggal</th><th>Skor</th><th>Persentase</th><th>Predikat</th><th class="no-print">Aksi</th></tr></thead><tbody>';
+items.forEach(function(d,i){
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=KOKURIKULER.length*4;
+var pct=max>0?(sum/max)*100:0;
+var pred=getPredikat(pct);
+html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+sum+'/'+max+'</td><td>'+pct.toFixed(1)+'%</td><td>'+pred+'</td>';
+html+='<td class="no-print"><button class="btn btn-sm btn-info" onclick="cetakKokurikuler('+d._idx+')">🖨️</button></td></tr>';
+});
+html+='</tbody></table></div>';
+});
+html+='<div class="no-print" style="margin-top:20px;text-align:center"><button class="btn btn-secondary" onclick="printRekapKokurikuler()">🖨️ Cetak Rekap</button></div>';
+}
+html+='</div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+return html;
+}
+
+function printRekapKokurikuler(){
+var data=getKokurikuler();
+var madrasahList=getMadrasah();
+var pengawas=getPengawas();
+var w=window.open('','_blank');
+var html='<html><head><title>Rekap Kokurikuler</title><style>';
+html+='body{font-family:Arial,sans-serif;padding:20px;font-size:12px}';
+html+='h2{text-align:center;margin-bottom:15px}';
+html+='h3{margin:15px 0 8px;color:#1e40af}';
+html+='table{width:100%;border-collapse:collapse;margin-bottom:15px}';
+html+='th,td{border:1px solid #333;padding:6px;text-align:center}';
+html+='th{background:#f0f0f0;font-weight:bold}';
+html+='.narasi{text-align:justify;line-height:1.6;margin:5px 0}';
+html+='.ttd-table{border:none;margin-top:40px}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='</style></head><body>';
+html+='<h2>REKAP HASIL SUPERVISI KOKURIKULER</h2>';
+html+='<p style="text-align:center;margin-bottom:20px">Pengawas: '+(pengawas.nama||'-')+'</p>';
+var grouped={};
+data.forEach(function(d){var key=d.madrasahNama||'Tanpa Madrasah';if(!grouped[key])grouped[key]=[];grouped[key].push(d);});
+Object.keys(grouped).forEach(function(madrasahNama){
+var items=grouped[madrasahNama];
+var madrasahData=madrasahList.find(function(m){return m.nama===madrasahNama})||{};
+html+='<h3>'+escHtml(madrasahNama)+'</h3>';
+html+='<table><thead><tr><th>No</th><th>Tanggal</th><th>Skor</th><th>Persentase</th><th>Predikat</th></tr></thead><tbody>';
+items.forEach(function(d,i){
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=KOKURIKULER.length*4;
+var pct=max>0?(sum/max)*100:0;
+html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+sum+'/'+max+'</td><td>'+pct.toFixed(1)+'%</td><td>'+getPredikat(pct)+'</td></tr>';
+});
+html+='</tbody></table>';
+// Catatan & RTL dari entry terakhir
+var last=items[items.length-1];
+var rekap=last.rekap||{};
+if(rekap.catatan){html+='<p><b>Catatan:</b></p><p class="narasi">'+escHtml(rekap.catatan)+'</p>';}
+if(rekap.tindakLanjut){html+='<p><b>Rencana Tindak Lanjut:</b></p><p class="narasi">'+escHtml(rekap.tindakLanjut)+'</p>';}
+});
+html+='<table class="ttd-table"><tr>';
+html+='<td style="width:50%"><p>Mengetahui,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">..........................</p>';
+html+='<p>NIP. ..........................</p></td>';
+html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(pengawas.nama||'..........................')+'</p>';
+html+='<p>NIP. '+(pengawas.nip||'..........................')+'</p></td>';
+html+='</tr></table>';
+html+='</body></html>';
+w.document.write(html);w.document.close();
+setTimeout(function(){w.print();},500);
 }
 
 function cetakKokurikuler(idx){
