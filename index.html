@@ -127,7 +127,6 @@ canvas{max-width:100%;margin:20px 0}
 <li onclick="navigate('supervisi')" data-nav="supervisi">&#128221; Supervisi</li>
 <li onclick="navigate('rekap')" data-nav="rekap">&#128202; Rekap Hasil Supervisi</li>
 <li onclick="navigate('cetak')" data-nav="cetak">&#128424; Cetak Hasil Supervisi</li>
-<li onclick="navigate('dashboard')" style="margin-top:15px;border-top:1px solid rgba(255,255,255,.15);padding-top:12px;color:#f87171">&#10060; Tutup</li>
 </ul>
 <p style="padding:15px 20px;font-size:.65rem;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.1);margin-top:auto;position:absolute;bottom:10px;left:0;right:0;white-space:normal;overflow:hidden;line-height:1.4;text-align:center">Aplikasi ini dibuat oleh : Subariyanto<br>Ketua Pokjawas Madrasah Kab. Jember</p>
 </nav>
@@ -580,6 +579,7 @@ else{
 html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Nama Madrasah</th><th>NPSN</th><th>Alamat</th><th>Kab/Kota</th><th>Kepala Madrasah</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 html+='</div><div id="modal-container"></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
 return html;
 }
 
@@ -643,6 +643,7 @@ else{
 html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Nama Guru</th><th>NIP</th><th>Mata Pelajaran</th><th>Madrasah</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 html+='</div><div id="modal-container"></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
 return html;
 }
 
@@ -695,6 +696,7 @@ html+='<div class="form-group"><label>Kabupaten/Kota</label><input type="text" i
 html+='</div>';
 html+='<div style="margin-top:15px"><button class="btn btn-primary" onclick="updatePengawas()">\ud83d\udcbe Simpan</button></div>';
 html+='</div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
 return html;
 }
 
@@ -755,6 +757,7 @@ html+='</div>';
 });
 }
 html+='</div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
 return html;
 }
 
@@ -1285,6 +1288,7 @@ html+='</div></div>';
 });
 }
 html+='</div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
 return html;
 }
 
