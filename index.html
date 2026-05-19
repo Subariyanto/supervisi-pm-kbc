@@ -208,6 +208,16 @@ const ASESMEN=[
 'Memanfaatkan hasil asesmen untuk perbaikan pembelajaran'
 ];
 
+const PENGGALIAN_ASESMEN=[
+'<b>Melalui telaah dokumen:</b><ul><li>Terdapat dokumen KKTP (Kriteria Ketercapaian Tujuan Pembelajaran) yang dikembangkan dari rumusan tujuan pembelajaran</li><li>KKTP memuat indikator ketercapaian yang jelas dan terukur</li><li>KKTP digunakan sebagai acuan dalam menentukan ketuntasan belajar murid</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Instrumen penilaian (soal, rubrik, lembar observasi) selaras dengan tujuan pembelajaran yang ditetapkan</li><li>Bentuk asesmen sesuai dengan kompetensi yang diukur (pengetahuan, keterampilan, sikap)</li><li>Terdapat kisi-kisi atau pedoman penilaian yang mengacu pada tujuan pembelajaran</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Terdapat asesmen formatif (penilaian proses) selama pembelajaran berlangsung</li><li>Terdapat asesmen sumatif (penilaian hasil) di akhir pembelajaran</li><li>Catatan perkembangan murid tersedia (jurnal, anekdot, portofolio)</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Instrumen asesmen mengukur aspek yang terkait dengan Dimensi Profil Lulusan</li><li>Terdapat penilaian karakter/sikap yang mengacu pada nilai Panca Cinta</li><li>Rubrik penilaian mencerminkan integrasi kompetensi akademik dan karakter</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Guru menggunakan berbagai teknik penilaian: tes tertulis, tes lisan, penugasan, observasi, portofolio, proyek</li><li>Pemilihan teknik asesmen disesuaikan dengan karakteristik materi dan kompetensi yang diukur</li><li>Terdapat variasi instrumen untuk mengakomodasi keberagaman murid</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Terdapat catatan umpan balik tertulis pada hasil kerja murid</li><li>Umpan balik bersifat konstruktif, spesifik, dan memberikan arahan perbaikan</li><li>Murid mendapat kesempatan untuk memperbaiki hasil kerja berdasarkan umpan balik</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Terdapat analisis hasil asesmen (daya serap, ketuntasan)</li><li>Hasil asesmen digunakan untuk merancang program remedial/pengayaan</li><li>Guru melakukan refleksi dan perbaikan strategi mengajar berdasarkan data asesmen</li><li>Terdapat dokumentasi tindak lanjut hasil asesmen</li></ul>'
+];
+
 const SKOR_LABELS=['1 - Kurang','2 - Cukup','3 - Baik','4 - Sangat Baik'];
 const SKOR_CATATAN=['Belum terlaksana/tidak sesuai','Terlaksana sebagian kecil','Terlaksana dengan baik','Terlaksana dengan sangat baik dan konsisten'];
 
@@ -463,6 +473,14 @@ var items=getIndikator('perencanaan');
 var title=items[idx]||'Aspek';
 document.getElementById('modalTitle').textContent='Penggalian Data: '+(idx+1)+'. '+title;
 document.getElementById('modalContent').innerHTML=PENGGALIAN_PERENCANAAN[idx]||'<p>Tidak ada data penggalian.</p>';
+document.getElementById('modalPenggalian').style.display='flex';
+}
+function showPenggalianGeneric(key,idx){
+var items=getIndikator(key);
+var title=items[idx]||'Aspek';
+var data=(key==='perencanaan')?PENGGALIAN_PERENCANAAN:(key==='asesmen')?PENGGALIAN_ASESMEN:[];
+document.getElementById('modalTitle').textContent='Penggalian Data: '+(idx+1)+'. '+title;
+document.getElementById('modalContent').innerHTML=data[idx]||'<p>Tidak ada data penggalian.</p>';
 document.getElementById('modalPenggalian').style.display='flex';
 }
 function closeModal(){
@@ -932,8 +950,8 @@ html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th c
 items.forEach(function(item,i){
 var score=(d.scores&&d.scores[i]!==undefined)?d.scores[i]:null;
 var cat=(d.catatan&&d.catatan[i])?d.catatan[i]:getAutoCatatan(score);
-var penggalian=(key==='perencanaan'&&PENGGALIAN_PERENCANAAN[i])?true:false;
-html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(penggalian?' clickable':'')+'"'+(penggalian?' onclick="showPenggalianPerencanaan('+i+')" title="Klik untuk lihat penggalian data"':'')+'>'+(penggalian?'\u{1F50D} ':'')+item+'</td>';
+var penggalian=(key==='perencanaan'&&PENGGALIAN_PERENCANAAN[i])?true:(key==='asesmen'&&PENGGALIAN_ASESMEN[i])?true:false;
+html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(penggalian?' clickable':'')+'"'+(penggalian?' onclick="showPenggalianGeneric(\''+key+'\','+i+')" title="Klik untuk lihat penggalian data"':'')+'>'+(penggalian?'\u{1F50D} ':'')+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\''+key+'\','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
 }
