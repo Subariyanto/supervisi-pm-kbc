@@ -308,6 +308,7 @@ return data[key];
 if(key==='perencanaan')return DEFAULT_PERENCANAAN;
 if(key==='pelaksanaan')return [...DEFAULT_PELAKSANAAN];
 if(key==='asesmen')return DEFAULT_ASESMEN;
+if(key==='ekstrakurikuler')return [...EKSTRAKURIKULER];
 return null;
 }
 function saveIndikator(key,items){
@@ -2228,8 +2229,12 @@ var catatan=d.catatan||[];
 var html='<div class="card">';
 html+='<h2 style="margin-bottom:5px">\u{1F3C6} Instrumen Ekstrakurikuler</h2>';
 html+='<p style="color:#666;margin-bottom:15px">Madrasah: <b>'+escHtml(d.madrasahNama)+'</b> | Tanggal: <b>'+escHtml(d.tanggal||'-')+'</b></p>';
+if(editIndikatorState.active==='ekstrakurikuler'){
+html+=renderEditPanelFlat('ekstrakurikuler');
+}
+var ekstraItems=getIndikator('ekstrakurikuler');
 html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><th style="width:30px">No</th><th>Aspek yang Diamati</th><th style="width:30px">1</th><th style="width:30px">2</th><th style="width:30px">3</th><th style="width:30px">4</th><th>Catatan</th></tr></thead><tbody>';
-EKSTRAKURIKULER.forEach(function(item,i){
+ekstraItems.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=catatan[i]||'';
 html+='<tr><td>'+(i+1)+'</td><td style="text-align:left;cursor:pointer" onclick="showPenggalianEkstrakurikuler('+i+')">'+item+' \u{1F50D}</td>';
@@ -2246,12 +2251,13 @@ var pct=max>0?(sum/max)*100:0;
 html+='<div style="margin-top:15px;padding:10px;background:#f0f9ff;border-radius:8px"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+getPredikat(pct)+'</b></div>';
 var rekap=d.rekap||{};
 html+='<div style="margin-top:20px"><h3>Catatan Hasil Supervisi</h3>';
-html+='<textarea rows="4" onchange="setRekapEkstrakurikuler('+idx+',\'catatan\',this.value)">'+escHtml(rekap.catatan||'')+'</textarea></div>';
+html+='<textarea rows="6" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px" onchange="setRekapEkstrakurikuler('+idx+',\'catatan\',this.value)">'+escHtml(rekap.catatan||'')+'</textarea></div>';
 html+='<div style="margin-top:15px"><h3>Rencana Tindak Lanjut</h3>';
-html+='<textarea rows="4" onchange="setRekapEkstrakurikuler('+idx+',\'tindakLanjut\',this.value)">'+escHtml(rekap.tindakLanjut||'')+'</textarea></div>';
+html+='<textarea rows="6" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px" onchange="setRekapEkstrakurikuler('+idx+',\'tindakLanjut\',this.value)">'+escHtml(rekap.tindakLanjut||'')+'</textarea></div>';
 html+='<div class="btn-group no-print" style="justify-content:center">';
 html+='<button class="btn btn-primary" onclick="navigate(\'ekstrakurikuler\')">&\#10004; Simpan</button>';
 html+='<button class="btn btn-info" onclick="cetakEkstrakurikuler('+idx+')">&\#128424; Cetak</button>';
+html+='<button class="btn btn-secondary" onclick="editIndikatorEkstrakurikuler()">&#9998; Edit Indikator</button>';
 html+='<button class="btn btn-warning" onclick="resetSkorEkstrakurikuler('+idx+')">&\#128260; Reset Skor</button>';
 html+='<button class="btn btn-danger" onclick="navigate(\'ekstrakurikuler\')">&\#10005; Tutup</button>';
 html+='</div></div>';
@@ -2480,6 +2486,10 @@ html+='</tr></table>';
 html+='</body></html>';
 w.document.write(html);w.document.close();
 setTimeout(function(){w.print();},500);
+}
+
+function editIndikatorEkstrakurikuler(){
+showEditIndikator('ekstrakurikuler');
 }
 
 // ===== INIT =====
