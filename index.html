@@ -129,6 +129,8 @@ canvas{max-width:100%;margin:20px 0}
 <li onclick="navigate('cetak')" data-nav="cetak">&#128424; Cetak Hasil Supervisi</li>
 <li onclick="navigate('kokurikuler')" data-nav="kokurikuler">&#128203; Kokurikuler</li>
 <li onclick="navigate('rekap-kokurikuler')" data-nav="rekap-kokurikuler">&#128202; Rekap Kokurikuler</li>
+<li onclick="navigate('ekstrakurikuler')" data-nav="ekstrakurikuler">&#127942; Ekstrakurikuler</li>
+<li onclick="navigate('rekap-ekstrakurikuler')" data-nav="rekap-ekstrakurikuler">&#128202; Rekap Ekstrakurikuler</li>
 </ul>
 <p style="padding:15px 20px;font-size:.65rem;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.1);margin-top:auto;position:absolute;bottom:10px;left:0;right:0;white-space:normal;overflow:hidden;line-height:1.4;text-align:center">Aplikasi ini dibuat oleh : Subariyanto<br>Ketua Pokjawas Madrasah Kab. Jember</p>
 </nav>
@@ -250,6 +252,34 @@ const PENGGALIAN_KOKURIKULER=[
 ];
 
 const KOKURIKULER_KEY='supervisi_kokurikuler';
+
+const EKSTRAKURIKULER=[
+'Program ekstrakurikuler dirancang untuk menumbuhkan nilai cinta (karakter) selain keterampilan',
+'Kegiatan ekstrakurikuler menumbuhkan semangat belajar dan kecintaan terhadap ilmu',
+'Pembina ekstrakurikuler membimbing dengan pendekatan kasih sayang dan keteladanan',
+'Kegiatan ekstrakurikuler membangun kerjasama, empati, dan saling menghargai',
+'Kegiatan menanamkan kedisiplinan dan tanggung jawab melalui aktivitas bernuansa kebangsaan',
+'Kegiatan ekstrakurikuler menumbuhkan kepedulian terhadap lingkungan',
+'Terdapat pembiasaan nilai religius dalam kegiatan ekstrakurikuler',
+'Kegiatan ekstrakurikuler memberikan ruang ekspresi dan pengembangan potensi siswa',
+'Evaluasi kegiatan ekstrakurikuler dilakukan secara reflektif dan berkelanjutan',
+'Lingkungan kegiatan ekstrakurikuler aman, nyaman, dan menyenangkan'
+];
+
+const PENGGALIAN_EKSTRAKURIKULER=[
+'<b>Telaah dokumen:</b><ul><li>Program kerja ekstrakurikuler memuat tujuan karakter</li><li>RPP masing-masing ekstrakurikuler memuat nilai karakter</li></ul><b>Wawancara:</b><ul><li>"Nilai apa yang ingin dibangun dari kegiatan ini?"</li></ul>',
+'<b>Telaah dokumen:</b><ul><li>Video kegiatan ekstrakurikuler</li></ul><b>Observasi:</b><ul><li>Siswa aktif dan antusias</li></ul><b>Wawancara:</b><ul><li>"Apa yang paling disukai dari kegiatan ini?"</li></ul>',
+'<b>Telaah dokumen:</b><ul><li>Video kegiatan ekstrakurikuler</li></ul><b>Observasi:</b><ul><li>Cara pembina berinteraksi dengan siswa</li></ul><b>Wawancara:</b><ul><li>"Bagaimana pembina membimbing siswa?"</li></ul>',
+'<b>Telaah dokumen:</b><ul><li>Hasil penilaian karakter sesuai DPL dan nilai cinta</li></ul><b>Observasi:</b><ul><li>Kerja kelompok, tidak ada konflik negatif</li></ul><b>Wawancara:</b><ul><li>"Bagaimana siswa saling membantu?"</li></ul>',
+'<b>Observasi:</b><ul><li>Kegiatan bernuansa kebangsaan</li></ul><b>Telaah dokumen:</b><ul><li>Program kegiatan lomba, upacara</li><li>Hasil penilaian karakter sesuai DPL dan nilai cinta</li></ul>',
+'<b>Telaah dokumen:</b><ul><li>Hasil penilaian karakter sesuai DPL dan nilai cinta</li></ul><b>Observasi:</b><ul><li>Kegiatan peduli lingkungan</li></ul><b>Wawancara:</b><ul><li>"Apa kegiatan yang menjaga lingkungan?"</li></ul>',
+'<b>Telaah dokumen:</b><ul><li>Hasil penilaian karakter sesuai DPL dan nilai cinta</li></ul><b>Observasi:</b><ul><li>Doa, adab, nilai spiritual dalam kegiatan</li></ul><b>Wawancara:</b><ul><li>"Apakah kegiatan diawali dengan doa?"</li></ul>',
+'<b>Observasi:</b><ul><li>Semua siswa terlibat aktif</li></ul><b>Wawancara:</b><ul><li>"Apakah siswa bebas mengembangkan ide?"</li></ul><b>Telaah dokumen:</b><ul><li>Video kegiatan dan hasil karya siswa</li></ul>',
+'<b>Telaah dokumen:</b><ul><li>Laporan kegiatan ekstrakurikuler</li></ul><b>Wawancara:</b><ul><li>"Apakah ada refleksi setelah kegiatan?"</li></ul>',
+'<b>Observasi:</b><ul><li>Suasana kegiatan aman dan nyaman</li></ul><b>Wawancara:</b><ul><li>"Apakah siswa merasa nyaman?"</li></ul>'
+];
+
+const EKSTRAKURIKULER_KEY='supervisi_ekstrakurikuler';
 
 const SKOR_LABELS=['1 - Kurang','2 - Cukup','3 - Baik','4 - Sangat Baik'];
 const SKOR_CATATAN=['Belum terlaksana/tidak sesuai','Terlaksana sebagian kecil','Terlaksana dengan baik','Terlaksana dengan sangat baik dan konsisten'];
@@ -554,12 +584,16 @@ case 'cetak':app.innerHTML=renderCetakPage();break;
 case 'kokurikuler':app.innerHTML=renderKokurikulerPage();break;
 case 'kokurikuler-form':app.innerHTML=renderKokurikulerForm(state.kokurikulerIdx);break;
 case 'rekap-kokurikuler':app.innerHTML=renderRekapKokurikulerPage();break;
+case 'ekstrakurikuler':app.innerHTML=renderEkstrakurikulerPage();break;
+case 'ekstrakurikuler-form':app.innerHTML=renderEkstrakurikulerForm(state.ekstrakurikulerIdx);break;
+case 'rekap-ekstrakurikuler':app.innerHTML=renderRekapEkstrakurikulerPage();break;
 default:app.innerHTML=renderDashboard();
 }
 var titleEl=document.getElementById('pageTitle');
 if(titleEl){
 var isKoku=(state.view==='kokurikuler'||state.view==='kokurikuler-form'||state.view==='rekap-kokurikuler');
-titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':'\u{1F4CB} Supervisi Pembelajaran';
+var isEkstra=(state.view==='ekstrakurikuler'||state.view==='ekstrakurikuler-form'||state.view==='rekap-ekstrakurikuler');
+titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':isEkstra?'\u{1F4CB} Supervisi Ekstrakurikuler':'\u{1F4CB} Supervisi Pembelajaran';
 }
 app.classList.add('fade-in');
 setTimeout(function(){app.classList.remove('fade-in')},300);
@@ -2112,6 +2146,338 @@ html+='<p>NIP. '+(madrasahData.nipKepala||'.........................')+'</p></td
 html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline">'+(pengawas.nama||'.........................')+'</p>';
 html+='<p>NIP. '+(pengawas.nip||'.........................')+'</p></td>';
+html+='</tr></table>';
+html+='</body></html>';
+w.document.write(html);w.document.close();
+setTimeout(function(){w.print();},500);
+}
+
+// ===== EKSTRAKURIKULER =====
+const EKSTRAKURIKULER_KEY='supervisi_ekstrakurikuler';
+function getEkstrakurikuler(){try{return JSON.parse(localStorage.getItem(EKSTRAKURIKULER_KEY))||[];}catch(e){return [];}}
+function saveEkstrakurikuler(data){localStorage.setItem(EKSTRAKURIKULER_KEY,JSON.stringify(data));}
+
+function renderEkstrakurikulerPage(){
+var data=getEkstrakurikuler();
+var madrasahList=getMadrasah();
+var html='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
+html+='<h2>\u{1F3C6} Instrumen Ekstrakurikuler</h2>';
+html+='<button class="btn btn-primary" onclick="showAddEkstrakurikuler()">+ Tambah Penilaian</button></div>';
+if(data.length===0){
+html+='<div class="empty-state"><p>Belum ada data penilaian ekstrakurikuler.<br>Klik tombol di atas untuk mulai.</p></div>';
+}else{
+html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Madrasah</th><th>Tanggal</th><th>Skor</th><th>Predikat</th><th>Aksi</th></tr></thead><tbody>';
+data.forEach(function(d,i){
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=EKSTRAKURIKULER.length*4;
+var pct=max>0?(sum/max)*100:0;
+html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+sum+'/'+max+' ('+pct.toFixed(1)+'%)</td><td>'+getPredikat(pct)+'</td>';
+html+='<td><button class="btn btn-sm btn-primary" onclick="state.ekstrakurikulerIdx='+i+';navigate(\'ekstrakurikuler-form\')">&\#9998;</button> ';
+html+='<button class="btn btn-sm btn-danger" onclick="deleteEkstrakurikuler('+i+')">\u{1F5D1}</button></td></tr>';
+});
+html+='</tbody></table></div>';
+}
+html+='</div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">\u2715 Tutup</button></div>';
+return html;
+}
+
+function showAddEkstrakurikuler(){
+var madrasahList=getMadrasah();
+var html='<div style="background:rgba(0,0,0,.5);position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center" id="modal-ekstra">';
+html+='<div style="background:#fff;border-radius:12px;padding:30px;max-width:400px;width:90%">';
+html+='<h3 style="margin-bottom:15px">Tambah Penilaian Ekstrakurikuler</h3>';
+html+='<label>Madrasah:</label><select id="ekstra-madrasah" style="width:100%;padding:8px;margin:5px 0 15px;border-radius:6px;border:1px solid #ddd">';
+if(madrasahList.length===0){html+='<option value="">-- Belum ada data madrasah --</option>';}
+else{madrasahList.forEach(function(m){html+='<option value="'+escHtml(m.nama)+'">'+escHtml(m.nama)+'</option>';});}
+html+='</select>';
+html+='<label>Tanggal:</label><input type="date" id="ekstra-tanggal" style="width:100%;padding:8px;margin:5px 0 15px;border-radius:6px;border:1px solid #ddd">';
+html+='<div style="text-align:right"><button class="btn btn-secondary" onclick="document.getElementById(\'modal-ekstra\').remove()">Batal</button> ';
+html+='<button class="btn btn-primary" onclick="addEkstrakurikuler()">Simpan</button></div></div></div>';
+document.body.insertAdjacentHTML('beforeend',html);
+document.getElementById('ekstra-tanggal').value=new Date().toISOString().slice(0,10);
+}
+
+function addEkstrakurikuler(){
+var nama=document.getElementById('ekstra-madrasah').value;
+var tgl=document.getElementById('ekstra-tanggal').value;
+if(!nama){alert('Pilih madrasah terlebih dahulu');return;}
+var data=getEkstrakurikuler();
+data.push({madrasahNama:nama,tanggal:tgl,scores:new Array(EKSTRAKURIKULER.length).fill(null),catatan:[],manualCatatan:[],rekap:{catatan:'',tindakLanjut:''}});
+saveEkstrakurikuler(data);
+var el=document.getElementById('modal-ekstra');if(el)el.remove();
+state.ekstrakurikulerIdx=data.length-1;
+navigate('ekstrakurikuler-form');
+}
+
+function deleteEkstrakurikuler(idx){
+if(!confirm('Hapus data penilaian ini?'))return;
+var data=getEkstrakurikuler();
+data.splice(idx,1);
+saveEkstrakurikuler(data);
+render();
+}
+
+function renderEkstrakurikulerForm(idx){
+var data=getEkstrakurikuler();
+var d=data[idx];
+if(!d)return '<div class="card"><p>Data tidak ditemukan.</p></div>';
+autoGenerateRekapEkstrakurikuler(idx);
+d=getEkstrakurikuler()[idx];
+var scores=d.scores||[];
+var catatan=d.catatan||[];
+var html='<div class="card">';
+html+='<h2 style="margin-bottom:5px">\u{1F3C6} Instrumen Ekstrakurikuler</h2>';
+html+='<p style="color:#666;margin-bottom:15px">Madrasah: <b>'+escHtml(d.madrasahNama)+'</b> | Tanggal: <b>'+escHtml(d.tanggal||'-')+'</b></p>';
+html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><th style="width:30px">No</th><th>Aspek yang Diamati</th><th style="width:30px">1</th><th style="width:30px">2</th><th style="width:30px">3</th><th style="width:30px">4</th><th>Catatan</th></tr></thead><tbody>';
+EKSTRAKURIKULER.forEach(function(item,i){
+var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
+var cat=catatan[i]||'';
+html+='<tr><td>'+(i+1)+'</td><td style="text-align:left;cursor:pointer" onclick="showPenggalianEkstrakurikuler('+i+')">'+item+' \u{1F50D}</td>';
+for(var s=0;s<4;s++){
+var checked=(score===s)?'checked':'';
+html+='<td><input type="radio" name="ekstra_score_'+i+'" value="'+s+'" '+checked+' onchange="setSkorEkstrakurikuler('+idx+','+i+','+s+')"></td>';
+}
+html+='<td><input type="text" value="'+escHtml(cat)+'" onchange="setCatatanEkstrakurikuler('+idx+','+i+',this.value)" style="width:100%;min-width:120px;padding:4px;border:1px solid #ddd;border-radius:4px"></td></tr>';
+});
+html+='</tbody></table></div>';
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=EKSTRAKURIKULER.length*4;
+var pct=max>0?(sum/max)*100:0;
+html+='<div style="margin-top:15px;padding:10px;background:#f0f9ff;border-radius:8px"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+getPredikat(pct)+'</b></div>';
+var rekap=d.rekap||{};
+html+='<div style="margin-top:20px"><h3>Catatan Hasil Supervisi</h3>';
+html+='<textarea rows="4" onchange="setRekapEkstrakurikuler('+idx+',\'catatan\',this.value)">'+escHtml(rekap.catatan||'')+'</textarea></div>';
+html+='<div style="margin-top:15px"><h3>Rencana Tindak Lanjut</h3>';
+html+='<textarea rows="4" onchange="setRekapEkstrakurikuler('+idx+',\'tindakLanjut\',this.value)">'+escHtml(rekap.tindakLanjut||'')+'</textarea></div>';
+html+='<div class="btn-group no-print" style="justify-content:center">';
+html+='<button class="btn btn-primary" onclick="navigate(\'ekstrakurikuler\')">&\#10004; Simpan</button>';
+html+='<button class="btn btn-info" onclick="cetakEkstrakurikuler('+idx+')">&\#128424; Cetak</button>';
+html+='<button class="btn btn-warning" onclick="resetSkorEkstrakurikuler('+idx+')">&\#128260; Reset Skor</button>';
+html+='<button class="btn btn-danger" onclick="navigate(\'ekstrakurikuler\')">&\#10005; Tutup</button>';
+html+='</div></div>';
+return html;
+}
+
+function setSkorEkstrakurikuler(idx,itemIdx,val){
+var data=getEkstrakurikuler();
+var d=data[idx];if(!d)return;
+if(!d.scores)d.scores=[];
+d.scores[itemIdx]=val;
+if(!d.manualCatatan)d.manualCatatan=[];
+if(!d.manualCatatan[itemIdx]){
+if(!d.catatan)d.catatan=[];
+d.catatan[itemIdx]=getAutoCatatan(val);
+}
+saveEkstrakurikuler(data);
+render();
+}
+
+function setCatatanEkstrakurikuler(idx,itemIdx,val){
+var data=getEkstrakurikuler();
+var d=data[idx];if(!d)return;
+if(!d.catatan)d.catatan=[];
+if(!d.manualCatatan)d.manualCatatan=[];
+d.catatan[itemIdx]=val;
+d.manualCatatan[itemIdx]=true;
+saveEkstrakurikuler(data);
+}
+
+function setRekapEkstrakurikuler(idx,field,val){
+var data=getEkstrakurikuler();
+var d=data[idx];if(!d)return;
+if(!d.rekap)d.rekap={};
+d.rekap[field]=val;
+if(field==='catatan')d.rekap.manualCatatan=true;
+if(field==='tindakLanjut')d.rekap.manualTindakLanjut=true;
+saveEkstrakurikuler(data);
+}
+
+function autoGenerateRekapEkstrakurikuler(idx){
+var data=getEkstrakurikuler();
+var d=data[idx];if(!d)return;
+var scores=d.scores||[];
+var hasScores=scores.some(function(s){return s!==null&&s!==undefined;});
+if(!hasScores)return;
+if(!d.rekap)d.rekap={};
+var dominated=[];
+var strong=[];
+scores.forEach(function(s,i){
+if(s!==null&&s!==undefined){
+if(s<=1)dominated.push(EKSTRAKURIKULER[i]);
+else if(s>=2)strong.push(EKSTRAKURIKULER[i]);
+}
+});
+if(!d.rekap.manualCatatan){
+var cat='';
+if(strong.length>0)cat+='Aspek yang sudah baik dalam supervisi ekstrakurikuler: '+strong.join('; ')+'. ';
+if(dominated.length>0)cat+='Aspek yang perlu ditingkatkan: '+dominated.join('; ')+'.';
+if(!cat)cat='Semua aspek ekstrakurikuler sudah terlaksana dengan baik.';
+d.rekap.catatan=cat;
+}
+if(!d.rekap.manualTindakLanjut){
+var rtl='';
+if(dominated.length>0)rtl='Rencana tindak lanjut: perlu peningkatan pada aspek '+dominated.join('; ')+'. Pengawas akan melakukan pendampingan dan pembinaan terkait aspek tersebut.';
+else rtl='Seluruh aspek ekstrakurikuler sudah terlaksana dengan baik. Pengawas akan terus melakukan pemantauan untuk mempertahankan kualitas.';
+d.rekap.tindakLanjut=rtl;
+}
+saveEkstrakurikuler(data);
+}
+
+function resetSkorEkstrakurikuler(idx){
+if(!confirm('Reset semua skor Ekstrakurikuler? Data skor, catatan, dan rekap akan dihapus.'))return;
+var data=getEkstrakurikuler();
+var d=data[idx];if(!d)return;
+d.scores=new Array(EKSTRAKURIKULER.length).fill(null);
+d.catatan=[];
+d.manualCatatan=[];
+d.rekap={catatan:'',tindakLanjut:''};
+saveEkstrakurikuler(data);
+render();
+}
+
+function showPenggalianEkstrakurikuler(idx){
+var modal=document.getElementById('modalPenggalian');
+if(!modal)return;
+var title=EKSTRAKURIKULER[idx]||'';
+var content=PENGGALIAN_EKSTRAKURIKULER[idx]||'Tidak ada data penggalian.';
+modal.querySelector('.modal-title').innerHTML='<b>'+(idx+1)+'. '+title+'</b>';
+modal.querySelector('.modal-body').innerHTML=content;
+modal.style.display='flex';
+}
+
+function renderRekapEkstrakurikulerPage(){
+var data=getEkstrakurikuler();
+var pengawas=getPengawas();
+var html='<div class="card"><h2 style="margin-bottom:20px">\u{1F4CA} Rekap Ekstrakurikuler</h2>';
+if(data.length===0){
+html+='<div class="empty-state"><p>Belum ada data ekstrakurikuler.</p></div>';
+}else{
+html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><th style="width:30px">No</th><th>Tanggal</th><th>Nama Madrasah</th><th>Skor</th><th>Prosentase</th><th>Catatan Hasil Supervisi</th><th>Rencana Tindak Lanjut</th><th>Predikat</th><th class="no-print">Aksi</th></tr></thead><tbody>';
+data.forEach(function(d,i){
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=EKSTRAKURIKULER.length*4;
+var pct=max>0?(sum/max)*100:0;
+var pred=getPredikat(pct);
+var rekap=d.rekap||{};
+html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+sum+'/'+max+'</td><td>'+pct.toFixed(1)+'%</td>';
+html+='<td style="text-align:left;font-size:.8rem;max-width:200px">'+escHtml(rekap.catatan||'-')+'</td>';
+html+='<td style="text-align:left;font-size:.8rem;max-width:200px">'+escHtml(rekap.tindakLanjut||'-')+'</td>';
+html+='<td>'+pred+'</td>';
+html+='<td class="no-print"><button class="btn btn-sm btn-info" onclick="cetakEkstrakurikuler('+i+')">&\#128424;</button></td></tr>';
+});
+html+='</tbody></table></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:center"><button class="btn btn-secondary" onclick="printRekapEkstrakurikuler()">&\#128424; Cetak Rekap</button></div>';
+}
+html+='</div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">\u2715 Tutup</button></div>';
+return html;
+}
+
+function printRekapEkstrakurikuler(){
+var data=getEkstrakurikuler();
+var pengawas=getPengawas();
+var w=window.open('','_blank');
+var html='<html><head><title>Rekap Ekstrakurikuler</title><style>';
+html+='body{font-family:Arial,sans-serif;padding:20px;font-size:11px}';
+html+='h2{text-align:center;margin-bottom:15px}';
+html+='table{width:100%;border-collapse:collapse;margin-bottom:15px}';
+html+='th,td{border:1px solid #333;padding:5px;text-align:center;vertical-align:top}';
+html+='th{background:#f0f0f0;font-weight:bold}';
+html+='.left{text-align:left}';
+html+='.ttd-table{border:none;margin-top:40px}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='</style></head><body>';
+html+='<h2>REKAP HASIL SUPERVISI EKSTRAKURIKULER</h2>';
+html+='<p style="text-align:center;margin-bottom:20px">Pengawas: '+(pengawas.nama||'-')+'</p>';
+html+='<table><thead><tr><th>No</th><th>Tanggal</th><th>Nama Madrasah</th><th>Skor</th><th>Prosentase</th><th>Catatan Hasil Supervisi</th><th>Rencana Tindak Lanjut</th><th>Predikat</th></tr></thead><tbody>';
+data.forEach(function(d,i){
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=EKSTRAKURIKULER.length*4;
+var pct=max>0?(sum/max)*100:0;
+var rekap=d.rekap||{};
+html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+sum+'/'+max+'</td><td>'+pct.toFixed(1)+'%</td>';
+html+='<td class="left">'+escHtml(rekap.catatan||'-')+'</td>';
+html+='<td class="left">'+escHtml(rekap.tindakLanjut||'-')+'</td>';
+html+='<td>'+getPredikat(pct)+'</td></tr>';
+});
+html+='</tbody></table>';
+html+='<table class="ttd-table"><tr>';
+html+='<td style="width:50%"><p>Mengetahui,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">..........................</p>';
+html+='<p>NIP. ..........................</p></td>';
+html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(pengawas.nama||'..........................')+'</p>';
+html+='<p>NIP. '+(pengawas.nip||'..........................')+'</p></td>';
+html+='</tr></table>';
+html+='</body></html>';
+w.document.write(html);w.document.close();
+setTimeout(function(){w.print();},500);
+}
+
+function cetakEkstrakurikuler(idx){
+var data=getEkstrakurikuler();
+var d=data[idx];
+if(!d)return;
+var pengawas=getPengawas();
+var madrasahList=getMadrasah();
+var madrasahData=madrasahList.find(function(m){return m.nama===d.madrasahNama})||{};
+var w=window.open('','_blank');
+var html='<html><head><title>Cetak Instrumen Ekstrakurikuler</title><style>';
+html+='body{font-family:Arial,sans-serif;padding:20px;font-size:12px}';
+html+='h2{text-align:center;margin-bottom:5px}';
+html+='h3{text-align:center;margin-bottom:10px}';
+html+='table{width:100%;border-collapse:collapse;margin-top:15px}';
+html+='th,td{border:1px solid #333;padding:6px;text-align:center;vertical-align:middle}';
+html+='th{background:#f0f0f0;font-weight:bold}';
+html+='.aspek{text-align:left}';
+html+='.header-info{margin-bottom:15px}';
+html+='.header-info p{margin:3px 0}';
+html+='.narasi{text-align:justify;line-height:1.6;margin:5px 0}';
+html+='.ttd-table{border:none;margin-top:40px}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='</style></head><body>';
+html+='<h2>INSTRUMEN SUPERVISI EKSTRAKURIKULER</h2>';
+html+='<h3>Madrasah: '+escHtml(d.madrasahNama)+'</h3>';
+html+='<div class="header-info">';
+html+='<p><b>Madrasah:</b> '+escHtml(d.madrasahNama)+' | <b>NPSN:</b> '+(madrasahData.npsn||'-')+'</p>';
+html+='<p><b>Kepala Madrasah:</b> '+(madrasahData.kepala||'-')+'</p>';
+html+='<p><b>Pengawas:</b> '+(pengawas.nama||'-')+' | <b>Tanggal:</b> '+escHtml(d.tanggal||'-')+'</p>';
+html+='</div>';
+html+='<table><thead><tr><th style="width:30px">No</th><th class="aspek">Aspek yang Diamati</th><th style="width:30px">1</th><th style="width:30px">2</th><th style="width:30px">3</th><th style="width:30px">4</th><th>Catatan</th></tr></thead><tbody>';
+var scores=d.scores||[];
+var catatan=d.catatan||[];
+EKSTRAKURIKULER.forEach(function(item,i){
+var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
+var cat=catatan[i]||getAutoCatatan(score);
+html+='<tr><td>'+(i+1)+'</td><td class="aspek">'+item+'</td>';
+for(var s=0;s<4;s++){html+='<td>'+(score===s?'&\#10004;':'')+'</td>';}
+html+='<td>'+escHtml(cat)+'</td></tr>';
+});
+html+='</tbody></table>';
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=EKSTRAKURIKULER.length*4;
+var pct=max>0?(sum/max)*100:0;
+html+='<p style="margin-top:15px"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+getPredikat(pct)+'</b></p>';
+var rekap=d.rekap||{};
+if(rekap.catatan){
+html+='<div style="margin-top:20px"><b>Catatan Hasil Supervisi:</b></div>';
+html+='<p class="narasi">'+escHtml(rekap.catatan)+'</p>';
+}
+if(rekap.tindakLanjut){
+html+='<div style="margin-top:15px"><b>Rencana Tindak Lanjut:</b></div>';
+html+='<p class="narasi">'+escHtml(rekap.tindakLanjut)+'</p>';
+}
+html+='<table class="ttd-table"><tr>';
+html+='<td style="width:50%"><p>Pembina Ekstrakurikuler,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">..........................</p>';
+html+='<p>NIP. ..........................</p></td>';
+html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(pengawas.nama||'..........................')+'</p>';
+html+='<p>NIP. '+(pengawas.nip||'..........................')+'</p></td>';
 html+='</tr></table>';
 html+='</body></html>';
 w.document.write(html);w.document.close();
