@@ -464,7 +464,7 @@ function toggleSidebar(){document.getElementById('sidebar').classList.toggle('op
 function render(){
 const app=document.getElementById('app');
 switch(state.view){
-case 'dashboard':app.innerHTML=renderDashboard();break;
+case 'dashboard':app.innerHTML=renderDashboard();setTimeout(drawChart,100);break;
 case 'pengawas':app.innerHTML=renderPengawasPage();break;
 case 'madrasah':app.innerHTML=renderMadrasahPage();break;
 case 'guru':app.innerHTML=renderGuruPage();break;
@@ -510,7 +510,7 @@ return html;
 }
 
 function renderChart(data){
-return '<div class="card"><h3 style="margin-bottom:15px">Grafik Capaian</h3><canvas id="chart" height="200"></canvas></div><script>setTimeout(function(){drawChart()},100)<\/script>';
+return '<div class="card"><h3 style="margin-bottom:15px">Grafik Capaian</h3><canvas id="chart" height="200"></canvas></div>';
 }
 
 function drawChart(){
