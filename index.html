@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplikasi Supervisi Pembelajaran</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;color:#333}
+.app-layout{display:flex;min-height:100vh}
+.sidebar{width:250px;background:rgba(15,32,39,.97);padding:20px 0;color:#fff;position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s}
+.sidebar h2{padding:15px 20px;font-size:1.2rem;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}
+.sidebar-menu{list-style:none}
+.sidebar-menu li{padding:12px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;font-size:.9rem}
+.sidebar-menu li:hover{background:rgba(14,165,233,.2)}
+.sidebar-menu li.active{background:linear-gradient(135deg,rgba(14,165,233,.3),rgba(13,148,136,.3));border-left:3px solid #0ea5e9}
+.main-content{margin-left:250px;flex:1;padding:20px;min-height:100vh}
+.mobile-toggle{display:none;position:fixed;top:15px;left:15px;z-index:200;background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:1.2rem;cursor:pointer}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}.mobile-toggle{display:block}}
+.container{max-width:900px;margin:0 auto}
+header{text-align:center;padding:20px 0;color:#fff}
+header h1{font-size:1.6rem;margin-bottom:5px}
+header p{opacity:.8;font-size:.85rem}
+.card{background:#fff;border-radius:16px;padding:25px;margin:15px 0;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.btn{padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(14,165,233,.4)}
+.btn-danger{background:#ef4444;color:#fff}
+.btn-danger:hover{background:#dc2626}
+.btn-secondary{background:#e2e8f0;color:#475569}
+.btn-secondary:hover{background:#cbd5e1}
+.btn-success{background:#10b981;color:#fff}
+.btn-success:hover{background:#059669}
+.btn-warning{background:#f59e0b;color:#fff}
+.btn-warning:hover{background:#d97706}
+.btn-info{background:#6366f1;color:#fff}
+.btn-info:hover{background:#4f46e5}
+.btn-sm{padding:6px 12px;font-size:.8rem;border-radius:6px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.progress-bar{display:flex;justify-content:space-between;margin-bottom:25px;position:relative}
+.progress-bar::before{content:'';position:absolute;top:50%;left:0;right:0;height:3px;background:#e2e8f0;transform:translateY(-50%);z-index:0}
+.step-indicator{width:36px;height:36px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;position:relative;z-index:1;transition:all .3s}
+.step-indicator.active{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;box-shadow:0 3px 10px rgba(14,165,233,.4)}
+.step-indicator.done{background:#10b981;color:#fff}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-weight:600;margin-bottom:6px;color:#374151;font-size:.9rem}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:2px solid #e2e8f0;border-radius:8px;font-size:.9rem;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0ea5e9}
+.form-group textarea{resize:vertical;min-height:80px}
+.instrumen-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:.85rem}
+.instrumen-table th,.instrumen-table td{border:1px solid #e2e8f0;padding:8px 6px;text-align:center;vertical-align:middle}
+.instrumen-table th{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;font-weight:600;font-size:.8rem}
+.instrumen-table .col-no{width:40px}
+.instrumen-table .col-aspek{text-align:left;min-width:200px}
+.instrumen-table .col-skor{width:40px}
+.instrumen-table .col-catatan{min-width:140px}
+.instrumen-table .col-catatan input{width:100%;padding:6px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:.8rem}
+.skor-radio{background:none;border:none;cursor:pointer;font-size:1.1rem;color:#94a3b8;transition:all .2s}
+.skor-radio:hover{color:#0ea5e9}
+.skor-radio.selected{color:#0ea5e9;font-weight:bold}
+.tahap-header{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;padding:10px 16px;border-radius:8px;margin:20px 0 12px;font-weight:600;font-size:.9rem}
+.rekap-card{background:linear-gradient(135deg,#f0f9ff,#f0fdfa);border:2px solid #0ea5e9;border-radius:12px;padding:20px;margin-bottom:16px}
+.rekap-card h3{color:#0d9488;margin-bottom:10px}
+.rekap-score{font-size:2rem;font-weight:700;color:#0ea5e9}
+.rekap-predikat{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:600;margin-top:5px}
+.predikat-sangat-baik{background:#d1fae5;color:#065f46}
+.predikat-baik{background:#dbeafe;color:#1e40af}
+.predikat-cukup{background:#fef3c7;color:#92400e}
+.predikat-kurang{background:#fee2e2;color:#991b1b}
+.dashboard-item{display:flex;justify-content:space-between;align-items:center;padding:16px;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;transition:all .2s;cursor:pointer}
+.dashboard-item:hover{border-color:#0ea5e9;box-shadow:0 4px 12px rgba(14,165,233,.1)}
+.dashboard-item .info h4{color:#1e293b;font-size:.95rem}
+.dashboard-item .info p{color:#64748b;font-size:.8rem;margin-top:3px}
+.dashboard-item .actions{display:flex;gap:6px}
+.empty-state{text-align:center;padding:40px;color:#94a3b8}
+canvas{max-width:100%;margin:20px 0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}.container{padding:10px}header h1{font-size:1.3rem}.card{padding:15px}}
+.hidden{display:none}
+.fade-in{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal{background:#fff;border-radius:16px;padding:30px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto}
+.modal h3{margin-bottom:20px;color:#1e293b}
+.data-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:15px 0}
+.data-table th,.data-table td{border:1px solid #e2e8f0;padding:10px 8px;text-align:left}
+.data-table th{background:#f1f5f9;font-weight:600;color:#374151}
+.data-table tr:hover{background:#f8fafc}
+.stat-card{background:linear-gradient(135deg,#f0f9ff,#f0fdfa);border:2px solid #e2e8f0;border-radius:12px;padding:20px;text-align:center}
+.stat-card .stat-number{font-size:2rem;font-weight:700;color:#0ea5e9}
+.stat-card .stat-label{color:#64748b;font-size:.85rem;margin-top:5px}
+@media print{.sidebar,.mobile-toggle,.no-print,.btn-group{display:none!important}.main-content{margin-left:0!important}.card{box-shadow:none;border:1px solid #ddd}body{background:#fff}.print-only{display:block!important}}
+.print-only{display:none}
+</style>
+</head>
+<body>
+<button class="mobile-toggle no-print" onclick="toggleSidebar()">&#9776;</button>
+<div class="app-layout">
+<nav class="sidebar" id="sidebar">
+<h2>&#128203; Supervisi PM-KBC</h2>
+<p style="padding:0 20px;font-size:.75rem;color:rgba(255,255,255,.6);margin-top:-5px">Pengawas Madrasah</p>
+<ul class="sidebar-menu">
+<li class="active" onclick="navigate('dashboard')" data-nav="dashboard">&#128202; Dashboard</li>
+<li onclick="navigate('pengawas')" data-nav="pengawas">&#128100; Data Pengawas</li>
+<li onclick="navigate('madrasah')" data-nav="madrasah">&#127979; Data Madrasah</li>
+<li onclick="navigate('guru')" data-nav="guru">&#128104;&#8205;&#127891; Data Guru</li>
+<li onclick="navigate('supervisi')" data-nav="supervisi">&#128221; Supervisi</li>
+<li onclick="navigate('rekap')" data-nav="rekap">&#128202; Rekap Hasil Supervisi</li>
+<li onclick="navigate('cetak')" data-nav="cetak">&#128424; Cetak Hasil Supervisi</li>
+</ul>
+<p style="padding:15px 20px;font-size:.65rem;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.1);margin-top:auto;position:absolute;bottom:10px;left:0;right:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Aplikasi ini dibuat oleh : Subariyanto</p>
+</nav>
+<div class="main-content">
+<div class="container">
+<header>
+<h1>&#128203; Supervisi Pembelajaran</h1>
+<p>Aplikasi Supervisi PM Integrasi KBC</p>
+</header>
+<div id="app"></div>
+</div>
+</div>
+</div>
+<script>
+// ===== CONSTANTS =====
+const APP_KEY='supervisi_data_v1';
+const MADRASAH_KEY='supervisi_madrasah';
+const GURU_KEY='supervisi_guru';
+const PENGAWAS_KEY='supervisi_pengawas';
+
+const PERENCANAAN=[
+'Identifikasi Murid: Sesuai kondisi obyektif dan menunjukkan kesiapan belajar',
+'Dimensi profil lulusan yang dipilih sesuai dengan materi pembelajaran',
+'Mengintegrasikan Topik Panca Cinta dalam Pembelajaran',
+'Tujuan pembelajaran jelas, terukur, relevan serta mengandung komponen minimal (kompetensi dan materi)',
+'Praktek pedagogis sesuai prinsip berkesadaran, bermakna, menggembirakan',
+'Kemitraan pembelajaran melibatkan stakeholder yang mendukung tercapainya tujuan pembelajaran',
+'Lingkungan pembelajaran mendukung suasana aman, inklusif, kolaborasi, refleksi, eksplorasi',
+'Pemanfaatan teknologi/digital mendukung pembelajaran interaktif dan kolaboratif',
+'Langkah-langkah pembelajaran runtut, sesuai waktu dan tahapan pengalaman belajar'
+];
+
+const PELAKSANAAN={
+'Tahap Memahami':[
+'Guru menyampaikan tujuan pembelajaran',
+'Guru membuka pembelajaran dengan apersepsi dan motivasi',
+'Menyajikan materi runtut, jelas, menarik',
+'Memfasilitasi pertanyaan dan penggalian pengetahuan awal',
+'Mengimplementasikan Prinsip Pembelajaran (Berkesadaran, Bermakna, Menggembirakan)'
+],
+'Tahap Mengaplikasi':[
+'Menggunakan media pembelajaran yang relevan dan interaktif',
+'Memberikan pengalaman nyata melalui kegiatan praktik, proyek, simulasi',
+'Melibatkan siswa aktif dalam kolaborasi dan diskusi',
+'Mengarahkan berpikir kritis dan kreatif',
+'Mengimplementasikan Prinsip Pembelajaran (Berkesadaran, Bermakna, Menggembirakan)'
+],
+'Tahap Merefleksi':[
+'Mengajak murid merefleksikan proses dan hasil belajar',
+'Memberikan umpan balik dan rencana tindak lanjut',
+'Mengintegrasikan Topik Panca Cinta dalam merefleksikan pembelajaran',
+'Mengimplementasikan Prinsip Pembelajaran (Berkesadaran, Bermakna, Menggembirakan)'
+]
+};
+
+const ASESMEN=[
+'Terdapat KKTP yang dikembangkan dari Tujuan Pembelajaran',
+'Instrumen penilaian sesuai tujuan pembelajaran',
+'Penilaian mencakup proses dan hasil belajar',
+'Penilaian berorientasi pada dimensi profil lulusan dan Topik Panca Cinta',
+'Menggunakan teknik beragam (tes, non-tes, observasi, portofolio)',
+'Memberikan umpan balik yang membangun',
+'Memanfaatkan hasil asesmen untuk perbaikan pembelajaran'
+];
+
+const SKOR_LABELS=['1 - Kurang','2 - Cukup','3 - Baik','4 - Sangat Baik'];
+const SKOR_CATATAN=['Belum terlaksana/tidak sesuai','Terlaksana sebagian kecil','Terlaksana dengan baik','Terlaksana dengan sangat baik dan konsisten'];
+
+// ===== STATE =====
+let state={view:'dashboard',editId:null,formData:{},currentStep:0,detailIdx:null};
+
+// ===== STORAGE =====
+function getData(){try{return JSON.parse(localStorage.getItem(APP_KEY))||[]}catch(e){return[]}}
+function saveData(d){localStorage.setItem(APP_KEY,JSON.stringify(d))}
+function getMadrasah(){try{return JSON.parse(localStorage.getItem(MADRASAH_KEY))||[]}catch(e){return[]}}
+function saveMadrasah(d){localStorage.setItem(MADRASAH_KEY,JSON.stringify(d))}
+function getGuru(){try{return JSON.parse(localStorage.getItem(GURU_KEY))||[]}catch(e){return[]}}
+function saveGuru(d){localStorage.setItem(GURU_KEY,JSON.stringify(d))}
+function getPengawas(){try{return JSON.parse(localStorage.getItem(PENGAWAS_KEY))||{}}catch(e){return{}}}
+function savePengawas(d){localStorage.setItem(PENGAWAS_KEY,JSON.stringify(d))}
+
+// ===== UTILITY =====
+function getPredikat(pct){if(pct>=91)return'Sangat Baik';if(pct>=81)return'Baik';if(pct>=71)return'Cukup';return'Kurang'}
+function getAutoCatatan(skor){if(skor===null||skor===undefined)return'';return SKOR_CATATAN[skor]||''}
+function getPredikatClass(p){return'predikat-'+p.toLowerCase().replace(' ','-')}
+function calcTotal(d){let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].forEach(k=>{const scores=d[k]&&d[k].scores?d[k].scores:[];scores.forEach(s=>{if(s!==null&&s!==undefined){sum+=s+1;max+=4}})});return max>0?(sum/max)*100:0}
+function calcKomponen(d,key){const scores=d[key]&&d[key].scores?d[key].scores:[];let sum=0,max=0;scores.forEach(s=>{if(s!==null&&s!==undefined){sum+=s+1;max+=4}});return max>0?(sum/max)*100:0}
+function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function getPelaksanaanFlat(){let items=[];Object.values(PELAKSANAAN).forEach(arr=>{items=items.concat(arr)});return items}
+
+// ===== NAVIGATION =====
+function navigate(view){
+state.view=view;state.editId=null;
+document.querySelectorAll('.sidebar-menu li').forEach(function(li){li.classList.toggle('active',li.dataset.nav===view)});
+if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open');
+if(view==='supervisi'&&(!state.formData||!state.formData.identitas||!state.formData.identitas.namaGuru)){newForm();return;}
+render();
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+
+// ===== RENDER MAIN =====
+function render(){
+const app=document.getElementById('app');
+switch(state.view){
+case 'dashboard':app.innerHTML=renderDashboard();break;
+case 'pengawas':app.innerHTML=renderPengawasPage();break;
+case 'madrasah':app.innerHTML=renderMadrasahPage();break;
+case 'guru':app.innerHTML=renderGuruPage();break;
+case 'supervisi':case 'form':app.innerHTML=renderForm();break;
+case 'detail':app.innerHTML=renderDetail();break;
+case 'rekap':app.innerHTML=renderRekapAllPage();break;
+case 'cetak':app.innerHTML=renderCetakPage();break;
+default:app.innerHTML=renderDashboard();
+}
+app.classList.add('fade-in');
+setTimeout(function(){app.classList.remove('fade-in')},300);
+}
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+const data=getData();
+const madrasahCount=getMadrasah().length;
+const guruCount=getGuru().length;
+let stats='<div class="grid-3" style="margin-bottom:20px">';
+stats+='<div class="stat-card"><div class="stat-number">'+data.length+'</div><div class="stat-label">Total Supervisi</div></div>';
+stats+='<div class="stat-card"><div class="stat-number">'+madrasahCount+'</div><div class="stat-label">Data Madrasah</div></div>';
+stats+='<div class="stat-card"><div class="stat-number">'+guruCount+'</div><div class="stat-label">Data Guru</div></div>';
+stats+='</div>';
+let items='';
+if(data.length===0){
+items='<div class="empty-state"><p>Belum ada data supervisi.<br>Klik tombol di bawah untuk mulai.</p></div>';
+}else{
+data.forEach(function(d,i){
+const pct=calcTotal(d);
+items+='<div class="dashboard-item" onclick="viewDetail('+i+')">';
+items+='<div class="info"><h4>'+escHtml(d.identitas&&d.identitas.namaGuru?d.identitas.namaGuru:'(Tanpa Nama)')+'</h4>';
+items+='<p>'+(escHtml(d.identitas&&d.identitas.mataPelajaran?d.identitas.mataPelajaran:'-'))+' &bull; '+(d.identitas&&d.identitas.tanggalSupervisi?d.identitas.tanggalSupervisi:'-')+' &bull; '+pct.toFixed(0)+'%</p></div>';
+items+='<div class="actions">';
+items+='<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();editItem('+i+')">&#9998;</button>';
+items+='<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteItem('+i+')">&#128465;</button>';
+items+='</div></div>';
+});
+}
+let html=stats+'<div class="card"><h2 style="margin-bottom:20px">Daftar Supervisi</h2>'+items;
+html+='<div style="text-align:center;margin-top:20px"><button class="btn btn-primary" onclick="newForm()">+ Supervisi Baru</button></div></div>';
+if(data.length>0)html+=renderChart(data);
+return html;
+}
+
+function renderChart(data){
+return '<div class="card"><h3 style="margin-bottom:15px">Grafik Capaian</h3><canvas id="chart" height="200"></canvas></div><script>setTimeout(function(){drawChart()},100)<\/script>';
+}
+
+function drawChart(){
+var canvas=document.getElementById('chart');
+if(!canvas)return;
+var ctx=canvas.getContext('2d');
+var data=getData();
+if(data.length===0)return;
+var w=canvas.width=canvas.parentElement.clientWidth-60;
+var h=canvas.height=220;
+ctx.clearRect(0,0,w,h);
+var labels=['Perencanaan','Pelaksanaan','Asesmen'];
+var colors=['#0ea5e9','#10b981','#f59e0b'];
+var barW=Math.min(60,w/(data.length*4));
+var gap=10;
+var groupW=barW*3+gap*2;
+var startX=50;
+var chartH=h-50;
+ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;
+for(var i=0;i<=4;i++){
+var y=20+chartH*(1-i/4);
+ctx.beginPath();ctx.moveTo(startX,y);ctx.lineTo(w,y);ctx.stroke();
+ctx.fillStyle='#64748b';ctx.font='11px sans-serif';ctx.textAlign='right';
+ctx.fillText((i*25)+'%',startX-8,y+4);
+}
+data.forEach(function(d,di){
+var x=startX+20+di*(groupW+30);
+labels.forEach(function(l,li){
+var key=['perencanaan','pelaksanaan','asesmen'][li];
+var pct=calcKomponen(d,key);
+var barH=(pct/100)*chartH;
+var bx=x+li*(barW+gap);
+var by=20+chartH-barH;
+ctx.fillStyle=colors[li];
+ctx.beginPath();
+if(ctx.roundRect){ctx.roundRect(bx,by,barW,barH,4);ctx.fill();}
+else{ctx.fillRect(bx,by,barW,barH);}
+});
+ctx.fillStyle='#374151';ctx.font='10px sans-serif';ctx.textAlign='center';
+ctx.fillText((d.identitas&&d.identitas.namaGuru?d.identitas.namaGuru:'').substring(0,10),x+groupW/2,h-5);
+});
+labels.forEach(function(l,i){
+var lx=w-200+i*70;
+ctx.fillStyle=colors[i];ctx.fillRect(lx,5,12,12);
+ctx.fillStyle='#374151';ctx.font='10px sans-serif';ctx.textAlign='left';
+ctx.fillText(l,lx+16,14);
+});
+}
+
+// ===== DATA MADRASAH =====
+function renderMadrasahPage(){
+var data=getMadrasah();
+var rows='';
+data.forEach(function(m,i){
+rows+='<tr><td>'+(i+1)+'</td><td>'+escHtml(m.nama)+'</td><td>'+escHtml(m.npsn)+'</td><td>'+escHtml(m.alamat)+'</td><td>'+escHtml(m.kabupaten)+'</td><td>'+escHtml(m.kepala)+'</td><td>';
+rows+='<button class="btn btn-sm btn-secondary" onclick="editMadrasah('+i+')">&#9998;</button> ';
+rows+='<button class="btn btn-sm btn-danger" onclick="deleteMadrasah('+i+')">&#128465;</button>';
+rows+='</td></tr>';
+});
+var html='<div class="card">';
+html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
+html+='<h2>Data Madrasah</h2>';
+html+='<button class="btn btn-primary" onclick="showMadrasahModal()">+ Tambah Madrasah</button></div>';
+if(data.length===0){html+='<div class="empty-state"><p>Belum ada data madrasah.</p></div>';}
+else{
+html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Nama Madrasah</th><th>NPSN</th><th>Alamat</th><th>Kab/Kota</th><th>Kepala Madrasah</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+html+='</div><div id="modal-container"></div>';
+return html;
+}
+
+function showMadrasahModal(idx){
+var m=(idx!==undefined)?getMadrasah()[idx]:{};
+var isEdit=(idx!==undefined);
+var modal='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">';
+modal+='<div class="modal"><h3>'+(isEdit?'Edit':'Tambah')+' Madrasah</h3>';
+modal+='<div class="form-group"><label>Nama Madrasah</label><input id="m-nama" value="'+escHtml(m.nama||'')+'"></div>';
+modal+='<div class="form-group"><label>NPSN</label><input id="m-npsn" value="'+escHtml(m.npsn||'')+'"></div>';
+modal+='<div class="form-group"><label>Alamat</label><input id="m-alamat" value="'+escHtml(m.alamat||'')+'"></div>';
+modal+='<div class="form-group"><label>Kabupaten/Kota</label><input id="m-kabupaten" value="'+escHtml(m.kabupaten||'')+'"></div>';
+modal+='<div class="form-group"><label>Kepala Madrasah</label><input id="m-kepala" value="'+escHtml(m.kepala||'')+'"></div>';
+modal+='<div class="form-group"><label>NIP Kepala</label><input id="m-nipkepala" value="'+escHtml(m.nipKepala||'')+'"></div>';
+modal+='<div class="btn-group"><button class="btn btn-success" onclick="saveMadrasahForm('+(isEdit?idx:'null')+')">Simpan</button>';
+modal+='<button class="btn btn-secondary" onclick="closeModal()">Batal</button></div>';
+modal+='</div></div>';
+document.getElementById('modal-container').innerHTML=modal;
+}
+
+function saveMadrasahForm(idx){
+var obj={
+nama:document.getElementById('m-nama').value.trim(),
+npsn:document.getElementById('m-npsn').value.trim(),
+alamat:document.getElementById('m-alamat').value.trim(),
+kabupaten:document.getElementById('m-kabupaten').value.trim(),
+kepala:document.getElementById('m-kepala').value.trim(),
+nipKepala:document.getElementById('m-nipkepala').value.trim()
+};
+if(!obj.nama){alert('Nama madrasah wajib diisi');return;}
+var data=getMadrasah();
+if(idx!==null&&idx!==undefined){data[idx]=obj;}else{
+if(data.length>=30){alert('Maksimal 30 madrasah');return;}
+data.push(obj);
+}
+saveMadrasah(data);closeModal();render();
+}
+
+function editMadrasah(idx){showMadrasahModal(idx)}
+function deleteMadrasah(idx){if(!confirm('Hapus data madrasah ini?'))return;var data=getMadrasah();data.splice(idx,1);saveMadrasah(data);render();}
+function closeModal(){var mc=document.getElementById('modal-container');if(mc)mc.innerHTML='';}
+
+// ===== DATA GURU =====
+function renderGuruPage(){
+var data=getGuru();
+var madrasahList=getMadrasah();
+var rows='';
+data.forEach(function(g,i){
+var mName=g.madrasah||'-';
+rows+='<tr><td>'+(i+1)+'</td><td>'+escHtml(g.nama)+'</td><td>'+escHtml(g.nip)+'</td><td>'+escHtml(g.mataPelajaran)+'</td><td>'+escHtml(mName)+'</td><td>';
+rows+='<button class="btn btn-sm btn-secondary" onclick="editGuru('+i+')">&#9998;</button> ';
+rows+='<button class="btn btn-sm btn-danger" onclick="deleteGuru('+i+')">&#128465;</button>';
+rows+='</td></tr>';
+});
+var html='<div class="card">';
+html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
+html+='<h2>Data Guru</h2>';
+html+='<button class="btn btn-primary" onclick="showGuruModal()">+ Tambah Guru</button></div>';
+if(data.length===0){html+='<div class="empty-state"><p>Belum ada data guru.</p></div>';}
+else{
+html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Nama Guru</th><th>NIP</th><th>Mata Pelajaran</th><th>Madrasah</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+html+='</div><div id="modal-container"></div>';
+return html;
+}
+
+function showGuruModal(idx){
+var g=(idx!==undefined)?getGuru()[idx]:{};
+var isEdit=(idx!==undefined);
+var madrasahList=getMadrasah();
+var opts='<option value="">-- Pilih Madrasah --</option>';
+madrasahList.forEach(function(m){opts+='<option value="'+escHtml(m.nama)+'" '+(g.madrasah===m.nama?'selected':'')+'>'+escHtml(m.nama)+'</option>';});
+var modal='<div class="modal-overlay" onclick="if(event.target===this)closeModal()">';
+modal+='<div class="modal"><h3>'+(isEdit?'Edit':'Tambah')+' Guru</h3>';
+modal+='<div class="form-group"><label>Nama Guru</label><input id="g-nama" value="'+escHtml(g.nama||'')+'"></div>';
+modal+='<div class="form-group"><label>NIP</label><input id="g-nip" value="'+escHtml(g.nip||'')+'"></div>';
+modal+='<div class="form-group"><label>Mata Pelajaran</label><input id="g-mapel" value="'+escHtml(g.mataPelajaran||'')+'"></div>';
+modal+='<div class="form-group"><label>Madrasah</label><select id="g-madrasah">'+opts+'</select></div>';
+modal+='<div class="btn-group"><button class="btn btn-success" onclick="saveGuruForm('+(isEdit?idx:'null')+')">Simpan</button>';
+modal+='<button class="btn btn-secondary" onclick="closeModal()">Batal</button></div>';
+modal+='</div></div>';
+document.getElementById('modal-container').innerHTML=modal;
+}
+
+function saveGuruForm(idx){
+var obj={
+nama:document.getElementById('g-nama').value.trim(),
+nip:document.getElementById('g-nip').value.trim(),
+mataPelajaran:document.getElementById('g-mapel').value.trim(),
+madrasah:document.getElementById('g-madrasah').value
+};
+if(!obj.nama){alert('Nama guru wajib diisi');return;}
+var data=getGuru();
+if(idx!==null&&idx!==undefined){data[idx]=obj;}else{data.push(obj);}
+saveGuru(data);closeModal();render();
+}
+
+function editGuru(idx){showGuruModal(idx)}
+function deleteGuru(idx){if(!confirm('Hapus data guru ini?'))return;var data=getGuru();data.splice(idx,1);saveGuru(data);render();}
+
+// ===== DATA PENGAWAS =====
+function renderPengawasPage(){
+var p=getPengawas();
+var html='<div class="card"><h2 style="margin-bottom:20px">\ud83d\udc64 Data Pengawas</h2>';
+html+='<p style="color:#64748b;margin-bottom:15px">Isi data pengawas agar otomatis terisi saat melakukan supervisi.</p>';
+html+='<div class="grid-2">';
+html+='<div class="form-group"><label>Nama Pengawas</label><input type="text" id="pNama" value="'+escHtml(p.nama||'')+'" onchange="updatePengawas()"></div>';
+html+='<div class="form-group"><label>NIP</label><input type="text" id="pNip" value="'+escHtml(p.nip||'')+'" onchange="updatePengawas()"></div>';
+html+='<div class="form-group"><label>Jabatan</label><input type="text" id="pJabatan" value="'+escHtml(p.jabatan||'Pengawas Madrasah')+'" onchange="updatePengawas()"></div>';
+html+='<div class="form-group"><label>Pangkat/Golongan</label><input type="text" id="pPangkat" value="'+escHtml(p.pangkat||'')+'" onchange="updatePengawas()"></div>';
+html+='<div class="form-group"><label>Instansi</label><input type="text" id="pInstansi" value="'+escHtml(p.instansi||'')+'" onchange="updatePengawas()"></div>';
+html+='<div class="form-group"><label>Kabupaten/Kota</label><input type="text" id="pKabupaten" value="'+escHtml(p.kabupaten||'')+'" onchange="updatePengawas()"></div>';
+html+='</div>';
+html+='<div style="margin-top:15px"><button class="btn btn-primary" onclick="updatePengawas()">\ud83d\udcbe Simpan</button></div>';
+html+='</div>';
+return html;
+}
+
+function updatePengawas(){
+var nama=document.getElementById('pNama');
+if(!nama)return;
+var p={
+nama:nama.value,
+nip:document.getElementById('pNip')?document.getElementById('pNip').value:'',
+jabatan:document.getElementById('pJabatan')?document.getElementById('pJabatan').value:'',
+pangkat:document.getElementById('pPangkat')?document.getElementById('pPangkat').value:'',
+instansi:document.getElementById('pInstansi')?document.getElementById('pInstansi').value:'',
+kabupaten:document.getElementById('pKabupaten')?document.getElementById('pKabupaten').value:''
+};
+savePengawas(p);
+alert('Data pengawas berhasil disimpan!');
+}
+
+// ===== REKAP HASIL SUPERVISI =====
+function renderRekapAllPage(){
+var data=getData();
+var madrasahList=getMadrasah();
+var html='<div class="card"><h2 style="margin-bottom:20px">\ud83d\udcca Rekap Hasil Supervisi</h2>';
+if(data.length===0){
+html+='<div class="empty-state"><p>Belum ada data supervisi.</p></div>';
+}else{
+// Group by madrasah
+var grouped={};
+data.forEach(function(d){
+var mName=d.identitas.namaMadrasah||'(Tanpa Madrasah)';
+if(!grouped[mName])grouped[mName]=[];
+grouped[mName].push(d);
+});
+Object.keys(grouped).forEach(function(mName){
+html+='<div style="margin-bottom:20px">';
+html+='<h3 style="color:#0d9488;margin-bottom:10px">\ud83c\udfeb '+escHtml(mName)+'</h3>';
+html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Nama Guru</th><th>Mata Pelajaran</th><th>Tanggal</th><th>Perencanaan</th><th>Pelaksanaan</th><th>Asesmen</th><th>Total</th><th>Predikat</th></tr></thead><tbody>';
+grouped[mName].forEach(function(d,i){
+var pctP=calcKomponen(d,'perencanaan');
+var pctL=calcKomponen(d,'pelaksanaan');
+var pctA=calcKomponen(d,'asesmen');
+var pctT=calcTotal(d);
+var pred=getPredikat(pctT);
+html+='<tr><td class="col-no">'+(i+1)+'</td>';
+html+='<td class="col-aspek">'+escHtml(d.identitas.namaGuru||'-')+'</td>';
+html+='<td>'+escHtml(d.identitas.mataPelajaran||'-')+'</td>';
+html+='<td>'+escHtml(d.identitas.tanggalSupervisi||'-')+'</td>';
+html+='<td>'+pctP.toFixed(0)+'%</td>';
+html+='<td>'+pctL.toFixed(0)+'%</td>';
+html+='<td>'+pctA.toFixed(0)+'%</td>';
+html+='<td><b>'+pctT.toFixed(0)+'%</b></td>';
+html+='<td><span class="rekap-predikat '+getPredikatClass(pred)+'">'+pred+'</span></td>';
+html+='</tr>';
+});
+html+='</tbody></table>';
+html+='<div class="btn-group" style="margin-top:10px"><button class="btn btn-sm btn-secondary" onclick="printRekapMadrasah(\''+escHtml(mName)+'\')">🖨️ Cetak Rekap</button></div>';
+html+='</div>';
+});
+}
+html+='</div>';
+return html;
+}
+
+function printRekapMadrasah(mName){
+var data=getData();
+var filtered=data.filter(function(d){return (d.identitas.namaMadrasah||'(Tanpa Madrasah)')===mName});
+var pengawas=getPengawas();
+var w=window.open('','_blank');
+var html='<html><head><title>Rekap Supervisi - '+mName+'</title><style>';
+html+='body{font-family:Arial,sans-serif;padding:20px;font-size:12px}';
+html+='h2{text-align:center;margin-bottom:5px}';
+html+='h3{text-align:center;margin-bottom:15px}';
+html+='table{width:100%;border-collapse:collapse;margin-top:15px}';
+html+='th,td{border:1px solid #333;padding:6px;text-align:center;vertical-align:middle}';
+html+='th{background:#f0f0f0;font-weight:bold}';
+html+='.ttd-table{border:none;margin-top:40px}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='</style></head><body>';
+html+='<h2>REKAP HASIL SUPERVISI PEMBELAJARAN</h2>';
+html+='<h3>'+escHtml(mName)+'</h3>';
+html+='<p><b>Pengawas:</b> '+(pengawas.nama||'-')+' | <b>NIP:</b> '+(pengawas.nip||'-')+'</p>';
+html+='<table><thead><tr><th>No</th><th>Nama Guru</th><th>Mata Pelajaran</th><th>Tanggal</th><th>Perencanaan</th><th>Pelaksanaan</th><th>Asesmen</th><th>Total</th><th>Predikat</th></tr></thead><tbody>';
+filtered.forEach(function(d,i){
+var pctP=calcKomponen(d,'perencanaan');
+var pctL=calcKomponen(d,'pelaksanaan');
+var pctA=calcKomponen(d,'asesmen');
+var pctT=calcTotal(d);
+var pred=getPredikat(pctT);
+html+='<tr><td>'+(i+1)+'</td>';
+html+='<td>'+escHtml(d.identitas.namaGuru||'-')+'</td>';
+html+='<td>'+escHtml(d.identitas.mataPelajaran||'-')+'</td>';
+html+='<td>'+escHtml(d.identitas.tanggalSupervisi||'-')+'</td>';
+html+='<td>'+pctP.toFixed(0)+'%</td>';
+html+='<td>'+pctL.toFixed(0)+'%</td>';
+html+='<td>'+pctA.toFixed(0)+'%</td>';
+html+='<td><b>'+pctT.toFixed(0)+'%</b></td>';
+html+='<td>'+pred+'</td></tr>';
+});
+html+='</tbody></table>';
+html+='<table class="ttd-table"><tr>';
+html+='<td style="width:50%"><p>Mengetahui,</p><p>Kepala Madrasah</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">.........................</p>';
+html+='<p>NIP. .........................</p></td>';
+html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(pengawas.nama||'.........................')+'</p>';
+html+='<p>NIP. '+(pengawas.nip||'.........................')+'</p></td>';
+html+='</tr></table>';
+html+='</body></html>';
+w.document.write(html);w.document.close();
+setTimeout(function(){w.print();},500);
+}
+
+// ===== FORM SUPERVISI =====
+function renderForm(){
+var steps=['Identitas','Perencanaan','Pelaksanaan','Asesmen','Rekap'];
+var progress='<div class="progress-bar">';
+steps.forEach(function(s,i){
+var cls=i<state.currentStep?'done':i===state.currentStep?'active':'';
+progress+='<div class="step-indicator '+cls+'">'+(i+1)+'</div>';
+});
+progress+='</div>';
+var content='';
+if(state.currentStep===0)content=renderIdentitas();
+else if(state.currentStep===1)content=renderInstrumen('perencanaan',PERENCANAAN);
+else if(state.currentStep===2)content=renderPelaksanaan();
+else if(state.currentStep===3)content=renderInstrumen('asesmen',ASESMEN);
+else if(state.currentStep===4)content=renderRekap();
+var isLast=state.currentStep===4;
+var nav='<div style="display:flex;justify-content:space-between;margin-top:20px">';
+nav+='<button class="btn btn-secondary" onclick="'+(state.currentStep===0?'backToDashboard()':'prevStep()')+'">&#8592; '+(state.currentStep===0?'Batal':'Kembali')+'</button>';
+if(isLast){nav+='<button class="btn btn-success" onclick="saveForm()">&#128190; Simpan</button>';}
+else{nav+='<button class="btn btn-primary" onclick="nextStep()">Lanjut &#8594;</button>';}
+nav+='</div>';
+return '<div class="card">'+progress+'<h2 style="margin-bottom:20px">'+steps[state.currentStep]+'</h2>'+content+nav+'</div>';
+}
+
+function renderIdentitas(){
+var id=state.formData.identitas||{};
+var madrasahList=getMadrasah();
+var guruList=getGuru();
+var html='<div class="grid-2">';
+// Madrasah dropdown
+html+='<div class="form-group"><label>Pilih Madrasah (dari data)</label><select onchange="selectMadrasah(this.value)"><option value="">-- Pilih atau isi manual --</option>';
+madrasahList.forEach(function(m,i){html+='<option value="'+i+'" '+(id.selectedMadrasahIdx==i?'selected':'')+'>'+escHtml(m.nama)+'</option>';});
+html+='</select></div>';
+// Guru dropdown
+var filteredGuru=guruList;
+if(id.namaMadrasah){filteredGuru=guruList.filter(function(g){return g.madrasah===id.namaMadrasah});}
+html+='<div class="form-group"><label>Pilih Guru (dari data)</label><select onchange="selectGuru(this.value)"><option value="">-- Pilih atau isi manual --</option>';
+filteredGuru.forEach(function(g,i){
+var gIdx=guruList.indexOf(g);
+html+='<option value="'+gIdx+'" '+(id.selectedGuruIdx==gIdx?'selected':'')+'>'+escHtml(g.nama)+' - '+escHtml(g.mataPelajaran)+'</option>';
+});
+html+='</select></div>';
+html+='</div><hr style="margin:15px 0;border-color:#e2e8f0"><div class="grid-2">';
+var fields=[
+['namaGuru','Nama Guru'],['nipGuru','NIP Guru'],['mataPelajaran','Mata Pelajaran'],
+['jumlahJTM','Jumlah Jam Tatap Muka'],['kelasSemester','Kelas/Semester'],
+['namaMadrasah','Nama Madrasah'],['alamatMadrasah','Alamat Madrasah'],['kabupatenKota','Kabupaten/Kota'],
+['namaSupervisor','Nama Supervisor'],['nipSupervisor','NIP Supervisor'],
+['jabatanSupervisor','Jabatan Supervisor']
+];
+fields.forEach(function(f){
+html+='<div class="form-group"><label>'+f[1]+'</label><input type="text" value="'+escHtml(id[f[0]]||'')+'" onchange="updateIdentitas(\''+f[0]+'\',this.value)"></div>';
+});
+html+='<div class="form-group"><label>Tanggal Supervisi</label><input type="date" value="'+(id.tanggalSupervisi||'')+'" onchange="updateIdentitas(\'tanggalSupervisi\',this.value)"></div>';
+html+='</div>';
+return html;
+}
+
+function selectMadrasah(idx){
+if(idx==='')return;
+var m=getMadrasah()[parseInt(idx)];
+if(!m)return;
+if(!state.formData.identitas)state.formData.identitas={};
+state.formData.identitas.namaMadrasah=m.nama;
+state.formData.identitas.alamatMadrasah=m.alamat;
+state.formData.identitas.kabupatenKota=m.kabupaten;
+state.formData.identitas.selectedMadrasahIdx=parseInt(idx);
+render();
+}
+
+function selectGuru(idx){
+if(idx==='')return;
+var g=getGuru()[parseInt(idx)];
+if(!g)return;
+if(!state.formData.identitas)state.formData.identitas={};
+state.formData.identitas.namaGuru=g.nama;
+state.formData.identitas.nipGuru=g.nip;
+state.formData.identitas.mataPelajaran=g.mataPelajaran;
+state.formData.identitas.selectedGuruIdx=parseInt(idx);
+if(g.madrasah){
+var mList=getMadrasah();
+var mIdx=mList.findIndex(function(m){return m.nama===g.madrasah});
+if(mIdx>=0)selectMadrasah(String(mIdx));
+}
+render();
+}
+
+function renderInstrumen(key,items){
+var d=state.formData[key]||{scores:[],catatan:[]};
+var html='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Aspek yang Diamati</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
+items.forEach(function(item,i){
+var score=(d.scores&&d.scores[i]!==undefined)?d.scores[i]:null;
+var cat=(d.catatan&&d.catatan[i])?d.catatan[i]:getAutoCatatan(score);
+html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek">'+item+'</td>';
+for(var s=0;s<4;s++){
+html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\''+key+'\','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
+}
+html+='<td class="col-catatan"><input type="text" value="'+escHtml(cat)+'" onchange="setCatatan(\''+key+'\','+i+',this.value)" placeholder="Otomatis"></td></tr>';
+});
+html+='</tbody></table>';
+// Skor summary
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=items.length*4;
+var pct=max>0?(sum/max)*100:0;
+var pred=getPredikat(pct);
+html+='<p style="margin-top:10px;font-size:.9rem"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+pred+'</b></p>';
+// Catatan Hasil Supervisi & RTL
+autoGenerateRekapForKey(key);
+var rekapData=(state.formData.rekap&&state.formData.rekap[key])?state.formData.rekap[key]:{};
+html+='<div class="form-group" style="margin-top:15px"><label>Catatan Hasil Supervisi</label>';
+html+='<textarea rows="4" onchange="setRekapNote(\''+key+'\',\'catatan\',this.value)">'+escHtml(rekapData.catatan||'')+'</textarea></div>';
+html+='<div class="form-group"><label>Rencana Tindak Lanjut</label>';
+html+='<textarea rows="4" onchange="setRekapNote(\''+key+'\',\'tindakLanjut\',this.value)">'+escHtml(rekapData.tindakLanjut||'')+'</textarea></div>';
+return html;
+}
+
+function renderPelaksanaan(){
+var d=state.formData.pelaksanaan||{scores:[],catatan:[]};
+var html='';var idx=0;
+var tahapKeys=Object.keys(PELAKSANAAN);
+tahapKeys.forEach(function(tahap){
+var items=PELAKSANAAN[tahap];
+html+='<div class="tahap-header">'+tahap+'</div>';
+html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Aspek yang Diamati</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
+items.forEach(function(item){
+var gi=idx;
+var score=(d.scores&&d.scores[gi]!==undefined)?d.scores[gi]:null;
+var cat=(d.catatan&&d.catatan[gi])?d.catatan[gi]:getAutoCatatan(score);
+html+='<tr><td class="col-no">'+(gi+1)+'</td><td class="col-aspek">'+item+'</td>';
+for(var s=0;s<4;s++){
+html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\'pelaksanaan\','+gi+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
+}
+html+='<td class="col-catatan"><input type="text" value="'+escHtml(cat)+'" onchange="setCatatan(\'pelaksanaan\','+gi+',this.value)" placeholder="Otomatis"></td></tr>';
+idx++;
+});
+html+='</tbody></table>';
+});
+// Skor summary
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=getPelaksanaanFlat().length*4;
+var pct=max>0?(sum/max)*100:0;
+var pred=getPredikat(pct);
+html+='<p style="margin-top:10px;font-size:.9rem"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+pred+'</b></p>';
+// Catatan Hasil Supervisi & RTL
+autoGenerateRekapForKey('pelaksanaan');
+var rekapData=(state.formData.rekap&&state.formData.rekap.pelaksanaan)?state.formData.rekap.pelaksanaan:{};
+html+='<div class="form-group" style="margin-top:15px"><label>Catatan Hasil Supervisi</label>';
+html+='<textarea rows="4" onchange="setRekapNote(\'pelaksanaan\',\'catatan\',this.value)">'+escHtml(rekapData.catatan||'')+'</textarea></div>';
+html+='<div class="form-group"><label>Rencana Tindak Lanjut</label>';
+html+='<textarea rows="4" onchange="setRekapNote(\'pelaksanaan\',\'tindakLanjut\',this.value)">'+escHtml(rekapData.tindakLanjut||'')+'</textarea></div>';
+return html;
+}
+
+// ===== REKAP =====
+function renderRekap(){
+var komps=[
+{key:'perencanaan',label:'Perencanaan Pembelajaran',max:9*4},
+{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:14*4},
+{key:'asesmen',label:'Asesmen Pembelajaran',max:7*4}
+];
+// Auto-generate catatan and tindak lanjut
+autoGenerateRekap();
+var html='';
+komps.forEach(function(k){
+var scores=state.formData[k.key]&&state.formData[k.key].scores?state.formData[k.key].scores:[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var pct=(sum/k.max)*100;
+var pred=getPredikat(pct);
+html+='<div class="rekap-card"><h3>'+k.label+'</h3>';
+html+='<div class="rekap-score">'+pct.toFixed(1)+'%</div>';
+html+='<span class="rekap-predikat '+getPredikatClass(pred)+'">'+pred+'</span>';
+html+='<p style="margin-top:8px;color:#64748b;font-size:.85rem">Skor: '+sum+' / '+k.max+'</p>';
+var rekapData=state.formData.rekap&&state.formData.rekap[k.key]?state.formData.rekap[k.key]:{};
+html+='<div class="form-group" style="margin-top:12px"><label>Catatan Hasil Supervisi</label>';
+html+='<textarea onchange="setRekapNote(\''+k.key+'\',\'catatan\',this.value)">'+escHtml(rekapData.catatan||'')+'</textarea></div>';
+html+='<div class="form-group"><label>Rencana Tindak Lanjut</label>';
+html+='<textarea onchange="setRekapNote(\''+k.key+'\',\'tindakLanjut\',this.value)">'+escHtml(rekapData.tindakLanjut||'')+'</textarea></div>';
+html+='<div class="btn-group no-print">';
+html+='<button class="btn btn-sm btn-secondary" onclick="printInstrumen(\''+k.key+'\')">&#128424; Cetak '+k.label.split(' ')[0]+'</button>';
+html+='<button class="btn btn-sm btn-info" onclick="exportInstrumenPDF(\''+k.key+'\')">&#128196; PDF '+k.label.split(' ')[0]+'</button>';
+html+='</div></div>';
+});
+html+='<div class="btn-group no-print" style="justify-content:center">';
+html+='<button class="btn btn-secondary" onclick="printRekap()">&#128424; Cetak Rekap</button>';
+html+='<button class="btn btn-info" onclick="exportRekapPDF()">&#128196; Export PDF Rekap</button>';
+html+='</div>';
+return html;
+}
+
+function autoGenerateRekapForKey(key){
+if(!state.formData.rekap)state.formData.rekap={};
+var instrumenMap={
+perencanaan:{items:PERENCANAAN,label:'Perencanaan Pembelajaran'},
+pelaksanaan:{items:getPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
+asesmen:{items:ASESMEN,label:'Asesmen Pembelajaran'}
+};
+var info=instrumenMap[key];
+if(!info)return;
+if(!state.formData.rekap[key])state.formData.rekap[key]={};
+var rekapObj=state.formData.rekap[key];
+var scores=state.formData[key]&&state.formData[key].scores?state.formData[key].scores:[];
+var items=info.items;
+var label=info.label;
+var totalItems=items.length;
+var scoredItems=scores.filter(function(s){return s!==null&&s!==undefined});
+var totalSkor=scoredItems.reduce(function(a,b){return a+(b+1)},0);
+var maxSkor=totalItems*4;
+var pct=maxSkor>0?((totalSkor/maxSkor)*100).toFixed(1):0;
+var weakItems=[];
+var goodItems=[];
+scores.forEach(function(s,i){
+if(s!==null&&s!==undefined&&i<items.length){
+if(s<=1)weakItems.push({item:items[i],skor:s+1});
+else goodItems.push({item:items[i],skor:s+1});
+}
+});
+if(!rekapObj.manualCatatan){
+var catatan='';
+if(scoredItems.length>0){
+catatan='Berdasarkan hasil supervisi pada komponen '+label+', diperoleh capaian sebesar '+pct+'% dari skor maksimal. ';
+if(goodItems.length>0){
+var goodAspek=goodItems.slice(0,3).map(function(g){return g.item.toLowerCase()}).join(', ');
+catatan+='Aspek yang sudah terlaksana dengan baik antara lain '+goodAspek+'. ';
+}
+if(weakItems.length>0){
+var weakAspek=weakItems.map(function(w){return w.item.toLowerCase()}).join(', ');
+catatan+='Namun demikian, masih terdapat beberapa aspek yang perlu ditingkatkan yaitu '+weakAspek+'. ';
+var kurangCount=weakItems.filter(function(w){return w.skor===1}).length;
+var cukupCount=weakItems.filter(function(w){return w.skor===2}).length;
+if(kurangCount>0)catatan+='Terdapat '+kurangCount+' aspek yang belum terlaksana dan memerlukan pembinaan intensif. ';
+if(cukupCount>0)catatan+='Terdapat '+cukupCount+' aspek yang baru terlaksana sebagian dan perlu pendampingan lebih lanjut.';
+}else{
+catatan+='Seluruh aspek sudah terlaksana dengan baik dan menunjukkan kinerja yang memuaskan.';
+}
+}
+rekapObj.catatan=catatan;
+}
+if(!rekapObj.manualTindakLanjut){
+var rtl='';
+if(scoredItems.length>0){
+if(weakItems.length>0){
+var kurangItems=weakItems.filter(function(w){return w.skor===1});
+var cukupItems=weakItems.filter(function(w){return w.skor===2});
+rtl='Berdasarkan hasil supervisi komponen '+label+', rencana tindak lanjut yang perlu dilakukan adalah sebagai berikut. ';
+if(kurangItems.length>0){
+var kurangAspek=kurangItems.map(function(w){return w.item.toLowerCase()}).join(', ');
+rtl+='Perlu dilakukan pembinaan intensif melalui pendampingan langsung dan diskusi profesional terkait '+kurangAspek+'. ';
+}
+if(cukupItems.length>0){
+var cukupAspek=cukupItems.map(function(w){return w.item.toLowerCase()}).join(', ');
+rtl+='Selain itu, perlu dilakukan pendampingan berkelanjutan untuk meningkatkan kualitas pada aspek '+cukupAspek+'. ';
+}
+rtl+='Supervisi lanjutan akan dilaksanakan untuk memastikan perbaikan yang telah direncanakan dapat terlaksana dengan optimal.';
+}else{
+rtl='Berdasarkan hasil supervisi komponen '+label+', seluruh aspek sudah terlaksana dengan baik. Rencana tindak lanjut yang dilakukan adalah mempertahankan kualitas yang sudah tercapai, terus melakukan inovasi dalam pembelajaran, serta berbagi praktik baik dengan rekan sejawat di madrasah.';
+}
+}
+rekapObj.tindakLanjut=rtl;
+}
+}
+
+function autoGenerateRekap(){
+if(!state.formData.rekap)state.formData.rekap={};
+var instrumenMap={
+perencanaan:{items:PERENCANAAN,label:'Perencanaan Pembelajaran'},
+pelaksanaan:{items:getPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
+asesmen:{items:ASESMEN,label:'Asesmen Pembelajaran'}
+};
+Object.keys(instrumenMap).forEach(function(key){
+if(!state.formData.rekap[key])state.formData.rekap[key]={};
+var rekapObj=state.formData.rekap[key];
+var scores=state.formData[key]&&state.formData[key].scores?state.formData[key].scores:[];
+var items=instrumenMap[key].items;
+var label=instrumenMap[key].label;
+var totalItems=items.length;
+var scoredItems=scores.filter(function(s){return s!==null&&s!==undefined});
+var totalSkor=scoredItems.reduce(function(a,b){return a+(b+1)},0);
+var maxSkor=totalItems*4;
+var pct=maxSkor>0?((totalSkor/maxSkor)*100).toFixed(1):0;
+var weakItems=[];
+var goodItems=[];
+scores.forEach(function(s,i){
+if(s!==null&&s!==undefined&&i<items.length){
+if(s<=1)weakItems.push({item:items[i],skor:s+1});
+else goodItems.push({item:items[i],skor:s+1});
+}
+});
+// Auto-generate Catatan Hasil Supervisi as narrative paragraph
+if(!rekapObj.manualCatatan){
+var catatan='';
+if(scoredItems.length>0){
+catatan='Berdasarkan hasil supervisi pada komponen '+label+', diperoleh capaian sebesar '+pct+'% dari skor maksimal. ';
+if(goodItems.length>0){
+var goodAspek=goodItems.slice(0,3).map(function(g){return g.item.toLowerCase()}).join(', ');
+catatan+='Aspek yang sudah terlaksana dengan baik antara lain '+goodAspek+'. ';
+}
+if(weakItems.length>0){
+var weakAspek=weakItems.map(function(w){return w.item.toLowerCase()}).join(', ');
+catatan+='Namun demikian, masih terdapat beberapa aspek yang perlu ditingkatkan yaitu '+weakAspek+'. ';
+var kurangCount=weakItems.filter(function(w){return w.skor===1}).length;
+var cukupCount=weakItems.filter(function(w){return w.skor===2}).length;
+if(kurangCount>0)catatan+='Terdapat '+kurangCount+' aspek yang belum terlaksana dan memerlukan pembinaan intensif. ';
+if(cukupCount>0)catatan+='Terdapat '+cukupCount+' aspek yang baru terlaksana sebagian dan perlu pendampingan lebih lanjut.';
+}else{
+catatan+='Seluruh aspek sudah terlaksana dengan baik dan menunjukkan kinerja yang memuaskan.';
+}
+}
+rekapObj.catatan=catatan;
+}
+// Auto-generate Rencana Tindak Lanjut as narrative paragraph
+if(!rekapObj.manualTindakLanjut){
+var rtl='';
+if(scoredItems.length>0){
+if(weakItems.length>0){
+var kurangItems=weakItems.filter(function(w){return w.skor===1});
+var cukupItems=weakItems.filter(function(w){return w.skor===2});
+rtl='Berdasarkan hasil supervisi komponen '+label+', rencana tindak lanjut yang perlu dilakukan adalah sebagai berikut. ';
+if(kurangItems.length>0){
+var kurangAspek=kurangItems.map(function(w){return w.item.toLowerCase()}).join(', ');
+rtl+='Perlu dilakukan pembinaan intensif melalui pendampingan langsung dan diskusi profesional terkait '+kurangAspek+'. ';
+}
+if(cukupItems.length>0){
+var cukupAspek=cukupItems.map(function(w){return w.item.toLowerCase()}).join(', ');
+rtl+='Selain itu, perlu dilakukan pendampingan berkelanjutan untuk meningkatkan kualitas pada aspek '+cukupAspek+'. ';
+}
+rtl+='Supervisi lanjutan akan dilaksanakan untuk memastikan perbaikan yang telah direncanakan dapat terlaksana dengan optimal.';
+}else{
+rtl='Berdasarkan hasil supervisi komponen '+label+', seluruh aspek sudah terlaksana dengan baik. Rencana tindak lanjut yang dilakukan adalah mempertahankan kualitas yang sudah tercapai, terus melakukan inovasi dalam pembelajaran, serta berbagi praktik baik dengan rekan sejawat di madrasah.';
+}
+}
+rekapObj.tindakLanjut=rtl;
+}
+});
+}
+
+// ===== DETAIL VIEW =====
+function renderDetail(){
+var data=getData();
+var d=data[state.detailIdx];
+if(!d){state.view='dashboard';render();return '';}
+var komps=[
+{key:'perencanaan',label:'Perencanaan Pembelajaran',max:9*4,items:PERENCANAAN},
+{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:14*4,items:getPelaksanaanFlat()},
+{key:'asesmen',label:'Asesmen Pembelajaran',max:7*4,items:ASESMEN}
+];
+var html='<div class="card">';
+html+='<button class="btn btn-secondary btn-sm no-print" onclick="backToDashboard()">&#8592; Kembali</button>';
+html+='<h2 style="margin:15px 0">'+(d.identitas&&d.identitas.namaGuru?escHtml(d.identitas.namaGuru):'(Tanpa Nama)')+'</h2>';
+html+='<p style="color:#64748b;margin-bottom:20px">'+(d.identitas?escHtml(d.identitas.namaMadrasah||''):'')+' &bull; '+(d.identitas?escHtml(d.identitas.mataPelajaran||''):'')+' &bull; '+(d.identitas?d.identitas.tanggalSupervisi||'':'')+'</p>';
+komps.forEach(function(k){
+var scores=d[k.key]&&d[k.key].scores?d[k.key].scores:[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var pct=(sum/k.max)*100;
+var pred=getPredikat(pct);
+html+='<div class="rekap-card"><h3>'+k.label+'</h3>';
+html+='<div class="rekap-score">'+pct.toFixed(1)+'%</div>';
+html+='<span class="rekap-predikat '+getPredikatClass(pred)+'">'+pred+'</span>';
+html+='<p style="margin-top:5px;color:#64748b;font-size:.85rem">Skor: '+sum+'/'+k.max+'</p>';
+if(d.rekap&&d.rekap[k.key]&&d.rekap[k.key].catatan){
+html+='<p style="margin-top:10px;font-size:.85rem"><b>Catatan:</b> '+escHtml(d.rekap[k.key].catatan).replace(/\n/g,'<br>')+'</p>';
+}
+if(d.rekap&&d.rekap[k.key]&&d.rekap[k.key].tindakLanjut){
+html+='<p style="margin-top:5px;font-size:.85rem"><b>Tindak Lanjut:</b> '+escHtml(d.rekap[k.key].tindakLanjut).replace(/\n/g,'<br>')+'</p>';
+}
+html+='</div>';
+});
+html+='<div class="btn-group no-print" style="justify-content:center">';
+html+='<button class="btn btn-primary" onclick="editItem('+state.detailIdx+')">&#9998; Edit</button>';
+html+='<button class="btn btn-secondary" onclick="printRekap()">&#128424; Cetak</button>';
+html+='<button class="btn btn-info" onclick="exportDetailPDF('+state.detailIdx+')">&#128196; Export PDF</button>';
+html+='</div></div>';
+return html;
+}
+
+// ===== FORM ACTIONS =====
+function newForm(){
+state.view='form';state.currentStep=0;state.editId=null;
+var pengawas=getPengawas();
+state.formData={identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
+render();
+}
+function backToDashboard(){state.view='dashboard';render()}
+function nextStep(){if(state.currentStep<4)state.currentStep++;render()}
+function prevStep(){if(state.currentStep>0)state.currentStep--;render()}
+
+function updateIdentitas(key,val){if(!state.formData.identitas)state.formData.identitas={};state.formData.identitas[key]=val;}
+
+function setSkor(key,idx,val){
+if(!state.formData[key])state.formData[key]={scores:[],catatan:[],manualCatatan:[]};
+if(!state.formData[key].scores)state.formData[key].scores=[];
+if(!state.formData[key].catatan)state.formData[key].catatan=[];
+if(!state.formData[key].manualCatatan)state.formData[key].manualCatatan=[];
+state.formData[key].scores[idx]=val;
+if(!state.formData[key].manualCatatan[idx]){state.formData[key].catatan[idx]=getAutoCatatan(val);}
+// Reset auto-generated rekap
+if(state.formData.rekap&&state.formData.rekap[key]){
+state.formData.rekap[key].manualCatatan=false;
+state.formData.rekap[key].manualTindakLanjut=false;
+}
+render();
+}
+
+function setCatatan(key,idx,val){
+if(!state.formData[key])state.formData[key]={scores:[],catatan:[],manualCatatan:[]};
+if(!state.formData[key].catatan)state.formData[key].catatan=[];
+if(!state.formData[key].manualCatatan)state.formData[key].manualCatatan=[];
+state.formData[key].catatan[idx]=val;
+state.formData[key].manualCatatan[idx]=true;
+}
+
+function setRekapNote(komp,field,val){
+if(!state.formData.rekap)state.formData.rekap={};
+if(!state.formData.rekap[komp])state.formData.rekap[komp]={};
+state.formData.rekap[komp][field]=val;
+if(field==='catatan')state.formData.rekap[komp].manualCatatan=true;
+if(field==='tindakLanjut')state.formData.rekap[komp].manualTindakLanjut=true;
+}
+
+function saveForm(){
+var data=getData();
+if(state.editId!==null){data[state.editId]=state.formData;}
+else{data.push(state.formData);}
+saveData(data);state.view='dashboard';render();
+}
+
+function editItem(idx){
+var data=getData();
+state.formData=JSON.parse(JSON.stringify(data[idx]));
+state.editId=idx;state.view='form';state.currentStep=0;render();
+}
+
+function deleteItem(idx){
+if(!confirm('Hapus data supervisi ini?'))return;
+var data=getData();data.splice(idx,1);saveData(data);render();
+}
+
+function viewDetail(idx){state.detailIdx=idx;state.view='detail';render();}
+
+// ===== CETAK HASIL SUPERVISI PAGE =====
+function renderCetakPage(){
+var data=getData();
+var html='<div class="card"><h2 style="margin-bottom:20px">🖨️ Cetak Hasil Supervisi</h2>';
+if(data.length===0){
+html+='<div class="empty-state"><p>Belum ada data supervisi untuk dicetak.</p></div>';
+}else{
+html+='<p style="color:#64748b;margin-bottom:15px">Pilih data supervisi dan halaman yang ingin dicetak:</p>';
+data.forEach(function(d,i){
+var pct=calcTotal(d);
+html+='<div class="cetak-item" style="border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px">';
+html+='<h4 style="margin-bottom:8px">'+(d.identitas.namaGuru||'(Tanpa Nama)')+' — '+(d.identitas.namaMadrasah||'-')+'</h4>';
+html+='<p style="color:#64748b;font-size:.85rem;margin-bottom:12px">'+(d.identitas.mataPelajaran||'-')+' • '+(d.identitas.tanggalSupervisi||'-')+' • '+pct.toFixed(0)+'%</p>';
+html+='<div class="btn-group">';
+html+='<button class="btn btn-sm btn-primary" onclick="cetakPilihan('+i+',\'perencanaan\')">📄 Perencanaan</button>';
+html+='<button class="btn btn-sm btn-info" onclick="cetakPilihan('+i+',\'pelaksanaan\')">📄 Pelaksanaan</button>';
+html+='<button class="btn btn-sm btn-warning" onclick="cetakPilihan('+i+',\'asesmen\')">📄 Asesmen</button>';
+html+='<button class="btn btn-sm btn-success" onclick="cetakPilihan('+i+',\'rekap\')">📄 Rekap</button>';
+html+='<button class="btn btn-sm btn-secondary" onclick="cetakPilihan('+i+',\'semua\')">📄 Semua</button>';
+html+='</div></div>';
+});
+}
+html+='</div>';
+return html;
+}
+
+function cetakPilihan(idx,bagian){
+var data=getData();
+var d=data[idx];
+if(!d)return;
+state.formData=d;
+if(bagian==='semua'){
+cetakSemua(d);
+}else if(bagian==='rekap'){
+cetakRekapDetail(d);
+}else{
+printInstrumen(bagian);
+}
+}
+
+function cetakSemua(d){
+var id=d.identitas||{};
+var w=window.open('','_blank');
+var html='<html><head><title>Cetak Semua Instrumen</title><style>';
+html+='body{font-family:Arial,sans-serif;padding:20px;font-size:12px}';
+html+='h2{text-align:center;margin-bottom:5px}';
+html+='h3{text-align:center;margin-bottom:10px}';
+html+='table{width:100%;border-collapse:collapse;margin-top:15px}';
+html+='th,td{border:1px solid #333;padding:6px;text-align:center;vertical-align:middle}';
+html+='th{background:#f0f0f0;font-weight:bold}';
+html+='.aspek{text-align:left}';
+html+='.header-info{margin-bottom:15px}';
+html+='.header-info p{margin:3px 0}';
+html+='.page-break{page-break-before:always}';
+html+='.ttd-table{border:none;margin-top:40px}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='</style></head><body>';
+var sections=['perencanaan','pelaksanaan','asesmen'];
+var labels={perencanaan:'Perencanaan Pembelajaran',pelaksanaan:'Pelaksanaan Pembelajaran',asesmen:'Asesmen Pembelajaran'};
+var itemsMap={perencanaan:PERENCANAAN,pelaksanaan:getPelaksanaanFlat(),asesmen:ASESMEN};
+sections.forEach(function(key,si){
+if(si>0)html+='<div class="page-break"></div>';
+html+='<h2>INSTRUMEN SUPERVISI PEMBELAJARAN</h2>';
+html+='<h3>'+labels[key]+'</h3>';
+html+='<div class="header-info">';
+html+='<p><b>Nama Guru:</b> '+(id.namaGuru||'-')+' | <b>NIP:</b> '+(id.nipGuru||'-')+'</p>';
+html+='<p><b>Mata Pelajaran:</b> '+(id.mataPelajaran||'-')+' | <b>Kelas/Semester:</b> '+(id.kelasSemester||'-')+'</p>';
+html+='<p><b>Madrasah:</b> '+(id.namaMadrasah||'-')+'</p>';
+html+='<p><b>Supervisor:</b> '+(id.namaSupervisor||'-')+' | <b>Tanggal:</b> '+(id.tanggalSupervisi||'-')+'</p>';
+html+='</div>';
+html+='<table><thead><tr><th style="width:30px">No</th><th class="aspek">Aspek yang Diamati</th><th style="width:30px">1</th><th style="width:30px">2</th><th style="width:30px">3</th><th style="width:30px">4</th><th>Catatan</th></tr></thead><tbody>';
+var items=itemsMap[key];
+var scores=(d[key]&&d[key].scores)?d[key].scores:[];
+var catatan=(d[key]&&d[key].catatan)?d[key].catatan:[];
+items.forEach(function(item,i){
+var score=(scores[i]!==undefined)?scores[i]:null;
+var cat=catatan[i]||getAutoCatatan(score);
+html+='<tr><td>'+(i+1)+'</td><td class="aspek">'+item+'</td>';
+for(var s=0;s<4;s++){html+='<td>'+(score===s?'&#10004;':'')+'</td>';}
+html+='<td>'+escHtml(cat)+'</td></tr>';
+});
+html+='</tbody></table>';
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=items.length*4;
+var pct=max>0?(sum/max)*100:0;
+html+='<p style="margin-top:15px"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+getPredikat(pct)+'</b></p>';
+// Catatan Hasil Supervisi & RTL
+var rekapData=(d.rekap&&d.rekap[key])?d.rekap[key]:{};
+if(rekapData.catatan){
+html+='<div style="margin-top:20px"><b>Catatan Hasil Supervisi:</b></div>';
+html+='<p style="text-align:justify;line-height:1.6;margin:5px 0">'+escHtml(rekapData.catatan)+'</p>';
+}
+if(rekapData.tindakLanjut){
+html+='<div style="margin-top:15px"><b>Rencana Tindak Lanjut:</b></div>';
+html+='<p style="text-align:justify;line-height:1.6;margin:5px 0">'+escHtml(rekapData.tindakLanjut)+'</p>';
+}
+html+='<table class="ttd-table"><tr>';
+html+='<td style="width:50%"><p>Guru Mata Pelajaran,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(id.namaGuru||'.........................')+'</p>';
+html+='<p>NIP. '+(id.nipGuru||'.........................')+'</p></td>';
+html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(id.namaSupervisor||'.........................')+'</p>';
+html+='<p>NIP. '+(id.nipSupervisor||'.........................')+'</p></td>';
+html+='</tr></table>';
+});
+html+='</body></html>';
+w.document.write(html);w.document.close();
+setTimeout(function(){w.print();},500);
+}
+
+function cetakRekapDetail(d){
+var id=d.identitas||{};
+var w=window.open('','_blank');
+var html='<html><head><title>Cetak Rekap Supervisi</title><style>';
+html+='body{font-family:Arial,sans-serif;padding:20px;font-size:12px}';
+html+='h2{text-align:center;margin-bottom:5px}';
+html+='table{width:100%;border-collapse:collapse;margin-top:15px}';
+html+='th,td{border:1px solid #333;padding:8px;vertical-align:middle}';
+html+='th{background:#f0f0f0;font-weight:bold;text-align:center}';
+html+='.header-info{margin-bottom:15px}';
+html+='.header-info p{margin:3px 0}';
+html+='.narasi{text-align:justify;line-height:1.6;margin:10px 0}';
+html+='.ttd-table{border:none;margin-top:40px}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='</style></head><body>';
+html+='<h2>REKAP HASIL SUPERVISI PEMBELAJARAN</h2>';
+html+='<div class="header-info">';
+html+='<p><b>Nama Guru:</b> '+(id.namaGuru||'-')+' | <b>NIP:</b> '+(id.nipGuru||'-')+'</p>';
+html+='<p><b>Mata Pelajaran:</b> '+(id.mataPelajaran||'-')+' | <b>Kelas/Semester:</b> '+(id.kelasSemester||'-')+'</p>';
+html+='<p><b>Madrasah:</b> '+(id.namaMadrasah||'-')+'</p>';
+html+='<p><b>Supervisor:</b> '+(id.namaSupervisor||'-')+' | <b>Tanggal:</b> '+(id.tanggalSupervisi||'-')+'</p>';
+html+='</div>';
+html+='<table><thead><tr><th>No</th><th>Komponen</th><th>Skor</th><th>Maks</th><th>%</th><th>Predikat</th></tr></thead><tbody>';
+var komps=[{key:'perencanaan',label:'Perencanaan Pembelajaran',max:9*4},{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:14*4},{key:'asesmen',label:'Asesmen Pembelajaran',max:7*4}];
+var totalSum=0,totalMax=0;
+komps.forEach(function(k,i){
+var scores=(d[k.key]&&d[k.key].scores)?d[k.key].scores:[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var pct=k.max>0?(sum/k.max)*100:0;
+totalSum+=sum;totalMax+=k.max;
+html+='<tr><td style="text-align:center">'+(i+1)+'</td><td>'+k.label+'</td><td style="text-align:center">'+sum+'</td><td style="text-align:center">'+k.max+'</td><td style="text-align:center">'+pct.toFixed(1)+'%</td><td style="text-align:center">'+getPredikat(pct)+'</td></tr>';
+});
+var totalPct=totalMax>0?(totalSum/totalMax)*100:0;
+html+='<tr style="font-weight:bold"><td colspan="2" style="text-align:center">TOTAL</td><td style="text-align:center">'+totalSum+'</td><td style="text-align:center">'+totalMax+'</td><td style="text-align:center">'+totalPct.toFixed(1)+'%</td><td style="text-align:center">'+getPredikat(totalPct)+'</td></tr>';
+html+='</tbody></table>';
+// Catatan dan RTL per komponen
+komps.forEach(function(k){
+var rekapData=(d.rekap&&d.rekap[k.key])?d.rekap[k.key]:{};
+if(rekapData.catatan){
+html+='<h4 style="margin-top:20px">Catatan Hasil Supervisi - '+k.label+':</h4>';
+html+='<p class="narasi">'+escHtml(rekapData.catatan)+'</p>';
+}
+if(rekapData.tindakLanjut){
+html+='<h4 style="margin-top:10px">Rencana Tindak Lanjut - '+k.label+':</h4>';
+html+='<p class="narasi">'+escHtml(rekapData.tindakLanjut)+'</p>';
+}
+});
+html+='<table class="ttd-table"><tr>';
+html+='<td style="width:50%"><p>Guru Mata Pelajaran,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(id.namaGuru||'.........................')+'</p>';
+html+='<p>NIP. '+(id.nipGuru||'.........................')+'</p></td>';
+html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(id.namaSupervisor||'.........................')+'</p>';
+html+='<p>NIP. '+(id.nipSupervisor||'.........................')+'</p></td>';
+html+='</tr></table>';
+html+='</body></html>';
+w.document.write(html);w.document.close();
+setTimeout(function(){w.print();},500);
+}
+
+// ===== PRINT FUNCTIONS =====
+function printInstrumen(key){
+var instrumenMap={
+perencanaan:{items:PERENCANAAN,label:'Perencanaan Pembelajaran'},
+pelaksanaan:{items:getPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
+asesmen:{items:ASESMEN,label:'Asesmen Pembelajaran'}
+};
+var info=instrumenMap[key];
+var id=state.formData.identitas||{};
+var d=state.formData[key]||{scores:[],catatan:[]};
+var w=window.open('','_blank');
+var html='<html><head><title>Cetak '+info.label+'</title><style>';
+html+='body{font-family:Arial,sans-serif;padding:20px;font-size:12px}';
+html+='h2{text-align:center;margin-bottom:5px}';
+html+='table{width:100%;border-collapse:collapse;margin-top:15px}';
+html+='th,td{border:1px solid #333;padding:6px;text-align:center;vertical-align:middle}';
+html+='th{background:#f0f0f0;font-weight:bold}';
+html+='.aspek{text-align:left}';
+html+='.header-info{margin-bottom:15px}';
+html+='.header-info p{margin:3px 0}';
+html+='</style></head><body>';
+html+='<h2>INSTRUMEN SUPERVISI PEMBELAJARAN</h2>';
+html+='<h3 style="text-align:center">'+info.label+'</h3>';
+html+='<div class="header-info">';
+html+='<p><b>Nama Guru:</b> '+(id.namaGuru||'-')+' | <b>NIP:</b> '+(id.nipGuru||'-')+'</p>';
+html+='<p><b>Mata Pelajaran:</b> '+(id.mataPelajaran||'-')+' | <b>Kelas/Semester:</b> '+(id.kelasSemester||'-')+'</p>';
+html+='<p><b>Madrasah:</b> '+(id.namaMadrasah||'-')+'</p>';
+html+='<p><b>Supervisor:</b> '+(id.namaSupervisor||'-')+' | <b>Tanggal:</b> '+(id.tanggalSupervisi||'-')+'</p>';
+html+='</div>';
+html+='<table><thead><tr><th style="width:30px">No</th><th class="aspek">Aspek yang Diamati</th><th style="width:30px">1</th><th style="width:30px">2</th><th style="width:30px">3</th><th style="width:30px">4</th><th>Catatan</th></tr></thead><tbody>';
+info.items.forEach(function(item,i){
+var score=(d.scores&&d.scores[i]!==undefined)?d.scores[i]:null;
+var cat=(d.catatan&&d.catatan[i])?d.catatan[i]:getAutoCatatan(score);
+html+='<tr><td>'+(i+1)+'</td><td class="aspek">'+item+'</td>';
+for(var s=0;s<4;s++){html+='<td>'+(score===s?'&#10004;':'')+'</td>';}
+html+='<td>'+escHtml(cat)+'</td></tr>';
+});
+html+='</tbody></table>';
+// Score summary
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=info.items.length*4;
+var pct=max>0?(sum/max)*100:0;
+html+='<p style="margin-top:15px"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+getPredikat(pct)+'</b></p>';
+// Catatan Hasil Supervisi & RTL
+var rekapData=(state.formData.rekap&&state.formData.rekap[key])?state.formData.rekap[key]:{};
+if(rekapData.catatan){
+html+='<div style="margin-top:20px"><b>Catatan Hasil Supervisi:</b></div>';
+html+='<p style="text-align:justify;line-height:1.6;margin:5px 0">'+escHtml(rekapData.catatan)+'</p>';
+}
+if(rekapData.tindakLanjut){
+html+='<div style="margin-top:15px"><b>Rencana Tindak Lanjut:</b></div>';
+html+='<p style="text-align:justify;line-height:1.6;margin:5px 0">'+escHtml(rekapData.tindakLanjut)+'</p>';
+}
+// Tanda tangan
+html+='<table style="width:100%;border:none;margin-top:40px"><tr>';
+html+='<td style="border:none;width:50%;text-align:center;vertical-align:top">';
+html+='<p>Guru Mata Pelajaran,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(id.namaGuru||'.........................')+'</p>';
+html+='<p>NIP. '+(id.nipGuru||'.........................')+'</p>';
+html+='</td>';
+html+='<td style="border:none;width:50%;text-align:center;vertical-align:top">';
+html+='<p>Pengawas Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(id.namaSupervisor||'.........................')+'</p>';
+html+='<p>NIP. '+(id.nipSupervisor||'.........................')+'</p>';
+html+='</td></tr></table>';
+html+='</body></html>';
+w.document.write(html);w.document.close();
+setTimeout(function(){w.print();},500);
+}
+
+function printRekap(){window.print();}
+
+// ===== PDF EXPORT =====
+function getHeaderInfo(formData){
+var id=formData||state.formData.identitas||{};
+if(formData&&formData.identitas)id=formData.identitas;
+return {
+namaGuru:id.namaGuru||'-',
+nipGuru:id.nipGuru||'-',
+mataPelajaran:id.mataPelajaran||'-',
+namaMadrasah:id.namaMadrasah||'-',
+namaSupervisor:id.namaSupervisor||'-',
+nipSupervisor:id.nipSupervisor||'-',
+tanggalSupervisi:id.tanggalSupervisi||'-',
+kelasSemester:id.kelasSemester||'-'
+};
+}
+
+function addPDFHeader(doc,title,headerInfo){
+doc.setFontSize(14);
+doc.text('INSTRUMEN SUPERVISI PEMBELAJARAN',doc.internal.pageSize.getWidth()/2,15,{align:'center'});
+doc.setFontSize(11);
+doc.text(title,doc.internal.pageSize.getWidth()/2,22,{align:'center'});
+doc.setFontSize(9);
+var y=30;
+doc.text('Nama Guru: '+headerInfo.namaGuru+'    NIP: '+headerInfo.nipGuru,14,y);
+doc.text('Mata Pelajaran: '+headerInfo.mataPelajaran+'    Kelas/Semester: '+headerInfo.kelasSemester,14,y+5);
+doc.text('Madrasah: '+headerInfo.namaMadrasah,14,y+10);
+doc.text('Supervisor: '+headerInfo.namaSupervisor+'    Tanggal: '+headerInfo.tanggalSupervisi,14,y+15);
+return y+22;
+}
+
+function exportInstrumenPDF(key){
+if(typeof window.jspdf==='undefined'){alert('jsPDF belum dimuat. Pastikan koneksi internet tersedia.');return;}
+var jsPDF=window.jspdf.jsPDF;
+var doc=new jsPDF('p','mm','a4');
+var instrumenMap={
+perencanaan:{items:PERENCANAAN,label:'Perencanaan Pembelajaran'},
+pelaksanaan:{items:getPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
+asesmen:{items:ASESMEN,label:'Asesmen Pembelajaran'}
+};
+var info=instrumenMap[key];
+var headerInfo=getHeaderInfo();
+var startY=addPDFHeader(doc,info.label,headerInfo);
+var d=state.formData[key]||{scores:[],catatan:[]};
+var tableData=[];
+info.items.forEach(function(item,i){
+var score=(d.scores&&d.scores[i]!==undefined)?d.scores[i]:null;
+var cat=(d.catatan&&d.catatan[i])?d.catatan[i]:getAutoCatatan(score);
+var row=[i+1,item];
+for(var s=0;s<4;s++){row.push(score===s?'V':'');}
+row.push(cat);
+tableData.push(row);
+});
+doc.autoTable({
+startY:startY,
+head:[['No','Aspek yang Diamati','1','2','3','4','Catatan']],
+body:tableData,
+styles:{fontSize:7,cellPadding:2},
+headStyles:{fillColor:[14,165,233],textColor:255,fontStyle:'bold'},
+columnStyles:{
+0:{cellWidth:8,halign:'center'},
+1:{cellWidth:60},
+2:{cellWidth:8,halign:'center'},
+3:{cellWidth:8,halign:'center'},
+4:{cellWidth:8,halign:'center'},
+5:{cellWidth:8,halign:'center'},
+6:{cellWidth:45}
+},
+margin:{left:14,right:14}
+});
+// Add score summary
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=info.items.length*4;
+var pct=max>0?(sum/max)*100:0;
+var finalY=doc.lastAutoTable.finalY+8;
+doc.setFontSize(9);
+doc.text('Total Skor: '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - '+getPredikat(pct),14,finalY);
+doc.save('Supervisi_'+info.label.replace(/ /g,'_')+'_'+(state.formData.identitas&&state.formData.identitas.namaGuru?state.formData.identitas.namaGuru:'')+ '.pdf');
+}
+
+function exportRekapPDF(){
+if(typeof window.jspdf==='undefined'){alert('jsPDF belum dimuat. Pastikan koneksi internet tersedia.');return;}
+var jsPDF=window.jspdf.jsPDF;
+var doc=new jsPDF('p','mm','a4');
+var headerInfo=getHeaderInfo();
+var startY=addPDFHeader(doc,'Rekap Hasil Supervisi',headerInfo);
+var komps=[
+{key:'perencanaan',label:'Perencanaan Pembelajaran',max:9*4},
+{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:14*4},
+{key:'asesmen',label:'Asesmen Pembelajaran',max:7*4}
+];
+var rekapTable=[];
+komps.forEach(function(k){
+var scores=state.formData[k.key]&&state.formData[k.key].scores?state.formData[k.key].scores:[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var pct=(sum/k.max)*100;
+rekapTable.push([k.label,sum+'/'+k.max,pct.toFixed(1)+'%',getPredikat(pct)]);
+});
+doc.autoTable({
+startY:startY,
+head:[['Komponen','Skor','Persentase','Predikat']],
+body:rekapTable,
+styles:{fontSize:9,cellPadding:3},
+headStyles:{fillColor:[14,165,233],textColor:255,fontStyle:'bold'},
+margin:{left:14,right:14}
+});
+var y=doc.lastAutoTable.finalY+10;
+// Add catatan and tindak lanjut
+komps.forEach(function(k){
+var rekapData=state.formData.rekap&&state.formData.rekap[k.key]?state.formData.rekap[k.key]:{};
+if(rekapData.catatan||rekapData.tindakLanjut){
+doc.setFontSize(10);
+doc.setFont(undefined,'bold');
+doc.text(k.label,14,y);y+=5;
+doc.setFont(undefined,'normal');
+doc.setFontSize(8);
+if(rekapData.catatan){
+doc.text('Catatan Hasil Supervisi:',14,y);y+=4;
+var lines=doc.splitTextToSize(rekapData.catatan,170);
+doc.text(lines,14,y);y+=lines.length*3.5+4;
+}
+if(rekapData.tindakLanjut){
+doc.text('Rencana Tindak Lanjut:',14,y);y+=4;
+var lines2=doc.splitTextToSize(rekapData.tindakLanjut,170);
+doc.text(lines2,14,y);y+=lines2.length*3.5+4;
+}
+y+=5;
+if(y>270){doc.addPage();y=15;}
+}
+});
+doc.save('Rekap_Supervisi_'+(state.formData.identitas&&state.formData.identitas.namaGuru?state.formData.identitas.namaGuru:'')+'.pdf');
+}
+
+function exportDetailPDF(idx){
+var data=getData();
+var d=data[idx];
+if(!d)return;
+// Temporarily set formData to this record for PDF generation
+var backup=JSON.parse(JSON.stringify(state.formData));
+state.formData=JSON.parse(JSON.stringify(d));
+exportRekapPDF();
+state.formData=backup;
+}
+
+// ===== INIT =====
+render();
+</script>
+</body>
+</html>
