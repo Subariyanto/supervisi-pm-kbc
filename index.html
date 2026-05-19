@@ -131,8 +131,10 @@ canvas{max-width:100%;margin:20px 0}
 <li onclick="navigate('rekap-kokurikuler')" data-nav="rekap-kokurikuler">&#128202; Rekap Kokurikuler</li>
 <li onclick="navigate('ekstrakurikuler')" data-nav="ekstrakurikuler">&#127942; Ekstrakurikuler</li>
 <li onclick="navigate('rekap-ekstrakurikuler')" data-nav="rekap-ekstrakurikuler">&#128202; Rekap Ekstrakurikuler</li>
+<li onclick="navigate('iklim-madrasah')" data-nav="iklim-madrasah">&#127979; Iklim Madrasah</li>
+<li onclick="navigate('rekap-iklim-madrasah')" data-nav="rekap-iklim-madrasah">&#128202; Rekap Iklim Madrasah</li>
 </ul>
-<p style="padding:15px 20px;font-size:.65rem;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.1);margin-top:auto;position:absolute;bottom:10px;left:0;right:0;white-space:normal;overflow:hidden;line-height:1.4;text-align:center">Aplikasi ini dibuat oleh : Subariyanto<br>Ketua Pokjawas Madrasah Kab. Jember</p>
+<p style="padding:10px 20px;font-size:.6rem;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.1);white-space:normal;line-height:1.4;text-align:center">Aplikasi ini dibuat oleh : Subariyanto<br>Ketua Pokjawas Madrasah Kab. Jember</p>
 </nav>
 <div class="main-content">
 <div class="container">
@@ -309,6 +311,7 @@ if(key==='perencanaan')return DEFAULT_PERENCANAAN;
 if(key==='pelaksanaan')return [...DEFAULT_PELAKSANAAN];
 if(key==='asesmen')return DEFAULT_ASESMEN;
 if(key==='ekstrakurikuler')return [...EKSTRAKURIKULER];
+if(key==='iklim-madrasah')return [...IKLIM_MADRASAH];
 return null;
 }
 function saveIndikator(key,items){
@@ -586,13 +589,17 @@ case 'rekap-kokurikuler':app.innerHTML=renderRekapKokurikulerPage();break;
 case 'ekstrakurikuler':app.innerHTML=renderEkstrakurikulerPage();break;
 case 'ekstrakurikuler-form':app.innerHTML=renderEkstrakurikulerForm(state.ekstrakurikulerIdx);break;
 case 'rekap-ekstrakurikuler':app.innerHTML=renderRekapEkstrakurikulerPage();break;
+case 'iklim-madrasah':app.innerHTML=renderIklimMadrasahPage();break;
+case 'iklim-madrasah-form':app.innerHTML=renderIklimMadrasahForm(state.iklimMadrasahIdx);break;
+case 'rekap-iklim-madrasah':app.innerHTML=renderRekapIklimMadrasahPage();break;
 default:app.innerHTML=renderDashboard();
 }
 var titleEl=document.getElementById('pageTitle');
 if(titleEl){
 var isKoku=(state.view==='kokurikuler'||state.view==='kokurikuler-form'||state.view==='rekap-kokurikuler');
 var isEkstra=(state.view==='ekstrakurikuler'||state.view==='ekstrakurikuler-form'||state.view==='rekap-ekstrakurikuler');
-titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':isEkstra?'\u{1F4CB} Supervisi Ekstrakurikuler':'\u{1F4CB} Supervisi Pembelajaran';
+var isIklim=(state.view==='iklim-madrasah'||state.view==='iklim-madrasah-form'||state.view==='rekap-iklim-madrasah');
+titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':isEkstra?'\u{1F4CB} Supervisi Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':'\u{1F4CB} Supervisi Pembelajaran';
 }
 app.classList.add('fade-in');
 setTimeout(function(){app.classList.remove('fade-in')},300);
@@ -2490,6 +2497,355 @@ setTimeout(function(){w.print();},500);
 
 function editIndikatorEkstrakurikuler(){
 showEditIndikator('ekstrakurikuler');
+}
+
+﻿// ===== IKLIM MADRASAH =====
+const IKLIM_MADRASAH_KEY='supervisi_iklim_madrasah';
+const IKLIM_MADRASAH=[
+'Iklim pembelajaran mencerminkan penghargaan terhadap keberagaman melalui interaksi yang saling menghormati dan praktik pembelajaran yang inklusif berbasis nilai cinta',
+'Relasi antar warga madrasah dibangun atas dasar kasih sayang, empati, dan saling mendukung sebagai wujud cinta diri dan sesama',
+'Madrasah memberikan ruang, kesempatan, dan perlakuan yang adil bagi semua tanpa diskriminasi gender',
+'Madrasah memfasilitasi iklim lingkungan belajar yang aman, nyaman, ramah, menyenangkan dan sejahtera',
+'Madrasah responsif terhadap kebutuhan murid berkebutuhan khusus melalui kebijakan dan layanan yang adaptif',
+'Madrasah membangun budaya aman melalui pencegahan dan penanganan perundungan secara sistematis dan edukatif',
+'Lingkungan madrasah tidak berpotensi membahayakan keselamatan warga madrasah dan memiliki kesiapsiagaan terhadap kondisi darurat',
+'Muatan pembelajaran membangun kesadaran tentang pola hidup bersih dan sehat sebagai wujud cinta diri dan alam'
+];
+const PENGGALIAN_IKLIM_MADRASAH=[
+'<b>Pengamatan:</b><ul><li>Guru membangun sikap positif terhadap keberagaman melalui pembelajaran</li><li>Guru memberi ruang semua siswa untuk berpendapat</li><li>Guru dan siswa saling menghormati perbedaan pendapat, kebiasaan, dan identitas</li></ul><b>Telaah dokumen:</b><ul><li>KSP yang memuat kebijakan dan pembelajaran tentang keberagaman</li><li>RPP intra/kokurikuler yang memuat penguatan keberagaman dan toleransi</li><li>Program madrasah pendukung yang turut membangun sikap positif keberagaman</li></ul>',
+'<b>Pengamatan:</b><ul><li>Guru dan tenaga kependidikan menyapa siswa dengan senyum dan bahasa santun</li><li>Siswa tidak segan meminta bantuan kepada guru dan guru respon terhadap kesulitan siswa</li><li>Siswa saling membantu teman yang belum paham materi tanpa diminta</li></ul><b>Telaah dokumen:</b><ul><li>Program pembiasaan di madrasah</li><li>Bukti pelaksanaan pembiasaan di madrasah</li></ul>',
+'<b>Pengamatan dan wawancara:</b><ul><li>Guru membangun kesadaran dalam kesetaraan gender dalam kegiatan pembelajaran</li><li>Madrasah memberikan kesempatan yang sama kepada murid laki-laki dan perempuan</li><li>Madrasah memberikan hak yang sama kepada guru dan tendik untuk terlibat dalam organisasi dan kegiatan</li></ul><b>Telaah dokumen:</b><ul><li>KSP yang memuat kebijakan layanan kesetaraan gender</li><li>RPP memuat membangun kesetaraan gender</li><li>Struktur kelas, OSIM, struktur madrasah</li><li>Dokumentasi kegiatan yang relevan</li></ul>',
+'<b>Pengamatan:</b><ul><li>Lingkungan madrasah bersih, sehat, tertib, ruang kelas bersih, rapi, pencahayaan dan sirkulasi udara cukup</li><li>Guru, tenaga kependidikan, dan murid saling menyapa dan tersenyum</li><li>Murid belajar dengan antusias dan ekspresi gembira</li><li>Terbangun budaya saling menolong dan empati</li></ul>',
+'<b>Telaah dokumen:</b><ul><li>Tersedianya kebijakan madrasah dalam mengakomodasi anak berkebutuhan khusus</li><li>Tersedianya Program Pembelajaran Individual (PPI/IEP) bagi anak berkebutuhan khusus</li></ul>',
+'<b>Telaah dokumen:</b><ul><li>Tersedia SK TPPK (Tim pencegahan dan penanganan perundungan/kekerasan)</li><li>Tersedianya SOP/alur pelaporan dan penanganan kasus yang jelas dan mudah dipahami</li><li>Sosialisasi rutin tentang anti-perundungan dan kekerasan kepada siswa</li><li>Terdapat catatan penanganan kasus dan tindak lanjut</li></ul>',
+'<b>Pengamatan:</b><ul><li>Lingkungan tertata rapi, ada perawatan rutin, dan tidak ditemukan potensi bahaya fisik</li><li>Perlengkapan keselamatan tanggap bencana tersedia dan diketahui warga madrasah</li></ul><b>Telaah dokumen:</b><ul><li>Tersedia dokumentasi simulasi kebencanaan</li></ul>',
+'<b>Pengamatan:</b><ul><li>Pembiasaan cuci tangan, memilah sampah, atau menjaga kebersihan kelas</li><li>Pembiasaan menjaga kebersihan sebelum dan sesudah belajar</li><li>Sarana kesehatan tersedia dan dimanfaatkan</li><li>Kantin atau area jualan tampak bersih dan sehat</li></ul><b>Telaah dokumen:</b><ul><li>Program PHBS</li><li>Program dan dokumentasi menjaga kebugaran bagi murid, guru dan tendik</li><li>Laporan terlaksananya kegiatan pencegahan adiksi murid</li><li>Laporan terlaksananya kegiatan membangun kesehatan reproduksi murid</li></ul>'
+];
+function getIklimMadrasah(){try{return JSON.parse(localStorage.getItem(IKLIM_MADRASAH_KEY))||[];}catch(e){return [];}}
+function saveIklimMadrasah(data){localStorage.setItem(IKLIM_MADRASAH_KEY,JSON.stringify(data));}
+
+﻿function renderIklimMadrasahPage(){
+var data=getIklimMadrasah();
+var madrasahList=getMadrasah();
+var html='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
+html+='<h2>&#127979; Instrumen Iklim Madrasah</h2>';
+html+='<button class="btn btn-primary" onclick="showAddIklimMadrasah()">+ Tambah Penilaian</button></div>';
+if(data.length===0){
+html+='<div class="empty-state"><p>Belum ada data penilaian iklim madrasah.<br>Klik tombol di atas untuk mulai.</p></div>';
+}else{
+html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Madrasah</th><th>Tanggal</th><th>Skor</th><th>Predikat</th><th>Aksi</th></tr></thead><tbody>';
+data.forEach(function(d,i){
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=IKLIM_MADRASAH.length*4;
+var pct=max>0?(sum/max)*100:0;
+html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+sum+'/'+max+' ('+pct.toFixed(1)+'%)</td><td>'+getPredikat(pct)+'</td>';
+html+='<td><button class="btn btn-sm btn-primary" onclick="state.iklimMadrasahIdx='+i+';navigate(\'iklim-madrasah-form\')">&#9998;</button> ';
+html+='<button class="btn btn-sm btn-danger" onclick="deleteIklimMadrasah('+i+')">&#128465;</button></td></tr>';
+});
+html+='</tbody></table></div>';
+}
+html+='</div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">&#10005; Tutup</button></div>';
+return html;
+}
+function showAddIklimMadrasah(){
+var madrasahList=getMadrasah();
+var html='<div style="background:rgba(0,0,0,.5);position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;display:flex;align-items:center;justify-content:center" id="modal-iklim">';
+html+='<div style="background:#fff;border-radius:12px;padding:30px;max-width:400px;width:90%">';
+html+='<h3 style="margin-bottom:15px">Tambah Penilaian Iklim Madrasah</h3>';
+html+='<label>Madrasah:</label><select id="iklim-madrasah" style="width:100%;padding:8px;margin:5px 0 15px;border-radius:6px;border:1px solid #ddd">';
+if(madrasahList.length===0){html+='<option value="">-- Belum ada data madrasah --</option>';}
+else{madrasahList.forEach(function(m){html+='<option value="'+escHtml(m.nama)+'">'+escHtml(m.nama)+'</option>';});}
+html+='</select>';
+html+='<label>Tanggal:</label><input type="date" id="iklim-tanggal" style="width:100%;padding:8px;margin:5px 0 15px;border-radius:6px;border:1px solid #ddd">';
+html+='<div style="text-align:right"><button class="btn btn-secondary" onclick="document.getElementById(\'modal-iklim\').remove()">Batal</button> ';
+html+='<button class="btn btn-primary" onclick="addIklimMadrasah()">Simpan</button></div></div></div>';
+document.body.insertAdjacentHTML('beforeend',html);
+document.getElementById('iklim-tanggal').value=new Date().toISOString().slice(0,10);
+}
+function addIklimMadrasah(){
+var nama=document.getElementById('iklim-madrasah').value;
+var tgl=document.getElementById('iklim-tanggal').value;
+if(!nama){alert('Pilih madrasah terlebih dahulu');return;}
+var data=getIklimMadrasah();
+data.push({madrasahNama:nama,tanggal:tgl,scores:new Array(IKLIM_MADRASAH.length).fill(null),catatan:[],manualCatatan:[],rekap:{catatan:'',tindakLanjut:''}});
+saveIklimMadrasah(data);
+var el=document.getElementById('modal-iklim');if(el)el.remove();
+state.iklimMadrasahIdx=data.length-1;
+navigate('iklim-madrasah-form');
+}
+function deleteIklimMadrasah(idx){
+if(!confirm('Hapus data penilaian ini?'))return;
+var data=getIklimMadrasah();
+data.splice(idx,1);
+saveIklimMadrasah(data);
+render();
+}
+
+﻿function renderIklimMadrasahForm(idx){
+var data=getIklimMadrasah();
+var d=data[idx];
+if(!d)return '<div class="card"><p>Data tidak ditemukan.</p></div>';
+autoGenerateRekapIklimMadrasah(idx);
+d=getIklimMadrasah()[idx];
+var scores=d.scores||[];
+var catatan=d.catatan||[];
+var html='<div class="card">';
+html+='<h2 style="margin-bottom:5px">&#127979; Instrumen Iklim Madrasah</h2>';
+html+='<p style="color:#666;margin-bottom:15px">Madrasah: <b>'+escHtml(d.madrasahNama)+'</b> | Tanggal: <b>'+escHtml(d.tanggal||'-')+'</b></p>';
+if(editIndikatorState.active==='iklim-madrasah'){
+html+=renderEditPanelFlat('iklim-madrasah');
+}
+var iklimItems=getIndikator('iklim-madrasah');
+html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><th style="width:30px">No</th><th>Aspek yang Diamati</th><th style="width:30px">1</th><th style="width:30px">2</th><th style="width:30px">3</th><th style="width:30px">4</th><th>Catatan</th></tr></thead><tbody>';
+iklimItems.forEach(function(item,i){
+var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
+var cat=catatan[i]||'';
+html+='<tr><td>'+(i+1)+'</td><td style="text-align:left;cursor:pointer" onclick="showPenggalianIklimMadrasah('+i+')">'+item+' &#128269;</td>';
+for(var s=0;s<4;s++){
+var checked=(score===s)?'checked':'';
+html+='<td><input type="radio" name="iklim_score_'+i+'" value="'+s+'" '+checked+' onchange="setSkorIklimMadrasah('+idx+','+i+','+s+')"></td>';
+}
+html+='<td><input type="text" value="'+escHtml(cat)+'" onchange="setCatatanIklimMadrasah('+idx+','+i+',this.value)" style="width:100%;min-width:120px;padding:4px;border:1px solid #ddd;border-radius:4px"></td></tr>';
+});
+html+='</tbody></table></div>';
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=IKLIM_MADRASAH.length*4;
+var pct=max>0?(sum/max)*100:0;
+html+='<div style="margin-top:15px;padding:10px;background:#f0f9ff;border-radius:8px"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+getPredikat(pct)+'</b></div>';
+var rekap=d.rekap||{};
+html+='<div style="margin-top:20px"><h3>Catatan Hasil Supervisi</h3>';
+html+='<textarea rows="6" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px" onchange="setRekapIklimMadrasah('+idx+',\'catatan\',this.value)">'+escHtml(rekap.catatan||'')+'</textarea></div>';
+html+='<div style="margin-top:15px"><h3>Rencana Tindak Lanjut</h3>';
+html+='<textarea rows="6" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px" onchange="setRekapIklimMadrasah('+idx+',\'tindakLanjut\',this.value)">'+escHtml(rekap.tindakLanjut||'')+'</textarea></div>';
+html+='<div class="btn-group no-print" style="justify-content:center">';
+html+='<button class="btn btn-primary" onclick="navigate(\'iklim-madrasah\')">&#10004; Simpan</button>';
+html+='<button class="btn btn-info" onclick="cetakIklimMadrasah('+idx+')">&#128424; Cetak</button>';
+html+='<button class="btn btn-secondary" onclick="editIndikatorIklimMadrasah()">&#9998; Edit Indikator</button>';
+html+='<button class="btn btn-warning" onclick="resetSkorIklimMadrasah('+idx+')">&#128260; Reset Skor</button>';
+html+='<button class="btn btn-danger" onclick="navigate(\'iklim-madrasah\')">&#10005; Tutup</button>';
+html+='</div></div>';
+return html;
+}
+function setSkorIklimMadrasah(idx,itemIdx,val){
+var data=getIklimMadrasah();
+var d=data[idx];if(!d)return;
+if(!d.scores)d.scores=[];
+d.scores[itemIdx]=val;
+if(!d.manualCatatan)d.manualCatatan=[];
+if(!d.manualCatatan[itemIdx]){
+if(!d.catatan)d.catatan=[];
+d.catatan[itemIdx]=getAutoCatatan(val);
+}
+saveIklimMadrasah(data);
+render();
+}
+function setCatatanIklimMadrasah(idx,itemIdx,val){
+var data=getIklimMadrasah();
+var d=data[idx];if(!d)return;
+if(!d.catatan)d.catatan=[];
+if(!d.manualCatatan)d.manualCatatan=[];
+d.catatan[itemIdx]=val;
+d.manualCatatan[itemIdx]=true;
+saveIklimMadrasah(data);
+}
+function setRekapIklimMadrasah(idx,field,val){
+var data=getIklimMadrasah();
+var d=data[idx];if(!d)return;
+if(!d.rekap)d.rekap={};
+d.rekap[field]=val;
+if(field==='catatan')d.rekap.manualCatatan=true;
+if(field==='tindakLanjut')d.rekap.manualTindakLanjut=true;
+saveIklimMadrasah(data);
+}
+function autoGenerateRekapIklimMadrasah(idx){
+var data=getIklimMadrasah();
+var d=data[idx];if(!d)return;
+var scores=d.scores||[];
+var hasScores=scores.some(function(s){return s!==null&&s!==undefined;});
+if(!hasScores)return;
+if(!d.rekap)d.rekap={};
+var dominated=[];
+var strong=[];
+scores.forEach(function(s,i){
+if(s!==null&&s!==undefined){
+if(s<=1)dominated.push(IKLIM_MADRASAH[i]);
+else if(s>=2)strong.push(IKLIM_MADRASAH[i]);
+}
+});
+if(!d.rekap.manualCatatan){
+var cat='';
+if(strong.length>0)cat+='Aspek yang sudah baik dalam iklim madrasah: '+strong.join('; ')+'. ';
+if(dominated.length>0)cat+='Aspek yang perlu ditingkatkan: '+dominated.join('; ')+'.';
+if(!cat)cat='Semua aspek iklim madrasah sudah terlaksana dengan baik.';
+d.rekap.catatan=cat;
+}
+if(!d.rekap.manualTindakLanjut){
+var rtl='';
+if(dominated.length>0)rtl='Rencana tindak lanjut: perlu peningkatan pada aspek '+dominated.join('; ')+'. Pengawas akan melakukan pendampingan dan pembinaan terkait aspek tersebut.';
+else rtl='Seluruh aspek iklim madrasah sudah terlaksana dengan baik. Pengawas akan terus melakukan pemantauan untuk mempertahankan kualitas.';
+d.rekap.tindakLanjut=rtl;
+}
+saveIklimMadrasah(data);
+}
+function resetSkorIklimMadrasah(idx){
+if(!confirm('Reset semua skor Iklim Madrasah? Data skor, catatan, dan rekap akan dihapus.'))return;
+var data=getIklimMadrasah();
+var d=data[idx];if(!d)return;
+d.scores=new Array(IKLIM_MADRASAH.length).fill(null);
+d.catatan=[];
+d.manualCatatan=[];
+d.rekap={catatan:'',tindakLanjut:''};
+saveIklimMadrasah(data);
+render();
+}
+function showPenggalianIklimMadrasah(idx){
+var modal=document.getElementById('modalPenggalian');
+if(!modal)return;
+var title=IKLIM_MADRASAH[idx]||'';
+var content=PENGGALIAN_IKLIM_MADRASAH[idx]||'Tidak ada data penggalian.';
+document.getElementById('modalTitle').innerHTML='<b>'+(idx+1)+'. '+title+'</b>';
+document.getElementById('modalContent').innerHTML=content;
+modal.style.display='flex';
+}
+function editIndikatorIklimMadrasah(){
+showEditIndikator('iklim-madrasah');
+}
+
+﻿function renderRekapIklimMadrasahPage(){
+var data=getIklimMadrasah();
+var pengawas=getPengawas();
+var html='<div class="card"><h2 style="margin-bottom:20px">&#128202; Rekap Iklim Madrasah</h2>';
+if(data.length===0){
+html+='<div class="empty-state"><p>Belum ada data iklim madrasah.</p></div>';
+}else{
+html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><th style="width:30px">No</th><th>Tanggal</th><th>Nama Madrasah</th><th>Skor</th><th>Prosentase</th><th>Catatan Hasil Supervisi</th><th>Rencana Tindak Lanjut</th><th>Predikat</th><th class="no-print">Aksi</th></tr></thead><tbody>';
+data.forEach(function(d,i){
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=IKLIM_MADRASAH.length*4;
+var pct=max>0?(sum/max)*100:0;
+var pred=getPredikat(pct);
+var rekap=d.rekap||{};
+html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+sum+'/'+max+'</td><td>'+pct.toFixed(1)+'%</td>';
+html+='<td style="text-align:left;font-size:.8rem;max-width:200px">'+escHtml(rekap.catatan||'-')+'</td>';
+html+='<td style="text-align:left;font-size:.8rem;max-width:200px">'+escHtml(rekap.tindakLanjut||'-')+'</td>';
+html+='<td>'+pred+'</td>';
+html+='<td class="no-print"><button class="btn btn-sm btn-info" onclick="cetakIklimMadrasah('+i+')">&#128424;</button></td></tr>';
+});
+html+='</tbody></table></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:center"><button class="btn btn-secondary" onclick="printRekapIklimMadrasah()">&#128424; Cetak Rekap</button></div>';
+}
+html+='</div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">&#10005; Tutup</button></div>';
+return html;
+}
+function printRekapIklimMadrasah(){
+var data=getIklimMadrasah();
+var pengawas=getPengawas();
+var w=window.open('','_blank');
+var html='<html><head><title>Rekap Iklim Madrasah</title><style>';
+html+='body{font-family:Arial,sans-serif;padding:20px;font-size:11px}';
+html+='h2{text-align:center;margin-bottom:15px}';
+html+='table{width:100%;border-collapse:collapse;margin-bottom:15px}';
+html+='th,td{border:1px solid #333;padding:5px;text-align:center;vertical-align:top}';
+html+='th{background:#f0f0f0;font-weight:bold}';
+html+='.left{text-align:left}';
+html+='.ttd-table{border:none;margin-top:40px}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='</style></head><body>';
+html+='<h2>REKAP HASIL SUPERVISI IKLIM MADRASAH</h2>';
+html+='<p style="text-align:center;margin-bottom:20px">Pengawas: '+(pengawas.nama||'-')+'</p>';
+html+='<table><thead><tr><th>No</th><th>Tanggal</th><th>Nama Madrasah</th><th>Skor</th><th>Prosentase</th><th>Catatan Hasil Supervisi</th><th>Rencana Tindak Lanjut</th><th>Predikat</th></tr></thead><tbody>';
+data.forEach(function(d,i){
+var scores=d.scores||[];
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=IKLIM_MADRASAH.length*4;
+var pct=max>0?(sum/max)*100:0;
+var rekap=d.rekap||{};
+html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+sum+'/'+max+'</td><td>'+pct.toFixed(1)+'%</td>';
+html+='<td class="left">'+escHtml(rekap.catatan||'-')+'</td>';
+html+='<td class="left">'+escHtml(rekap.tindakLanjut||'-')+'</td>';
+html+='<td>'+getPredikat(pct)+'</td></tr>';
+});
+html+='</tbody></table>';
+html+='<table class="ttd-table"><tr>';
+html+='<td style="width:50%"><p>Mengetahui,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">..........................</p>';
+html+='<p>NIP. ..........................</p></td>';
+html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(pengawas.nama||'..........................')+'</p>';
+html+='<p>NIP. '+(pengawas.nip||'..........................')+'</p></td>';
+html+='</tr></table>';
+html+='</body></html>';
+w.document.write(html);w.document.close();
+setTimeout(function(){w.print();},500);
+}
+function cetakIklimMadrasah(idx){
+var data=getIklimMadrasah();
+var d=data[idx];
+if(!d)return;
+var pengawas=getPengawas();
+var madrasahList=getMadrasah();
+var madrasahData=madrasahList.find(function(m){return m.nama===d.madrasahNama})||{};
+var w=window.open('','_blank');
+var html='<html><head><title>Cetak Instrumen Iklim Madrasah</title><style>';
+html+='body{font-family:Arial,sans-serif;padding:20px;font-size:12px}';
+html+='h2{text-align:center;margin-bottom:5px}';
+html+='h3{text-align:center;margin-bottom:10px}';
+html+='table{width:100%;border-collapse:collapse;margin-top:15px}';
+html+='th,td{border:1px solid #333;padding:6px;text-align:center;vertical-align:middle}';
+html+='th{background:#f0f0f0;font-weight:bold}';
+html+='.aspek{text-align:left}';
+html+='.header-info{margin-bottom:15px}';
+html+='.header-info p{margin:3px 0}';
+html+='.narasi{text-align:justify;line-height:1.6;margin:5px 0}';
+html+='.ttd-table{border:none;margin-top:40px}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='</style></head><body>';
+html+='<h2>INSTRUMEN SUPERVISI IKLIM MADRASAH</h2>';
+html+='<h3>Madrasah: '+escHtml(d.madrasahNama)+'</h3>';
+html+='<div class="header-info">';
+html+='<p><b>Madrasah:</b> '+escHtml(d.madrasahNama)+' | <b>NPSN:</b> '+(madrasahData.npsn||'-')+'</p>';
+html+='<p><b>Kepala Madrasah:</b> '+(madrasahData.kepala||'-')+'</p>';
+html+='<p><b>Pengawas:</b> '+(pengawas.nama||'-')+' | <b>Tanggal:</b> '+escHtml(d.tanggal||'-')+'</p>';
+html+='</div>';
+html+='<table><thead><tr><th style="width:30px">No</th><th class="aspek">Aspek yang Diamati</th><th style="width:30px">1</th><th style="width:30px">2</th><th style="width:30px">3</th><th style="width:30px">4</th><th>Catatan</th></tr></thead><tbody>';
+var scores=d.scores||[];
+var catatan=d.catatan||[];
+IKLIM_MADRASAH.forEach(function(item,i){
+var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
+var cat=catatan[i]||getAutoCatatan(score);
+html+='<tr><td>'+(i+1)+'</td><td class="aspek">'+item+'</td>';
+for(var s=0;s<4;s++){html+='<td>'+(score===s?'&#10004;':'')+'</td>';}
+html+='<td>'+escHtml(cat)+'</td></tr>';
+});
+html+='</tbody></table>';
+var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
+var max=IKLIM_MADRASAH.length*4;
+var pct=max>0?(sum/max)*100:0;
+html+='<p style="margin-top:15px"><b>Total Skor:</b> '+sum+'/'+max+' ('+pct.toFixed(1)+'%) - <b>'+getPredikat(pct)+'</b></p>';
+var rekap=d.rekap||{};
+if(rekap.catatan){
+html+='<div style="margin-top:20px"><b>Catatan Hasil Supervisi:</b></div>';
+html+='<p class="narasi">'+escHtml(rekap.catatan)+'</p>';
+}
+if(rekap.tindakLanjut){
+html+='<div style="margin-top:15px"><b>Rencana Tindak Lanjut:</b></div>';
+html+='<p class="narasi">'+escHtml(rekap.tindakLanjut)+'</p>';
+}
+html+='<table class="ttd-table"><tr>';
+html+='<td style="width:50%"><p>Kepala Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(madrasahData.kepala||'..........................')+'</p>';
+html+='<p>NIP. '+(madrasahData.nipKepala||'..........................')+'</p></td>';
+html+='<td style="width:50%"><p>Pengawas Madrasah,</p><br><br><br><br>';
+html+='<p style="font-weight:bold;text-decoration:underline">'+(pengawas.nama||'..........................')+'</p>';
+html+='<p>NIP. '+(pengawas.nip||'..........................')+'</p></td>';
+html+='</tr></table>';
+html+='</body></html>';
+w.document.write(html);w.document.close();
+setTimeout(function(){w.print();},500);
 }
 
 // ===== INIT =====
