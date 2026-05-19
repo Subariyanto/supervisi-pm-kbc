@@ -160,6 +160,18 @@ const PERENCANAAN=[
 'Langkah-langkah pembelajaran runtut, sesuai waktu dan tahapan pengalaman belajar'
 ];
 
+const PENGGALIAN_PERENCANAAN=[
+'<b>Melalui telaah dokumen:</b><ul><li>Terdapat data/informasi tentang kondisi awal murid (asesmen diagnostik, profil belajar, minat, gaya belajar)</li><li>Identifikasi kesiapan belajar murid tercantum dalam RPP/Modul Ajar</li><li>Terdapat catatan observasi atau hasil asesmen awal yang menjadi dasar perencanaan</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>RPP/Modul Ajar mencantumkan Dimensi Profil Lulusan (DPL) yang relevan dengan materi</li><li>Tujuan pembelajaran mengacu pada capaian pembelajaran dan DPL</li><li>Terdapat keterkaitan antara DPL yang dipilih dengan aktivitas pembelajaran yang dirancang</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>RPP/Modul Ajar mencantumkan nilai-nilai Panca Cinta yang diintegrasikan</li><li>Aktivitas pembelajaran dirancang untuk menumbuhkan nilai Panca Cinta</li><li>Terdapat keterkaitan antara materi, aktivitas, dan nilai Panca Cinta yang ditargetkan</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Tujuan pembelajaran memuat komponen kompetensi (pengetahuan, keterampilan, sikap) dan materi</li><li>Rumusan tujuan pembelajaran terukur dan dapat diamati</li><li>Tujuan pembelajaran relevan dengan capaian pembelajaran dan kebutuhan murid</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Langkah pembelajaran mencerminkan prinsip berkesadaran (mindful teaching)</li><li>Aktivitas dirancang bermakna dan kontekstual bagi murid</li><li>Terdapat unsur kegembiraan/engagement dalam rancangan aktivitas pembelajaran</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>RPP/Modul Ajar melibatkan peran orang tua, masyarakat, atau narasumber eksternal</li><li>Terdapat rencana kolaborasi dengan stakeholder untuk mendukung pembelajaran</li><li>Sumber belajar memanfaatkan potensi lingkungan dan komunitas</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Rancangan pembelajaran memperhatikan keamanan fisik dan psikologis murid</li><li>Terdapat strategi untuk menciptakan suasana inklusif dan kolaboratif</li><li>Aktivitas mendorong refleksi dan eksplorasi murid</li><li>Setting ruang/lingkungan belajar direncanakan mendukung interaksi positif</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>RPP/Modul Ajar mencantumkan penggunaan teknologi/media digital</li><li>Teknologi digunakan untuk mendukung interaksi dan kolaborasi murid</li><li>Pemilihan teknologi sesuai konteks dan ketersediaan di madrasah</li></ul>',
+'<b>Melalui telaah dokumen:</b><ul><li>Langkah-langkah pembelajaran tersusun runtut (pendahuluan, inti, penutup)</li><li>Alokasi waktu proporsional untuk setiap tahapan</li><li>Tahapan pengalaman belajar jelas (mengamati, menanya, mencoba, menalar, mengkomunikasikan atau variasi lainnya)</li></ul>'
+];
+
 const PELAKSANAAN=[
 'Pembelajaran berorientasi pada penanaman karakter sesuai DPL dan nilai 5 cinta',
 'Guru mampu menciptakan suasana belajar yang aman, nyaman dan mendukung tercapainya tujuan pembelajaran berbasis cinta',
@@ -444,6 +456,13 @@ var items=getPelaksanaanFlat();
 var title=items[idx]||'Aspek';
 document.getElementById('modalTitle').textContent='Penggalian Data: '+(idx+1)+'. '+title;
 document.getElementById('modalContent').innerHTML=PENGGALIAN_PELAKSANAAN[idx]||'<p>Tidak ada data penggalian.</p>';
+document.getElementById('modalPenggalian').style.display='flex';
+}
+function showPenggalianPerencanaan(idx){
+var items=getIndikator('perencanaan');
+var title=items[idx]||'Aspek';
+document.getElementById('modalTitle').textContent='Penggalian Data: '+(idx+1)+'. '+title;
+document.getElementById('modalContent').innerHTML=PENGGALIAN_PERENCANAAN[idx]||'<p>Tidak ada data penggalian.</p>';
 document.getElementById('modalPenggalian').style.display='flex';
 }
 function closeModal(){
@@ -913,7 +932,8 @@ html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th c
 items.forEach(function(item,i){
 var score=(d.scores&&d.scores[i]!==undefined)?d.scores[i]:null;
 var cat=(d.catatan&&d.catatan[i])?d.catatan[i]:getAutoCatatan(score);
-html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek">'+item+'</td>';
+var penggalian=(key==='perencanaan'&&PENGGALIAN_PERENCANAAN[i])?true:false;
+html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(penggalian?' clickable':'')+'"'+(penggalian?' onclick="showPenggalianPerencanaan('+i+')" title="Klik untuk lihat penggalian data"':'')+'>'+(penggalian?'\u{1F50D} ':'')+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\''+key+'\','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
 }
