@@ -136,7 +136,7 @@ canvas{max-width:100%;margin:20px 0}
 <li onclick="navigate('iklim-madrasah')" data-nav="iklim-madrasah">&#127979; Iklim Madrasah</li>
 <li onclick="navigate('rekap-iklim-madrasah')" data-nav="rekap-iklim-madrasah">&#128202; Rekap Iklim Madrasah</li>
 <li onclick="navigate('laporan')" data-nav="laporan">&#128196; Laporan Hasil Supervisi</li>
-<li onclick="navigate('laporan-kokurikuler')" data-nav="laporan-kokurikuler">&#128196; Laporan Kokurikuler</li>
+<li onclick="document.getElementById('app').innerHTML='<div class=card><h2>Laporan Kokurikuler</h2><p>Data: '+getKokurikuler().length+' penilaian</p><button class=btn onclick=cetakLaporanKokurikuler()>Cetak Laporan</button></div>'" data-nav="laporan-kokurikuler">&#128196; Laporan Kokurikuler</li>
 <li onclick="navigate('laporan-ekstrakurikuler')" data-nav="laporan-ekstrakurikuler">&#128196; Laporan Ekstrakurikuler</li>
 <li onclick="navigate('laporan-iklim-madrasah')" data-nav="laporan-iklim-madrasah">&#128196; Laporan Iklim Madrasah</li>
 </ul>
