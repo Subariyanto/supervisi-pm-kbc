@@ -317,6 +317,7 @@ if(key==='perencanaan')return DEFAULT_PERENCANAAN;
 if(key==='pelaksanaan')return [...DEFAULT_PELAKSANAAN];
 if(key==='asesmen')return DEFAULT_ASESMEN;
 if(key==='ekstrakurikuler')return [...EKSTRAKURIKULER];
+if(key==='kokurikuler')return [...KOKURIKULER];
 if(key==='iklim-madrasah')return [...IKLIM_MADRASAH];
 return null;
 }
@@ -599,7 +600,7 @@ case 'iklim-madrasah':app.innerHTML=renderIklimMadrasahPage();break;
 case 'iklim-madrasah-form':app.innerHTML=renderIklimMadrasahForm(state.iklimMadrasahIdx);break;
 case 'rekap-iklim-madrasah':app.innerHTML=renderRekapIklimMadrasahPage();break;
 case 'laporan':app.innerHTML=renderLaporanPage();break;
-case 'laporan-kokurikuler':var _lkData=[];try{_lkData=getKokurikuler();}catch(e){_lkData=[];}if(_lkData.length===0){app.innerHTML='<div class="card"><h2 style="margin-bottom:20px">&#128196; Laporan Hasil Supervisi Kokurikuler</h2><div class="empty-state"><p>Belum ada data supervisi kokurikuler.</p></div></div>';}else{app.innerHTML='<div class="card"><h2 style="margin-bottom:20px">&#128196; Laporan Hasil Supervisi Kokurikuler</h2><p>Jumlah Penilaian: '+_lkData.length+'</p><div class="btn-group" style="justify-content:center;margin-top:20px"><button class="btn btn-primary" onclick="cetakLaporanKokurikuler()" style="padding:12px 30px;font-size:1.1rem">&#128424; Cetak Laporan Lengkap</button></div></div>';}break;
+case 'laporan-kokurikuler':app.innerHTML=renderLaporanKokurikulerPage();break;
 case 'laporan-ekstrakurikuler':app.innerHTML=renderLaporanEkstrakurikulerPage();break;
 case 'laporan-iklim-madrasah':app.innerHTML=renderLaporanIklimMadrasahPage();break;
 default:app.innerHTML=renderDashboard();
