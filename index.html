@@ -599,7 +599,7 @@ case 'iklim-madrasah':app.innerHTML=renderIklimMadrasahPage();break;
 case 'iklim-madrasah-form':app.innerHTML=renderIklimMadrasahForm(state.iklimMadrasahIdx);break;
 case 'rekap-iklim-madrasah':app.innerHTML=renderRekapIklimMadrasahPage();break;
 case 'laporan':app.innerHTML=renderLaporanPage();break;
-case 'laporan-kokurikuler':app.innerHTML=renderLaporanKokurikulerPage();break;
+case 'laporan-kokurikuler':try{app.innerHTML=renderLaporanKokurikulerPage();}catch(e){app.innerHTML='<div class="card"><h2>Error</h2><p>'+e.message+'</p></div>';}break;
 case 'laporan-ekstrakurikuler':app.innerHTML=renderLaporanEkstrakurikulerPage();break;
 case 'laporan-iklim-madrasah':app.innerHTML=renderLaporanIklimMadrasahPage();break;
 default:app.innerHTML=renderDashboard();
