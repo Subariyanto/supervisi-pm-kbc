@@ -599,7 +599,7 @@ case 'iklim-madrasah':app.innerHTML=renderIklimMadrasahPage();break;
 case 'iklim-madrasah-form':app.innerHTML=renderIklimMadrasahForm(state.iklimMadrasahIdx);break;
 case 'rekap-iklim-madrasah':app.innerHTML=renderRekapIklimMadrasahPage();break;
 case 'laporan':app.innerHTML=renderLaporanPage();break;
-case 'laporan-kokurikuler':try{app.innerHTML=renderLaporanKokurikulerPage();}catch(e){app.innerHTML='<div class="card"><h2>Error</h2><p>'+e.message+'</p></div>';}break;
+case 'laporan-kokurikuler':var _lkd=getKokurikuler();app.innerHTML='<div class="card"><h2>&#128196; Laporan Hasil Supervisi Kokurikuler</h2>'+ (_lkd.length===0?'<p>Belum ada data kokurikuler.</p>':'<p>Jumlah data: '+_lkd.length+'</p><p>Klik tombol di bawah untuk cetak laporan.</p><div class="btn-group" style="justify-content:center"><button class="btn btn-primary" onclick="cetakLaporanKokurikuler()" style="padding:12px 30px">&#128424; Cetak Laporan</button></div>')+'</div>';break;
 case 'laporan-ekstrakurikuler':app.innerHTML=renderLaporanEkstrakurikulerPage();break;
 case 'laporan-iklim-madrasah':app.innerHTML=renderLaporanIklimMadrasahPage();break;
 default:app.innerHTML=renderDashboard();
