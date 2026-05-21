@@ -3437,18 +3437,17 @@ html+='</ul>';
 
 // BAB VI
 html+='<div class="page-break"></div>';
-html+='<h2>BAB VI<br>PENUTUP</h2>';
+html+='<div style="page-break-inside:avoid"><h2>BAB VI<br>PENUTUP</h2>';
 html+='<p>Pelaksanaan supervisi pembelajaran yang telah dilakukan menunjukkan bahwa kegiatan ini memiliki peran penting dalam meningkatkan mutu proses belajar mengajar di madrasah. Melalui supervisi, guru memperoleh bimbingan, masukan, dan pendampingan yang konstruktif untuk memperkuat perencanaan, pelaksanaan, serta evaluasi pembelajaran. Hal ini sejalan dengan tujuan supervisi, yaitu membantu guru mengembangkan profesionalisme sekaligus memastikan tercapainya pembelajaran yang bermakna dan berorientasi pada kebutuhan peserta didik.</p>';
 html+='<p>Hasil supervisi juga memperlihatkan bahwa guru pada umumnya telah menunjukkan kesungguhan dalam melaksanakan tugas, meskipun masih terdapat beberapa hal yang perlu ditingkatkan, terutama dalam aspek variasi metode, pemanfaatan media, asesmen proses, serta integrasi nilai-nilai kurikulum berbasis cinta dalam kegiatan pembelajaran. Oleh karena itu, tindak lanjut berupa pendampingan, pelatihan, dan monitoring berkelanjutan perlu terus dilakukan agar kualitas pembelajaran dapat semakin optimal.</p>';
 html+='<p>Demikian laporan supervisi ini disusun sebagai bentuk pertanggungjawaban sekaligus bahan evaluasi bersama bagi guru, kepala madrasah, dan pengawas. Besar harapan kami, hasil supervisi ini dapat memberikan kontribusi nyata dalam peningkatan mutu pendidikan, membentuk iklim belajar yang positif, dan menumbuhkan karakter peserta didik yang beriman, berilmu, berakhlak mulia, serta penuh cinta kasih.</p>';
-html+='<br>';
-html+='<div class="ttd">';
+html+='<div class="ttd" style="margin-top:20px">';
 html+='<p>..................., .................... 2025</p>';
 html+='<p>Pengawas Madrasah,</p>';
-html+='<br><br><br>';
-html+='<p><b><u>'+(pengawas.nama||'...........................')+'</u></b></p>';
-html+='<p>NIP. '+(pengawas.nip||'...........................')+'</p>';
-html+='</div>';
+html+='<br><br><br><br>';
+html+='<p style="margin:0"><b><u>'+(pengawas.nama||'...........................')+'</u></b></p>';
+html+='<p style="margin:0">NIP. '+(pengawas.nip||'...........................')+'</p>';
+html+='</div></div>';
 
 // LAMPIRAN
 html+='<div class="page-break"></div>';
@@ -3661,11 +3660,11 @@ html+='<li><b>Sharing Best Practice:</b> Memfasilitasi forum berbagi pengalaman 
 html+='<li><b>Monitoring Berkelanjutan:</b> Melaksanakan supervisi lanjutan untuk memantau perkembangan dan perbaikan.</li>';
 html+='</ol>';
 // BAB V PENUTUP
-html+='<div class="page-break"></div><h2>BAB V<br>PENUTUP</h2>';
+html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>BAB V<br>PENUTUP</h2>';
 html+='<p>Pelaksanaan supervisi kokurikuler yang telah dilakukan menunjukkan bahwa kegiatan ini memiliki peran penting dalam memastikan kualitas pelaksanaan kegiatan kokurikuler di madrasah. Melalui supervisi, guru memperoleh bimbingan dan masukan yang konstruktif untuk meningkatkan kualitas perencanaan dan pelaksanaan kegiatan kokurikuler.</p>';
 html+='<p>Kegiatan kokurikuler yang berkualitas akan memberikan kontribusi signifikan terhadap pencapaian tujuan pendidikan secara holistik, tidak hanya aspek kognitif tetapi juga afektif dan psikomotorik peserta didik. Oleh karena itu, pembinaan dan pendampingan berkelanjutan perlu terus dilakukan.</p>';
-html+='<p>Demikian laporan ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi bersama. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan di madrasah.</p><br>';
-html+='<div class="ttd"><p>..................., .................... 2025</p><p>Pengawas Madrasah,</p><br><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
+html+='<p>Demikian laporan ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi bersama. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan di madrasah.</p>';
+html+='<div class="ttd" style="margin-top:20px"><p>..................., .................... 2025</p><p>Pengawas Madrasah,</p><br><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
 // LAMPIRAN
 html+='<div class="page-break"></div><h2>LAMPIRAN</h2><h3>Dokumentasi Kegiatan Kokurikuler</h3>';
 html+='<p style="text-align:center;color:#666;margin-top:50px">(Tempelkan foto-foto dokumentasi kegiatan kokurikuler di halaman ini)</p>';
@@ -3870,11 +3869,11 @@ html+='</ol>';
 
 
 // BAB V PENUTUP EKSTRAKURIKULER
-html+='<div class="page-break"></div><h2>BAB V<br>PENUTUP</h2>';
+html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>BAB V<br>PENUTUP</h2>';
 html+='<p>Pelaksanaan supervisi ekstrakurikuler yang telah dilakukan menunjukkan bahwa kegiatan ini memiliki peran penting dalam memastikan kualitas pelaksanaan kegiatan ekstrakurikuler di madrasah. Kegiatan ekstrakurikuler yang berkualitas akan memberikan kontribusi signifikan terhadap pembentukan karakter, pengembangan bakat, dan peningkatan prestasi peserta didik.</p>';
 html+='<p>Hasil supervisi menunjukkan bahwa secara umum madrasah telah berupaya melaksanakan kegiatan ekstrakurikuler dengan baik, meskipun masih terdapat beberapa aspek yang perlu ditingkatkan. Tindak lanjut berupa pendampingan, pelatihan, dan monitoring berkelanjutan perlu terus dilakukan agar kualitas kegiatan ekstrakurikuler semakin optimal.</p>';
-html+='<p>Demikian laporan ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi bersama. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan di madrasah.</p><br>';
-html+='<div class="ttd"><p>..................., .................... 2025</p><p>Pengawas Madrasah,</p><br><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
+html+='<p>Demikian laporan ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi bersama. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan di madrasah.</p>';
+html+='<div class="ttd" style="margin-top:20px"><p>..................., .................... 2025</p><p>Pengawas Madrasah,</p><br><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
 // LAMPIRAN
 html+='<div class="page-break"></div><h2>LAMPIRAN</h2><h3>Dokumentasi Kegiatan Ekstrakurikuler</h3>';
 html+='<p style="text-align:center;color:#666;margin-top:50px">(Tempelkan foto-foto dokumentasi kegiatan ekstrakurikuler di halaman ini)</p>';
@@ -4084,11 +4083,11 @@ html+='</ol>';
 
 
 // BAB V PENUTUP IKLIM MADRASAH
-html+='<div class="page-break"></div><h2>BAB V<br>PENUTUP</h2>';
+html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>BAB V<br>PENUTUP</h2>';
 html+='<p>Pelaksanaan supervisi iklim madrasah yang telah dilakukan menunjukkan bahwa kegiatan ini sangat penting dalam upaya menciptakan lingkungan pendidikan yang kondusif, harmonis, dan berlandaskan nilai-nilai keislaman. Iklim madrasah yang positif merupakan fondasi bagi terciptanya proses pembelajaran yang efektif dan pembentukan karakter peserta didik yang mulia.</p>';
 html+='<p>Hasil supervisi menunjukkan bahwa madrasah-madrasah binaan telah berupaya membangun iklim yang baik, meskipun masih terdapat aspek-aspek yang perlu ditingkatkan. Komitmen bersama dari seluruh warga madrasah, dukungan stakeholder, dan pembinaan berkelanjutan dari pengawas menjadi kunci keberhasilan dalam mewujudkan iklim madrasah yang ideal.</p>';
-html+='<p>Demikian laporan ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi bersama. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan dan terciptanya madrasah yang unggul, berkarakter, dan penuh cinta kasih.</p><br>';
-html+='<div class="ttd"><p>..................., .................... 2025</p><p>Pengawas Madrasah,</p><br><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
+html+='<p>Demikian laporan ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi bersama. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan dan terciptanya madrasah yang unggul, berkarakter, dan penuh cinta kasih.</p>';
+html+='<div class="ttd" style="margin-top:20px"><p>..................., .................... 2025</p><p>Pengawas Madrasah,</p><br><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
 // LAMPIRAN
 html+='<div class="page-break"></div><h2>LAMPIRAN</h2><h3>Dokumentasi Supervisi Iklim Madrasah</h3>';
 html+='<p style="text-align:center;color:#666;margin-top:50px">(Tempelkan foto-foto dokumentasi supervisi iklim madrasah di halaman ini)</p>';
