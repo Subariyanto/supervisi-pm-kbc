@@ -10,12 +10,17 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;color:#333}
 .app-layout{display:flex;min-height:100vh}
-.sidebar{width:250px;background:rgba(15,32,39,.97);padding:20px 0;color:#fff;position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s}
+.sidebar{width:250px;background:#0a1128;padding:20px 0;color:#fff;position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s}
 .sidebar h2{padding:15px 20px;font-size:1.2rem;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}
 .sidebar-menu{list-style:none}
 .sidebar-menu li{padding:12px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;font-size:.9rem}
 .sidebar-menu li:hover{background:rgba(14,165,233,.2)}
 .sidebar-menu li.active{background:linear-gradient(135deg,rgba(14,165,233,.3),rgba(13,148,136,.3));border-left:3px solid #0ea5e9}
+.submenu-toggle{cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.submenu{list-style:none;padding:0;margin:0;overflow:hidden;transition:max-height .3s ease}
+.submenu li{padding:10px 20px 10px 36px;font-size:.82rem}
+.submenu.hidden{max-height:0;overflow:hidden}
+.submenu.open{max-height:500px}
 .main-content{margin-left:250px;flex:1;padding:20px;min-height:100vh}
 .mobile-toggle{display:none;position:fixed;top:15px;left:15px;z-index:200;background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:1.2rem;cursor:pointer}
 @media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}.mobile-toggle{display:block}}
@@ -107,10 +112,16 @@ canvas{max-width:100%;margin:20px 0}
 <li onclick="navigate('pengawas')" data-nav="pengawas">&#128100; Data Pengawas</li>
 <li onclick="navigate('madrasah')" data-nav="madrasah">&#127979; Data Madrasah</li>
 <li onclick="navigate('guru')" data-nav="guru">&#128104;&#8205;&#127891; Data Guru</li>
+<li onclick="toggleSubmenu('sub-supervisi')" class="submenu-toggle">&#128221; Supervisi Pembelajaran</li>
+<ul class="submenu hidden" id="sub-supervisi">
 <li onclick="navigate('supervisi')" data-nav="supervisi">&#128221; Supervisi</li>
-<li onclick="navigate('rekap')" data-nav="rekap">&#128202; Rekap Hasil Supervisi</li>
-<li onclick="navigate('cetak')" data-nav="cetak">&#128424; Cetak Hasil Supervisi</li>
+<li onclick="navigate('rekap')" data-nav="rekap">&#128202; Rekap Hasil</li>
+<li onclick="navigate('cetak')" data-nav="cetak">&#128424; Cetak Hasil</li>
 </ul>
+<li onclick="backupData()" style="border-top:1px solid rgba(255,255,255,.1);margin-top:10px">&#128190; Backup Data</li>
+<li onclick="document.getElementById('restoreFileInput').click()">&#128194; Restore Data</li>
+</ul>
+<input type="file" id="restoreFileInput" accept=".json" style="display:none" onchange="restoreData(this)">
 <p style="padding:15px 20px;font-size:.65rem;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.1);margin-top:auto;position:absolute;bottom:10px;left:0;right:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Aplikasi ini dibuat oleh : Subariyanto</p>
 </nav>
 <div class="main-content">
@@ -208,6 +219,7 @@ if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('op
 if(view==='supervisi'&&(!state.formData||!state.formData.identitas||!state.formData.identitas.namaGuru)){newForm();return;}
 render();
 }
+function toggleSubmenu(id){var el=document.getElementById(id);if(!el)return;if(el.classList.contains('open')){el.classList.remove('open');el.classList.add('hidden');}else{el.classList.remove('hidden');el.classList.add('open');}}
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
 
 // ===== RENDER MAIN =====
@@ -323,7 +335,10 @@ rows+='</td></tr>';
 var html='<div class="card">';
 html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
 html+='<h2>Data Madrasah</h2>';
-html+='<button class="btn btn-primary" onclick="showMadrasahModal()">+ Tambah Madrasah</button></div>';
+html+='<button class="btn btn-primary" onclick="showMadrasahModal()">+ Tambah Madrasah</button> ';
+html+='<button class="btn btn-success" onclick="document.getElementById(\''importExcelMadrasah\'').click()">&#128229; Import Excel</button>';
+html+='<input type="file" id="importExcelMadrasah" accept=".xlsx,.xls" style="display:none" onchange="importMadrasahExcel(this)">';
+html+='</div>';
 if(data.length===0){html+='<div class="empty-state"><p>Belum ada data madrasah.</p></div>';}
 else{
 html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Nama Madrasah</th><th>NPSN</th><th>Alamat</th><th>Kab/Kota</th><th>Kepala Madrasah</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
@@ -369,6 +384,81 @@ saveMadrasah(data);closeModal();render();
 
 function editMadrasah(idx){showMadrasahModal(idx)}
 function deleteMadrasah(idx){if(!confirm('Hapus data madrasah ini?'))return;var data=getMadrasah();data.splice(idx,1);saveMadrasah(data);render();}
+function importMadrasahExcel(input){
+if(!input.files||!input.files[0])return;
+var file=input.files[0];
+var reader=new FileReader();
+reader.onload=function(e){
+try{
+var workbook=XLSX.read(e.target.result,{type:'array'});
+var sheet=workbook.Sheets[workbook.SheetNames[0]];
+var rows=XLSX.utils.sheet_to_json(sheet,{defval:''});
+if(rows.length===0){alert('File Excel kosong atau format tidak sesuai');return;}
+var data=getMadrasah();
+var added=0;
+rows.forEach(function(row){
+var nama=String(row['Nama Madrasah']||row['nama']||row['NAMA MADRASAH']||row['Nama']||'').trim();
+if(!nama)return;
+var obj={
+nama:nama,
+npsn:String(row['NPSN']||row['npsn']||'').trim(),
+alamat:String(row['Alamat']||row['alamat']||row['ALAMAT']||'').trim(),
+kabupaten:String(row['Kabupaten']||row['kabupaten']||row['Kab/Kota']||row['KABUPATEN']||row['Kabupaten/Kota']||'').trim(),
+kepala:String(row['Kepala Madrasah']||row['kepala']||row['Kepala']||row['KEPALA MADRASAH']||'').trim(),
+nipKepala:String(row['NIP Kepala']||row['NIP']||row['nip']||row['NIP KEPALA']||'').trim()
+};
+data.push(obj);
+added++;
+});
+if(added===0){alert('Tidak ada data valid ditemukan. Pastikan kolom: Nama Madrasah, NPSN, Alamat, Kabupaten, Kepala Madrasah, NIP Kepala');return;}
+saveMadrasah(data);
+render();
+alert('Berhasil import '+added+' data madrasah!');
+}catch(err){alert('Gagal membaca file: '+err.message);}
+};
+reader.readAsArrayBuffer(file);
+input.value='';
+}
+
+function backupData(){
+var keys=['supervisi_data_v1','supervisi_madrasah','supervisi_guru'];
+var backup={};
+keys.forEach(function(k){
+var val=localStorage.getItem(k);
+if(val)backup[k]=JSON.parse(val);
+});
+backup._backupDate=new Date().toISOString();
+backup._appVersion='supervisi-pm-kbc';
+var blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+var url=URL.createObjectURL(blob);
+var a=document.createElement('a');
+a.href=url;
+a.download='backup-supervisi-'+new Date().toISOString().slice(0,10)+'.json';
+a.click();
+URL.revokeObjectURL(url);
+alert('Backup berhasil didownload!');
+}
+
+function restoreData(input){
+if(!input.files||!input.files[0])return;
+var file=input.files[0];
+var reader=new FileReader();
+reader.onload=function(e){
+try{
+var backup=JSON.parse(e.target.result);
+if(!backup._appVersion){alert('File bukan backup yang valid');return;}
+if(!confirm('Restore data dari backup tanggal '+(backup._backupDate||'tidak diketahui').slice(0,10)+'?\n\nData saat ini akan ditimpa dengan data dari backup.'))return;
+var keys=['supervisi_data_v1','supervisi_madrasah','supervisi_guru'];
+keys.forEach(function(k){
+if(backup[k]){localStorage.setItem(k,JSON.stringify(backup[k]));}
+});
+alert('Restore berhasil! Halaman akan di-refresh.');
+location.reload();
+}catch(err){alert('Gagal membaca file backup: '+err.message);}
+};
+reader.readAsText(file);
+input.value='';
+}
 function closeModal(){var mc=document.getElementById('modal-container');if(mc)mc.innerHTML='';}
 
 // ===== DATA GURU =====
