@@ -898,9 +898,24 @@ return null;
 function getActiveAppKey(){return isRAJenjang()?APP_KEY_RA:APP_KEY;}
 function getActiveGuruKey(){return isRAJenjang()?GURU_KEY_RA:GURU_KEY;}
 function getActiveMadrasahKey(){return isRAJenjang()?MADRASAH_KEY_RA:MADRASAH_KEY;}
+// Cross-module views (Kokurikuler/Ekstrakurikuler/Iklim) butuh akses ke semua madrasah (umum + RA)
+function isCrossModuleView(){
+var v=state&&state.view;
+if(!v)return false;
+return v.indexOf('kokurikuler')>-1||v.indexOf('ekstrakurikuler')>-1||v.indexOf('iklim')>-1;
+}
+function getAllMadrasahCombined(){
+var umum=[];try{umum=JSON.parse(localStorage.getItem(MADRASAH_KEY))||[]}catch(e){}
+var ra=[];try{ra=JSON.parse(localStorage.getItem(MADRASAH_KEY_RA))||[]}catch(e){}
+// Tag asal jenjang supaya bisa dibedakan visual
+return umum.concat(ra.map(function(m){return Object.assign({},m,{_jenjang:'RA'})}));
+}
 function getData(){try{return JSON.parse(localStorage.getItem(getActiveAppKey()))||[]}catch(e){return[]}}
 function saveData(d){localStorage.setItem(getActiveAppKey(),JSON.stringify(d))}
-function getMadrasah(){try{return JSON.parse(localStorage.getItem(getActiveMadrasahKey()))||[]}catch(e){return[]}}
+function getMadrasah(){
+if(isCrossModuleView())return getAllMadrasahCombined();
+try{return JSON.parse(localStorage.getItem(getActiveMadrasahKey()))||[]}catch(e){return[]}
+}
 function saveMadrasah(d){localStorage.setItem(getActiveMadrasahKey(),JSON.stringify(d))}
 function getGuru(){try{return JSON.parse(localStorage.getItem(getActiveGuruKey()))||[]}catch(e){return[]}}
 function saveGuru(d){localStorage.setItem(getActiveGuruKey(),JSON.stringify(d))}
