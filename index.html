@@ -166,6 +166,7 @@ canvas{max-width:100%;margin:20px 0}
 </ul>
 <li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi-ra')">&#127793; Supervisi Pembelajaran RA &#9662;</li>
 <ul class="submenu" id="sub-supervisi-ra">
+<li onclick="navigate('guru-ra')" data-nav="guru-ra">&#128104;&#8205;&#127891; Data Guru RA</li>
 <li onclick="navigate('supervisi-ra')" data-nav="supervisi-ra">&#128221; Input Supervisi RA</li>
 <li onclick="navigate('rekap-ra')" data-nav="rekap-ra">&#128202; Rekap Hasil RA</li>
 <li onclick="navigate('cetak-ra')" data-nav="cetak-ra">&#128424; Cetak Hasil RA</li>
@@ -419,6 +420,7 @@ document.getElementById('confirmNewPass').value='';
 const APP_KEY='supervisi_data_v1';
 const MADRASAH_KEY='supervisi_madrasah';
 const GURU_KEY='supervisi_guru';
+const GURU_KEY_RA='supervisi_guru_ra';
 const PENGAWAS_KEY='supervisi_pengawas';
 const INDIKATOR_KEY='supervisi_indikator';
 
@@ -865,7 +867,7 @@ render();
 let state={view:'dashboard',editId:null,formData:{},currentStep:0,detailIdx:null,jenjang:'umum'};
 
 // ===== JENJANG HELPERS =====
-function isRAView(v){return v==='supervisi-ra'||v==='supervisi-ra-form'||v==='form-ra'||v==='detail-ra'||v==='rekap-ra'||v==='cetak-ra'||v==='laporan-ra';}
+function isRAView(v){return v==='supervisi-ra'||v==='supervisi-ra-form'||v==='form-ra'||v==='detail-ra'||v==='rekap-ra'||v==='cetak-ra'||v==='laporan-ra'||v==='guru-ra';}
 function isRAJenjang(){return typeof state!=='undefined'&&state&&state.jenjang==='ra';}
 function getPenggalian(key,idx){
 if(isRAJenjang()){
@@ -882,12 +884,13 @@ return null;
 
 // ===== STORAGE =====
 function getActiveAppKey(){return isRAJenjang()?APP_KEY_RA:APP_KEY;}
+function getActiveGuruKey(){return isRAJenjang()?GURU_KEY_RA:GURU_KEY;}
 function getData(){try{return JSON.parse(localStorage.getItem(getActiveAppKey()))||[]}catch(e){return[]}}
 function saveData(d){localStorage.setItem(getActiveAppKey(),JSON.stringify(d))}
 function getMadrasah(){try{return JSON.parse(localStorage.getItem(MADRASAH_KEY))||[]}catch(e){return[]}}
 function saveMadrasah(d){localStorage.setItem(MADRASAH_KEY,JSON.stringify(d))}
-function getGuru(){try{return JSON.parse(localStorage.getItem(GURU_KEY))||[]}catch(e){return[]}}
-function saveGuru(d){localStorage.setItem(GURU_KEY,JSON.stringify(d))}
+function getGuru(){try{return JSON.parse(localStorage.getItem(getActiveGuruKey()))||[]}catch(e){return[]}}
+function saveGuru(d){localStorage.setItem(getActiveGuruKey(),JSON.stringify(d))}
 function getPengawas(){try{return JSON.parse(localStorage.getItem(PENGAWAS_KEY))||{}}catch(e){return{}}}
 function savePengawas(d){localStorage.setItem(PENGAWAS_KEY,JSON.stringify(d))}
 
@@ -984,6 +987,7 @@ case 'laporan-iklim-madrasah-kkma':app.innerHTML=renderLaporanIklimMadrasahPerKK
 case 'ubah-password':app.innerHTML=renderUbahPassword();break;
 case 'backup-restore':app.innerHTML=renderBackupRestore();break;
 case 'supervisi-ra':case 'supervisi-ra-form':case 'form-ra':app.innerHTML=renderForm();break;
+case 'guru-ra':app.innerHTML=renderGuruPage();break;
 case 'detail-ra':app.innerHTML=renderDetail();break;
 case 'rekap-ra':app.innerHTML=renderRekapAllPage();break;
 case 'cetak-ra':app.innerHTML=renderCetakPage();break;
@@ -995,8 +999,8 @@ if(titleEl){
 var isKoku=(state.view==='kokurikuler'||state.view==='kokurikuler-form'||state.view==='rekap-kokurikuler'||state.view==='laporan-kokurikuler'||state.view==='laporan-kokurikuler-madrasah'||state.view==='laporan-kokurikuler-kkma');
 var isEkstra=(state.view==='ekstrakurikuler'||state.view==='ekstrakurikuler-form'||state.view==='rekap-ekstrakurikuler'||state.view==='laporan-ekstrakurikuler'||state.view==='laporan-ekstrakurikuler-madrasah'||state.view==='laporan-ekstrakurikuler-kkma');
 var isIklim=(state.view==='iklim-madrasah'||state.view==='iklim-madrasah-form'||state.view==='rekap-iklim-madrasah'||state.view==='laporan-iklim-madrasah'||state.view==='laporan-iklim-madrasah-madrasah'||state.view==='laporan-iklim-madrasah-kkma');
-var isRA=(state.view==='supervisi-ra'||state.view==='supervisi-ra-form'||state.view==='form-ra'||state.view==='detail-ra'||state.view==='rekap-ra'||state.view==='cetak-ra'||state.view==='laporan-ra');
-titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':isEkstra?'\u{1F4CB} Supervisi Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':isRA?'\u{1F331} Supervisi Pembelajaran RA':'\u{1F4CB} Supervisi Pembelajaran';
+var isRA=(state.view==='supervisi-ra'||state.view==='supervisi-ra-form'||state.view==='form-ra'||state.view==='detail-ra'||state.view==='rekap-ra'||state.view==='cetak-ra'||state.view==='laporan-ra'||state.view==='guru-ra');
+titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':isEkstra?'\u{1F4CB} Supervisi Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':isRA?(state.view==='guru-ra'?'\u{1F468}\u200D\u{1F393} Data Guru RA':'\u{1F331} Supervisi Pembelajaran RA'):'\u{1F4CB} Supervisi Pembelajaran';
 }
 app.classList.add('fade-in');
 setTimeout(function(){app.classList.remove('fade-in')},300);
@@ -1208,9 +1212,9 @@ rows+='</td></tr>';
 });
 var html='<div class="card">';
 html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
-html+='<h2>Data Guru</h2>';
-html+='<button class="btn btn-primary" onclick="showGuruModal()">+ Tambah Guru</button></div>';
-if(data.length===0){html+='<div class="empty-state"><p>Belum ada data guru.</p></div>';}
+html+='<h2>'+(isRAJenjang()?'Data Guru RA':'Data Guru')+'</h2>';
+html+='<button class="btn btn-primary" onclick="showGuruModal()">+ Tambah Guru'+(isRAJenjang()?' RA':'')+'</button></div>';
+if(data.length===0){html+='<div class="empty-state"><p>Belum ada data guru'+(isRAJenjang()?' RA':'')+'.</p></div>';}
 else{
 html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Nama Guru</th><th>NIP</th><th>Mata Pelajaran</th><th>Madrasah</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
