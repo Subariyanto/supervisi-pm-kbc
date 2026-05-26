@@ -157,6 +157,11 @@ canvas{max-width:100%;margin:20px 0}
 <li onclick="navigate('pengawas')" data-nav="pengawas">&#128100; Data Pengawas</li>
 <li onclick="navigate('madrasah')" data-nav="madrasah">&#127979; Data Madrasah</li>
 <li onclick="navigate('guru')" data-nav="guru">&#128104;&#8205;&#127891; Data Guru</li>
+<li class="submenu-toggle" onclick="toggleSubmenu('sub-data-ra')">&#127793; Data RA &#9662;</li>
+<ul class="submenu" id="sub-data-ra">
+<li onclick="navigate('madrasah-ra')" data-nav="madrasah-ra">&#127979; Data Madrasah RA</li>
+<li onclick="navigate('guru-ra')" data-nav="guru-ra">&#128104;&#8205;&#127891; Data Guru RA</li>
+</ul>
 <li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi')">&#128221; Supervisi Pembelajaran &#9662;</li>
 <ul class="submenu" id="sub-supervisi">
 <li onclick="navigate('supervisi')" data-nav="supervisi">&#128221; Input Supervisi</li>
@@ -166,7 +171,6 @@ canvas{max-width:100%;margin:20px 0}
 </ul>
 <li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi-ra')">&#127793; Supervisi Pembelajaran RA &#9662;</li>
 <ul class="submenu" id="sub-supervisi-ra">
-<li onclick="navigate('guru-ra')" data-nav="guru-ra">&#128104;&#8205;&#127891; Data Guru RA</li>
 <li onclick="navigate('supervisi-ra')" data-nav="supervisi-ra">&#128221; Input Supervisi RA</li>
 <li onclick="navigate('rekap-ra')" data-nav="rekap-ra">&#128202; Rekap Hasil RA</li>
 <li onclick="navigate('cetak-ra')" data-nav="cetak-ra">&#128424; Cetak Hasil RA</li>
@@ -419,6 +423,7 @@ document.getElementById('confirmNewPass').value='';
 // ===== CONSTANTS =====
 const APP_KEY='supervisi_data_v1';
 const MADRASAH_KEY='supervisi_madrasah';
+const MADRASAH_KEY_RA='supervisi_madrasah_ra';
 const GURU_KEY='supervisi_guru';
 const GURU_KEY_RA='supervisi_guru_ra';
 const PENGAWAS_KEY='supervisi_pengawas';
@@ -867,7 +872,7 @@ render();
 let state={view:'dashboard',editId:null,formData:{},currentStep:0,detailIdx:null,jenjang:'umum'};
 
 // ===== JENJANG HELPERS =====
-function isRAView(v){return v==='supervisi-ra'||v==='supervisi-ra-form'||v==='form-ra'||v==='detail-ra'||v==='rekap-ra'||v==='cetak-ra'||v==='laporan-ra'||v==='guru-ra';}
+function isRAView(v){return v==='supervisi-ra'||v==='supervisi-ra-form'||v==='form-ra'||v==='detail-ra'||v==='rekap-ra'||v==='cetak-ra'||v==='laporan-ra'||v==='guru-ra'||v==='madrasah-ra';}
 function isRAJenjang(){return typeof state!=='undefined'&&state&&state.jenjang==='ra';}
 function getPenggalian(key,idx){
 if(isRAJenjang()){
@@ -885,10 +890,11 @@ return null;
 // ===== STORAGE =====
 function getActiveAppKey(){return isRAJenjang()?APP_KEY_RA:APP_KEY;}
 function getActiveGuruKey(){return isRAJenjang()?GURU_KEY_RA:GURU_KEY;}
+function getActiveMadrasahKey(){return isRAJenjang()?MADRASAH_KEY_RA:MADRASAH_KEY;}
 function getData(){try{return JSON.parse(localStorage.getItem(getActiveAppKey()))||[]}catch(e){return[]}}
 function saveData(d){localStorage.setItem(getActiveAppKey(),JSON.stringify(d))}
-function getMadrasah(){try{return JSON.parse(localStorage.getItem(MADRASAH_KEY))||[]}catch(e){return[]}}
-function saveMadrasah(d){localStorage.setItem(MADRASAH_KEY,JSON.stringify(d))}
+function getMadrasah(){try{return JSON.parse(localStorage.getItem(getActiveMadrasahKey()))||[]}catch(e){return[]}}
+function saveMadrasah(d){localStorage.setItem(getActiveMadrasahKey(),JSON.stringify(d))}
 function getGuru(){try{return JSON.parse(localStorage.getItem(getActiveGuruKey()))||[]}catch(e){return[]}}
 function saveGuru(d){localStorage.setItem(getActiveGuruKey(),JSON.stringify(d))}
 function getPengawas(){try{return JSON.parse(localStorage.getItem(PENGAWAS_KEY))||{}}catch(e){return{}}}
@@ -960,6 +966,7 @@ switch(state.view){
 case 'dashboard':app.innerHTML=renderDashboard();setTimeout(drawChart,100);break;
 case 'pengawas':app.innerHTML=renderPengawasPage();break;
 case 'madrasah':app.innerHTML=renderMadrasahPage();break;
+case 'madrasah-ra':app.innerHTML=renderMadrasahPage();break;
 case 'guru':app.innerHTML=renderGuruPage();break;
 case 'supervisi':case 'form':app.innerHTML=renderForm();break;
 case 'detail':app.innerHTML=renderDetail();break;
@@ -999,8 +1006,8 @@ if(titleEl){
 var isKoku=(state.view==='kokurikuler'||state.view==='kokurikuler-form'||state.view==='rekap-kokurikuler'||state.view==='laporan-kokurikuler'||state.view==='laporan-kokurikuler-madrasah'||state.view==='laporan-kokurikuler-kkma');
 var isEkstra=(state.view==='ekstrakurikuler'||state.view==='ekstrakurikuler-form'||state.view==='rekap-ekstrakurikuler'||state.view==='laporan-ekstrakurikuler'||state.view==='laporan-ekstrakurikuler-madrasah'||state.view==='laporan-ekstrakurikuler-kkma');
 var isIklim=(state.view==='iklim-madrasah'||state.view==='iklim-madrasah-form'||state.view==='rekap-iklim-madrasah'||state.view==='laporan-iklim-madrasah'||state.view==='laporan-iklim-madrasah-madrasah'||state.view==='laporan-iklim-madrasah-kkma');
-var isRA=(state.view==='supervisi-ra'||state.view==='supervisi-ra-form'||state.view==='form-ra'||state.view==='detail-ra'||state.view==='rekap-ra'||state.view==='cetak-ra'||state.view==='laporan-ra'||state.view==='guru-ra');
-titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':isEkstra?'\u{1F4CB} Supervisi Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':isRA?(state.view==='guru-ra'?'\u{1F468}\u200D\u{1F393} Data Guru RA':'\u{1F331} Supervisi Pembelajaran RA'):'\u{1F4CB} Supervisi Pembelajaran';
+var isRA=(state.view==='supervisi-ra'||state.view==='supervisi-ra-form'||state.view==='form-ra'||state.view==='detail-ra'||state.view==='rekap-ra'||state.view==='cetak-ra'||state.view==='laporan-ra'||state.view==='guru-ra'||state.view==='madrasah-ra');
+titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':isEkstra?'\u{1F4CB} Supervisi Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':isRA?(state.view==='guru-ra'?'\u{1F468}\u200D\u{1F393} Data Guru RA':state.view==='madrasah-ra'?'\u{1F3EB} Data Madrasah RA':'\u{1F331} Supervisi Pembelajaran RA'):'\u{1F4CB} Supervisi Pembelajaran';
 }
 app.classList.add('fade-in');
 setTimeout(function(){app.classList.remove('fade-in')},300);
@@ -1100,12 +1107,12 @@ rows+='</td></tr>';
 });
 var html='<div class="card">';
 html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
-html+='<h2>Data Madrasah</h2>';
-html+='<button class="btn btn-primary" onclick="showMadrasahModal()">+ Tambah Madrasah</button> ';
+html+='<h2>'+(isRAJenjang()?'Data Madrasah RA':'Data Madrasah')+'</h2>';
+html+='<button class="btn btn-primary" onclick="showMadrasahModal()">+ Tambah Madrasah'+(isRAJenjang()?' RA':'')+'</button> ';
 html+='<button class="btn btn-info" onclick="importMadrasahExcel()">&#128196; Import Excel</button> ';
 html+='<button class="btn btn-secondary" onclick="downloadTemplateMadrasah()">&#128229; Template Excel</button></div>';
 html+='<input type="file" id="importMadrasahFile" accept=".xlsx,.xls" style="display:none" onchange="handleImportMadrasah(event)">';
-if(data.length===0){html+='<div class="empty-state"><p>Belum ada data madrasah.</p></div>';}
+if(data.length===0){html+='<div class="empty-state"><p>Belum ada data madrasah'+(isRAJenjang()?' RA':'')+'.</p></div>';}
 else{
 html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Nama Madrasah</th><th>NPSN</th><th>Alamat</th><th>Kab/Kota</th><th>Kepala Madrasah</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
