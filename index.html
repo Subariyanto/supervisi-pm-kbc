@@ -16,14 +16,18 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,
 .app-layout{display:flex;min-height:100vh}
 .sidebar{width:250px;background:rgba(15,32,39,.97);padding:20px 0;color:#fff;position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s}
 .sidebar h2{padding:15px 20px;font-size:1.2rem;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}
-.sidebar-menu{list-style:none}
+.sidebar-menu{list-style:none;padding-bottom:60px}
+.sidebar-menu li.menu-section{padding:14px 20px 6px;font-size:.7rem;font-weight:700;color:rgba(14,165,233,.85);letter-spacing:1.2px;text-transform:uppercase;cursor:default;border-top:1px solid rgba(255,255,255,.08);margin-top:6px}
+.sidebar-menu li.menu-section:first-of-type{border-top:none;margin-top:0}
+.sidebar-menu li.menu-section:hover{background:transparent}
+.submenu.open{max-height:600px}
 .sidebar-menu li{padding:12px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;font-size:.9rem}
 .sidebar-menu li:hover{background:rgba(14,165,233,.2)}
 .sidebar-menu li.active{background:linear-gradient(135deg,rgba(14,165,233,.3),rgba(13,148,136,.3));border-left:3px solid #0ea5e9}
-.submenu-toggle{cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;font-size:.9rem;color:#fff;transition:all .2s}
+.submenu.open{max-height:600px}.submenu-toggle{cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;font-size:.9rem;color:#fff;transition:all .2s}
 .submenu-toggle:hover{background:rgba(14,165,233,.2)}
 .submenu{list-style:none;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0;margin:0}
-.submenu.open{max-height:300px}
+.submenu.open{max-height:600px}
 .submenu li{padding:10px 20px 10px 35px;font-size:.85rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.85)}
 .submenu li:hover{background:rgba(14,165,233,.15)}
 .submenu li.active{background:linear-gradient(135deg,rgba(14,165,233,.2),rgba(13,148,136,.2));border-left:3px solid #0ea5e9}
@@ -154,6 +158,7 @@ canvas{max-width:100%;margin:20px 0}
 <div class="sidebar-user" id="sidebarUser"></div>
 <ul class="sidebar-menu">
 <li class="active" onclick="navigate('dashboard')" data-nav="dashboard">&#128202; Dashboard</li>
+<li class="menu-section">DATA MADRASAH</li>
 <li onclick="navigate('pengawas')" data-nav="pengawas">&#128100; Data Pengawas</li>
 <li onclick="navigate('madrasah')" data-nav="madrasah">&#127979; Data Madrasah</li>
 <li onclick="navigate('guru')" data-nav="guru">&#128104;&#8205;&#127891; Data Guru</li>
@@ -163,18 +168,6 @@ canvas{max-width:100%;margin:20px 0}
 <li onclick="navigate('rekap')" data-nav="rekap">&#128202; Rekap Hasil</li>
 <li onclick="navigate('cetak')" data-nav="cetak">&#128424; Cetak Hasil</li>
 <li onclick="navigate('laporan')" data-nav="laporan">&#128196; Laporan</li>
-</ul>
-<li class="submenu-toggle" onclick="toggleSubmenu('sub-data-ra')">&#127793; Data RA &#9662;</li>
-<ul class="submenu" id="sub-data-ra">
-<li onclick="navigate('madrasah-ra')" data-nav="madrasah-ra">&#127979; Data Madrasah RA</li>
-<li onclick="navigate('guru-ra')" data-nav="guru-ra">&#128104;&#8205;&#127891; Data Guru RA</li>
-</ul>
-<li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi-ra')">&#127793; Supervisi Pembelajaran RA &#9662;</li>
-<ul class="submenu" id="sub-supervisi-ra">
-<li onclick="navigate('supervisi-ra')" data-nav="supervisi-ra">&#128221; Input Supervisi RA</li>
-<li onclick="navigate('rekap-ra')" data-nav="rekap-ra">&#128202; Rekap Hasil RA</li>
-<li onclick="navigate('cetak-ra')" data-nav="cetak-ra">&#128424; Cetak Hasil RA</li>
-<li onclick="navigate('laporan-ra')" data-nav="laporan-ra">&#128196; Laporan RA</li>
 </ul>
 <li class="submenu-toggle" onclick="toggleSubmenu('sub-kokurikuler')">&#128203; Kokurikuler &#9662;</li>
 <ul class="submenu" id="sub-kokurikuler">
@@ -200,6 +193,20 @@ canvas{max-width:100%;margin:20px 0}
 <li onclick="navigate('laporan-iklim-madrasah-madrasah')" data-nav="laporan-iklim-madrasah-madrasah">&#128196; Laporan Per Madrasah</li>
 
 </ul>
+<li class="menu-section">DATA RA (RAUDHATUL ATHFAL)</li>
+<li class="submenu-toggle" onclick="toggleSubmenu('sub-data-ra')">&#127793; Data RA &#9662;</li>
+<ul class="submenu" id="sub-data-ra">
+<li onclick="navigate('madrasah-ra')" data-nav="madrasah-ra">&#127979; Data Madrasah RA</li>
+<li onclick="navigate('guru-ra')" data-nav="guru-ra">&#128104;&#8205;&#127891; Data Guru RA</li>
+</ul>
+<li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi-ra')">&#127793; Supervisi Pembelajaran RA &#9662;</li>
+<ul class="submenu" id="sub-supervisi-ra">
+<li onclick="navigate('supervisi-ra')" data-nav="supervisi-ra">&#128221; Input Supervisi RA</li>
+<li onclick="navigate('rekap-ra')" data-nav="rekap-ra">&#128202; Rekap Hasil RA</li>
+<li onclick="navigate('cetak-ra')" data-nav="cetak-ra">&#128424; Cetak Hasil RA</li>
+<li onclick="navigate('laporan-ra')" data-nav="laporan-ra">&#128196; Laporan RA</li>
+</ul>
+<li class="menu-section">PENGATURAN</li>
 <li onclick="navigate('ubah-password')" data-nav="ubah-password">&#128274; Ubah Password</li>
 <li onclick="navigate('backup-restore')" data-nav="backup-restore">&#128190; Export/Backup &amp; Restore</li>
 <li onclick="window.open('panduan.html','_blank')" style="border-top:1px solid rgba(255,255,255,.1);margin-top:10px">&#128214; Panduan</li>
