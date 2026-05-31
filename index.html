@@ -1556,7 +1556,7 @@ items.forEach(function(item,i){
 var score=(d.scores&&d.scores[i]!==undefined)?d.scores[i]:null;
 var cat=(d.catatan&&d.catatan[i])?d.catatan[i]:getAutoCatatan(score);
 var penggalian=(key==='perencanaan'||key==='asesmen')&&getPenggalian(key,i)?true:false;
-html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(penggalian?' clickable':'')+'"'+(penggalian?' onclick="showPenggalianGeneric(\''+key+'\','+i+')" title="Klik untuk lihat penggalian data"':'')+'>'+(penggalian?'\u{1F50D} ':'')+item+'</td>';
+html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(penggalian?' clickable':'')+'"'+(penggalian?' onclick="showPenggalianGeneric(\''+key+'\','+i+')" title="Klik untuk lihat penggalian data"':'')+'>'+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\''+key+'\','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
 }
@@ -1599,7 +1599,7 @@ var gi=idx;
 var score=(d.scores&&d.scores[gi]!==undefined)?d.scores[gi]:null;
 var cat=(d.catatan&&d.catatan[gi])?d.catatan[gi]:getAutoCatatan(score);
 var hasInfo=getPenggalian('pelaksanaan',gi)?true:false;
-html+='<tr><td class="col-no">'+(gi+1)+'</td><td class="col-aspek'+(hasInfo?' clickable':'')+'"'+(hasInfo?' onclick="showPenggalian('+gi+')" title="Klik untuk lihat penggalian data"':'')+'>'+(hasInfo?'\u{1F50D} ':'')+item+'</td>';
+html+='<tr><td class="col-no">'+(gi+1)+'</td><td class="col-aspek'+(hasInfo?' clickable':'')+'"'+(hasInfo?' onclick="showPenggalian('+gi+')" title="Klik untuk lihat penggalian data"':'')+'>'+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\'pelaksanaan\','+gi+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
 }
@@ -2398,7 +2398,7 @@ KOKURIKULER.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=(catatan[i])?catatan[i]:getAutoCatatan(score);
 var hasInfo=PENGGALIAN_KOKURIKULER[i]?true:false;
-html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(hasInfo?' clickable':'')+'"'+(hasInfo?' onclick="showPenggalianKokurikuler('+i+')" title="Klik untuk lihat penggalian data"':'')+'>'+(hasInfo?'\u{1F50D} ':'')+item+'</td>';
+html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(hasInfo?' clickable':'')+'"'+(hasInfo?' onclick="showPenggalianKokurikuler('+i+')" title="Klik untuk lihat penggalian data"':'')+'>'+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkorKokurikuler('+idx+','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
 }
@@ -2768,7 +2768,7 @@ html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><t
 ekstraItems.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=catatan[i]||'';
-html+='<tr><td>'+(i+1)+'</td><td style="text-align:left;cursor:pointer" onclick="showPenggalianEkstrakurikuler('+i+')">'+item+' \u{1F50D}</td>';
+html+='<tr><td>'+(i+1)+'</td><td style="text-align:left;cursor:pointer" onclick="showPenggalianEkstrakurikuler('+i+')" title="Klik untuk lihat penggalian data">'+item+'</td>';
 for(var s=0;s<4;s++){
 var checked=(score===s)?'checked':'';
 html+='<td><input type="radio" name="ekstra_score_'+i+'" value="'+s+'" '+checked+' onchange="setSkorEkstrakurikuler('+idx+','+i+','+s+')"></td>';
@@ -3134,7 +3134,7 @@ html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><t
 iklimItems.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=catatan[i]||'';
-html+='<tr><td>'+(i+1)+'</td><td style="text-align:left;cursor:pointer" onclick="showPenggalianIklimMadrasah('+i+')">'+item+' &#128269;</td>';
+html+='<tr><td>'+(i+1)+'</td><td style="text-align:left;cursor:pointer" onclick="showPenggalianIklimMadrasah('+i+')" title="Klik untuk lihat penggalian data">'+item+'</td>';
 for(var s=0;s<4;s++){
 var checked=(score===s)?'checked':'';
 html+='<td><input type="radio" name="iklim_score_'+i+'" value="'+s+'" '+checked+' onchange="setSkorIklimMadrasah('+idx+','+i+','+s+')"></td>';
