@@ -28,11 +28,14 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f8fafb;color:#1e293b;l
 .section li{margin-bottom:6px}
 .note{background:#f0f9ff;border-left:4px solid #0ea5e9;padding:12px 16px;border-radius:0 8px 8px 0;margin:15px 0;font-size:.9rem}
 .warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:0 8px 8px 0;margin:15px 0;font-size:.9rem}
+.tip{background:#ecfdf5;border-left:4px solid #10b981;padding:12px 16px;border-radius:0 8px 8px 0;margin:15px 0;font-size:.9rem}
 .step{background:#f0fdfa;border:1px solid #99f6e4;border-radius:8px;padding:12px 16px;margin:10px 0}
 .step strong{color:#0d9488}
 .badge{display:inline-block;background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;padding:3px 10px;border-radius:12px;font-size:.75rem;font-weight:600;margin-right:6px}
+.badge-ra{background:linear-gradient(135deg,#f59e0b,#ea580c)}
+.badge-uni{background:linear-gradient(135deg,#8b5cf6,#6366f1)}
 table{width:100%;border-collapse:collapse;margin:15px 0;font-size:.9rem}
-table th,table td{border:1px solid #e2e8f0;padding:10px 12px;text-align:left}
+table th,table td{border:1px solid #e2e8f0;padding:10px 12px;text-align:left;vertical-align:top}
 table th{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;font-weight:600}
 table tr:nth-child(even){background:#f8fafc}
 .footer{text-align:center;padding:30px 20px;color:#64748b;font-size:.85rem;border-top:1px solid #e2e8f0;margin-top:30px}
@@ -54,17 +57,21 @@ table tr:nth-child(even){background:#f8fafc}
 <h2>Daftar Isi</h2>
 <ol>
 <li><a href="#pendahuluan">Pendahuluan</a></li>
+<li><a href="#struktur-menu">Struktur Menu Aplikasi</a></li>
 <li><a href="#login">Login dan Registrasi</a></li>
 <li><a href="#dashboard">Dashboard</a></li>
 <li><a href="#data-pengawas">Data Pengawas</a></li>
-<li><a href="#data-madrasah">Data Madrasah</a></li>
-<li><a href="#data-guru">Data Guru</a></li>
-<li><a href="#supervisi-pembelajaran">Supervisi Pembelajaran</a></li>
+<li><a href="#data-madrasah">Data Madrasah (Umum)</a></li>
+<li><a href="#data-guru">Data Guru (Umum)</a></li>
+<li><a href="#supervisi-pembelajaran">Supervisi Pembelajaran (Umum)</a></li>
+<li><a href="#data-ra">Data Madrasah RA &amp; Guru RA</a></li>
+<li><a href="#supervisi-ra">Supervisi Pembelajaran RA</a></li>
 <li><a href="#supervisi-kokurikuler">Supervisi Kokurikuler</a></li>
 <li><a href="#supervisi-ekstrakurikuler">Supervisi Ekstrakurikuler</a></li>
 <li><a href="#supervisi-iklim">Supervisi Iklim Madrasah</a></li>
 <li><a href="#cetak-laporan">Cetak Laporan Lengkap</a></li>
 <li><a href="#laporan-madrasah">Laporan Per Madrasah</a></li>
+<li><a href="#periode">Periode Supervisi</a></li>
 <li><a href="#ubah-password">Ubah Password</a></li>
 <li><a href="#backup-restore">Export/Backup dan Restore</a></li>
 <li><a href="#tips">Tips dan Catatan Penting</a></li>
@@ -73,24 +80,105 @@ table tr:nth-child(even){background:#f8fafc}
 
 <div class="section" id="pendahuluan">
 <h2>1. Pendahuluan</h2>
-<p>Aplikasi Supervisi PM-KBC adalah aplikasi berbasis web yang dirancang untuk membantu Pengawas Madrasah dalam melaksanakan supervisi pembelajaran, kokurikuler, ekstrakurikuler, dan iklim madrasah sesuai dengan standar Pokjawas Jawa Timur.</p>
+<p>Aplikasi Supervisi PM-KBC adalah aplikasi berbasis web (single-file SPA) yang dirancang untuk membantu Pengawas Madrasah dalam melaksanakan supervisi pembelajaran, kokurikuler, ekstrakurikuler, dan iklim madrasah sesuai standar Pokjawas Jawa Timur. Mendukung jenjang umum (MI/MTs/MA) dan RA (Raudhatul Athfal) dengan instrumen terpisah.</p>
 <h3>Fitur Utama</h3>
 <ul>
-<li>Input supervisi pembelajaran per guru dengan penilaian skor 1-4</li>
-<li>Input supervisi kokurikuler, ekstrakurikuler, dan iklim madrasah per madrasah</li>
-<li>Cetak instrumen supervisi dan rekap hasil</li>
-<li>Cetak laporan lengkap (cover, kata pengantar, BAB I-V, lampiran)</li>
+<li>Input supervisi pembelajaran umum per guru (28 indikator: 10 Perencanaan, 10 Pelaksanaan, 8 Asesmen)</li>
+<li>Input supervisi pembelajaran RA per guru (28 indikator: 10 Perencanaan, 10 Pelaksanaan, 8 Evaluasi)</li>
+<li>Input supervisi kokurikuler (12 indikator), ekstrakurikuler (10 indikator), iklim madrasah (11 indikator) per madrasah</li>
+<li>Cetak instrumen, rekap hasil, dan laporan lengkap (cover, kata pengantar, BAB I-V, lampiran)</li>
 <li>Laporan per madrasah dan per KKMA</li>
-<li>Backup dan restore data</li>
+<li>Backup &amp; restore data berbasis JSON</li>
 <li>Multi-user dengan sistem login</li>
 </ul>
 <div class="note">
-<strong>Catatan:</strong> Semua data tersimpan di localStorage browser. Artinya data hanya tersedia di browser dan perangkat yang sama. Gunakan fitur Backup secara berkala untuk mengamankan data Anda.
+<strong>Catatan:</strong> Semua data tersimpan di localStorage browser. Data hanya tersedia di browser dan perangkat yang sama. Lakukan backup berkala untuk mengamankan data.
+</div>
+</div>
+
+<div class="section" id="struktur-menu">
+<h2>2. Struktur Menu Aplikasi</h2>
+<p>Sidebar aplikasi terbagi menjadi tiga kelompok utama. Klik judul submenu (dengan tanda &#9662;) untuk membuka/menutup sub-itemnya.</p>
+
+<h3>📊 Dashboard</h3>
+<p>Halaman ringkasan statistik dan daftar supervisi pembelajaran.</p>
+
+<h3>🏫 DATA MADRASAH (Jenjang Umum: MI/MTs/MA)</h3>
+<ul>
+<li><strong>👤 Data Pengawas</strong> - Identitas pengawas yang muncul di laporan</li>
+<li><strong>🏫 Data Madrasah</strong> - Daftar madrasah binaan jenjang umum</li>
+<li><strong>👨‍🎓 Data Guru</strong> - Daftar guru jenjang umum</li>
+<li><strong>📝 Supervisi Pembelajaran</strong>
+<ul>
+<li>Input Supervisi - Input penilaian per guru</li>
+<li>Rekap Hasil - Tabel rekap supervisi pembelajaran</li>
+<li>Cetak Hasil - Cetak instrumen per guru</li>
+<li>Laporan - Cetak laporan lengkap supervisi pembelajaran</li>
+</ul>
+</li>
+<li><strong>📋 Kokurikuler</strong>
+<ul>
+<li>Input Kokurikuler - <span class="badge badge-uni">Umum + RA</span></li>
+<li>Rekap, Cetak Laporan Lengkap, Laporan Per Madrasah</li>
+</ul>
+</li>
+<li><strong>📋 Ekstrakurikuler</strong>
+<ul>
+<li>Input Ekstrakurikuler - <span class="badge badge-uni">Umum + RA</span></li>
+<li>Rekap, Cetak Laporan Lengkap, Laporan Per Madrasah</li>
+</ul>
+</li>
+<li><strong>🏫 Iklim Madrasah</strong>
+<ul>
+<li>Input Iklim Madrasah - <span class="badge badge-uni">Umum + RA</span></li>
+<li>Rekap, Cetak Laporan Lengkap, Laporan Per Madrasah</li>
+</ul>
+</li>
+</ul>
+
+<h3>🌱 DATA RA (Raudhatul Athfal)</h3>
+<ul>
+<li><strong>🌱 Data RA</strong>
+<ul>
+<li>Data Madrasah RA - Daftar RA binaan</li>
+<li>Data Guru RA - Daftar guru RA</li>
+</ul>
+</li>
+<li><strong>🌱 Supervisi Pembelajaran RA</strong>
+<ul>
+<li>Input Supervisi RA - Penilaian khusus RA (28 indikator)</li>
+<li>Rekap Hasil RA, Cetak Hasil RA, Laporan RA</li>
+</ul>
+</li>
+</ul>
+
+<h3>🔒 PENGATURAN</h3>
+<ul>
+<li><strong>📅 Periode</strong> - Atur Tahun Ajaran &amp; Semester yang tampil di laporan</li>
+<li><strong>🔒 Ubah Password</strong></li>
+<li><strong>💾 Export/Backup &amp; Restore</strong></li>
+<li><strong>📖 Panduan</strong> - Membuka dokumen panduan ini</li>
+<li><strong>🚪 Logout</strong></li>
+</ul>
+
+<div class="tip">
+<strong>Logika Dropdown Madrasah per Modul:</strong>
+<table style="margin-top:10px">
+<tr><th>Modul / Halaman Input</th><th>Sumber Daftar Madrasah</th></tr>
+<tr><td>Data Madrasah (umum)</td><td>Hanya madrasah umum (MI/MTs/MA)</td></tr>
+<tr><td>Data Madrasah RA</td><td>Hanya RA</td></tr>
+<tr><td>Input Supervisi (umum)</td><td>Hanya madrasah umum</td></tr>
+<tr><td>Input Supervisi RA</td><td>Hanya RA</td></tr>
+<tr><td>Input Kokurikuler</td><td><span class="badge badge-uni">Umum + RA</span> (gabungan)</td></tr>
+<tr><td>Input Ekstrakurikuler</td><td><span class="badge badge-uni">Umum + RA</span> (gabungan)</td></tr>
+<tr><td>Input Iklim Madrasah</td><td><span class="badge badge-uni">Umum + RA</span> (gabungan)</td></tr>
+</table>
+Modul Kokurikuler, Ekstrakurikuler, dan Iklim Madrasah berlaku universal untuk semua jenjang sehingga dropdown-nya gabung dua sumber.
 </div>
 </div>
 
 <div class="section" id="login">
-<h2>2. Login dan Registrasi</h2>
+<h2>3. Login dan Registrasi</h2>
 <h3>Login</h3>
 <div class="step">
 <strong>Langkah 1:</strong> Buka aplikasi di browser Anda.<br>
@@ -103,7 +191,7 @@ table tr:nth-child(even){background:#f8fafc}
 <tr><td>admin</td><td>admin123</td></tr>
 </table>
 <div class="warning">
-<strong>Penting:</strong> Segera ubah password default setelah login pertama kali melalui menu Ubah Password.
+<strong>Penting:</strong> Segera ubah password default setelah login pertama melalui menu <em>Ubah Password</em>.
 </div>
 <h3>Registrasi Akun Baru</h3>
 <div class="step">
@@ -115,86 +203,93 @@ table tr:nth-child(even){background:#f8fafc}
 </div>
 
 <div class="section" id="dashboard">
-<h2>3. Dashboard</h2>
-<p>Dashboard menampilkan ringkasan data supervisi Anda:</p>
+<h2>4. Dashboard</h2>
+<p>Dashboard menampilkan ringkasan data supervisi pembelajaran (jenjang umum):</p>
 <ul>
 <li><strong>Total Supervisi</strong> - Jumlah supervisi pembelajaran yang telah dilakukan</li>
-<li><strong>Data Madrasah</strong> - Jumlah madrasah yang terdaftar</li>
-<li><strong>Data Guru</strong> - Jumlah guru yang terdaftar</li>
+<li><strong>Data Madrasah</strong> - Jumlah madrasah umum terdaftar</li>
+<li><strong>Data Guru</strong> - Jumlah guru umum terdaftar</li>
 </ul>
-<p>Di bawah statistik terdapat <strong>Daftar Supervisi</strong> yang menampilkan semua data supervisi pembelajaran beserta persentase capaian. Anda dapat:</p>
+<p>Di bawah statistik tampil <strong>Daftar Supervisi</strong> beserta persentase capaian. Anda dapat:</p>
 <ul>
 <li>Klik item untuk melihat detail</li>
 <li>Klik ikon pensil untuk mengedit</li>
 <li>Klik ikon hapus untuk menghapus data</li>
 </ul>
-<p>Grafik capaian ditampilkan di bagian bawah untuk visualisasi perbandingan skor Perencanaan, Pelaksanaan, dan Asesmen.</p>
+<p>Grafik capaian ditampilkan di bagian bawah untuk membandingkan skor Perencanaan, Pelaksanaan, dan Asesmen.</p>
+<div class="note">
+<strong>Catatan RA:</strong> Statistik untuk supervisi pembelajaran RA tampil terpisah pada menu <em>Rekap Hasil RA</em>.
+</div>
 </div>
 
 <div class="section" id="data-pengawas">
-<h2>4. Data Pengawas</h2>
-<p>Menu ini digunakan untuk mengisi identitas pengawas yang akan tampil di laporan.</p>
+<h2>5. Data Pengawas</h2>
+<p>Menu ini digunakan untuk mengisi identitas pengawas yang akan tampil di seluruh laporan (umum maupun RA).</p>
 <div class="step">
 <strong>Langkah 1:</strong> Klik menu <strong>Data Pengawas</strong> di sidebar.<br>
 <strong>Langkah 2:</strong> Isi data: Nama Pengawas, NIP, Pangkat/Golongan, dan informasi lainnya.<br>
 <strong>Langkah 3:</strong> Klik <strong>Simpan</strong>.
 </div>
 <div class="note">
-<strong>Catatan:</strong> Data pengawas akan otomatis muncul di semua laporan yang dicetak.
+<strong>Catatan:</strong> Data pengawas otomatis muncul di semua jenis laporan yang dicetak.
 </div>
 </div>
 
 <div class="section" id="data-madrasah">
-<h2>5. Data Madrasah</h2>
-<p>Kelola daftar madrasah binaan Anda di menu ini.</p>
+<h2>6. Data Madrasah (Umum)</h2>
+<p>Kelola daftar madrasah binaan jenjang MI/MTs/MA. Untuk RA gunakan menu <em>Data Madrasah RA</em>.</p>
 <h3>Tambah Madrasah</h3>
 <div class="step">
-<strong>Langkah 1:</strong> Klik menu <strong>Data Madrasah</strong> di sidebar.<br>
+<strong>Langkah 1:</strong> Klik menu <strong>Data Madrasah</strong>.<br>
 <strong>Langkah 2:</strong> Klik tombol <strong>+ Tambah Madrasah</strong>.<br>
-<strong>Langkah 3:</strong> Isi data: Nama Madrasah, NPSN, Alamat, Kabupaten/Kota, Kepala Madrasah.<br>
+<strong>Langkah 3:</strong> Isi: Nama Madrasah, NPSN/NSM, Alamat, Kabupaten/Kota, Kepala Madrasah.<br>
 <strong>Langkah 4:</strong> Klik <strong>Simpan</strong>.
 </div>
 <h3>Import dari Excel</h3>
 <div class="step">
-<strong>Langkah 1:</strong> Klik tombol <strong>Template Excel</strong> untuk mengunduh template.<br>
-<strong>Langkah 2:</strong> Isi data madrasah di file Excel sesuai format template.<br>
-<strong>Langkah 3:</strong> Klik tombol <strong>Import Excel</strong> dan pilih file yang sudah diisi.
+<strong>Langkah 1:</strong> Klik <strong>Template Excel</strong> untuk mengunduh template.<br>
+<strong>Langkah 2:</strong> Isi data madrasah sesuai format template.<br>
+<strong>Langkah 3:</strong> Klik <strong>Import Excel</strong> dan pilih file yang sudah diisi.
 </div>
 </div>
 
 <div class="section" id="data-guru">
-<h2>6. Data Guru</h2>
-<p>Kelola daftar guru yang akan disupervisi.</p>
+<h2>7. Data Guru (Umum)</h2>
+<p>Kelola daftar guru jenjang umum yang akan disupervisi. Untuk guru RA gunakan menu <em>Data Guru RA</em>.</p>
 <h3>Tambah Guru</h3>
 <div class="step">
-<strong>Langkah 1:</strong> Klik menu <strong>Data Guru</strong> di sidebar.<br>
-<strong>Langkah 2:</strong> Klik tombol <strong>+ Tambah Guru</strong>.<br>
-<strong>Langkah 3:</strong> Isi data: Nama Guru, NIP, Madrasah, Mata Pelajaran, dan Kelas.<br>
+<strong>Langkah 1:</strong> Klik menu <strong>Data Guru</strong>.<br>
+<strong>Langkah 2:</strong> Klik <strong>+ Tambah Guru</strong>.<br>
+<strong>Langkah 3:</strong> Isi: Nama Guru, NIP, Madrasah, Mata Pelajaran, dan Kelas.<br>
 <strong>Langkah 4:</strong> Klik <strong>Simpan</strong>.
 </div>
 <h3>Import dari Excel</h3>
-<p>Sama seperti data madrasah, Anda dapat mengunduh template dan mengimport data guru dari file Excel.</p>
+<p>Sama seperti data madrasah, tersedia template dan import dari Excel untuk batch entry.</p>
+<div class="note">
+<strong>Catatan:</strong> Dropdown <em>Madrasah</em> di form guru hanya menampilkan madrasah umum.
+</div>
 </div>
 
 <div class="section" id="supervisi-pembelajaran">
-<h2>7. Supervisi Pembelajaran</h2>
-<p>Fitur utama untuk melakukan supervisi pembelajaran per guru. Terdiri dari 3 komponen penilaian:</p>
+<h2>8. Supervisi Pembelajaran (Umum)</h2>
+<p>Fitur utama supervisi pembelajaran per guru jenjang umum. Tiga komponen penilaian:</p>
 <table>
 <tr><th>Komponen</th><th>Jumlah Indikator</th><th>Keterangan</th></tr>
 <tr><td>Perencanaan</td><td>10</td><td>Telaah dokumen RPP/Modul Ajar</td></tr>
 <tr><td>Pelaksanaan</td><td>10</td><td>Observasi pembelajaran di kelas</td></tr>
 <tr><td>Asesmen</td><td>8</td><td>Penilaian dan evaluasi pembelajaran</td></tr>
+<tr><th>Total</th><th>28 indikator</th><th>Skor maksimal 112</th></tr>
 </table>
 
 <h3>Input Supervisi Baru</h3>
 <div class="step">
-<strong>Langkah 1:</strong> Klik menu <strong>Supervisi Pembelajaran > Input Supervisi</strong>.<br>
+<strong>Langkah 1:</strong> Buka menu <strong>Supervisi Pembelajaran &gt; Input Supervisi</strong>.<br>
 <strong>Langkah 2:</strong> Isi identitas: pilih guru, tanggal supervisi, materi, dll.<br>
 <strong>Langkah 3:</strong> Klik <strong>Lanjut</strong> untuk masuk ke penilaian Perencanaan.<br>
-<strong>Langkah 4:</strong> Beri skor 1-4 untuk setiap indikator perencanaan. Klik aspek (teks biru bergaris) untuk melihat penggalian data.<br>
-<strong>Langkah 5:</strong> Lanjut ke Pelaksanaan, beri skor 1-4 untuk setiap indikator.<br>
-<strong>Langkah 6:</strong> Lanjut ke Asesmen, beri skor 1-4 untuk setiap indikator.<br>
-<strong>Langkah 7:</strong> Klik <strong>Simpan</strong> untuk menyimpan hasil supervisi.
+<strong>Langkah 4:</strong> Beri skor 1-4 untuk setiap indikator. Klik teks aspek (biru bergaris) untuk melihat panduan penggalian data.<br>
+<strong>Langkah 5:</strong> Lanjut ke Pelaksanaan, beri skor 1-4 setiap indikator.<br>
+<strong>Langkah 6:</strong> Lanjut ke Asesmen, beri skor 1-4 setiap indikator.<br>
+<strong>Langkah 7:</strong> Klik <strong>Simpan</strong>.
 </div>
 
 <h3>Skala Penilaian</h3>
@@ -215,106 +310,181 @@ table tr:nth-child(even){background:#f8fafc}
 <tr><td>&lt; 71%</td><td>Kurang</td></tr>
 </table>
 
-<h3>Rekap Hasil</h3>
-<p>Menu <strong>Supervisi Pembelajaran > Rekap Hasil</strong> menampilkan tabel rekap seluruh supervisi yang telah dilakukan, lengkap dengan skor per komponen dan predikat akhir.</p>
+<h3>Rekap Hasil &amp; Cetak Hasil</h3>
+<ul>
+<li><strong>Rekap Hasil</strong> - Tabel rekap seluruh supervisi pembelajaran beserta skor per komponen dan predikat akhir</li>
+<li><strong>Cetak Hasil</strong> - Cetak instrumen supervisi per guru dalam format siap print</li>
+<li><strong>Laporan</strong> - Cetak laporan lengkap (cover, BAB I-V, lampiran)</li>
+</ul>
+</div>
 
-<h3>Cetak Hasil</h3>
-<p>Menu <strong>Supervisi Pembelajaran > Cetak Hasil</strong> memungkinkan Anda mencetak instrumen supervisi per guru dalam format yang siap print.</p>
+<div class="section" id="data-ra">
+<h2>9. Data Madrasah RA &amp; Guru RA <span class="badge badge-ra">RA</span></h2>
+<p>Khusus jenjang Raudhatul Athfal. Data RA disimpan terpisah dari data umum supaya instrumen, rekap, dan laporan tidak tercampur.</p>
+
+<h3>Data Madrasah RA</h3>
+<div class="step">
+<strong>Langkah 1:</strong> Buka <strong>Data RA &gt; Data Madrasah RA</strong>.<br>
+<strong>Langkah 2:</strong> Klik <strong>+ Tambah Madrasah RA</strong>.<br>
+<strong>Langkah 3:</strong> Isi: Nama RA, NSM, Alamat, Kabupaten/Kota, Kepala RA.<br>
+<strong>Langkah 4:</strong> Klik <strong>Simpan</strong>.
+</div>
+
+<h3>Data Guru RA</h3>
+<div class="step">
+<strong>Langkah 1:</strong> Buka <strong>Data RA &gt; Data Guru RA</strong>.<br>
+<strong>Langkah 2:</strong> Klik <strong>+ Tambah Guru RA</strong>.<br>
+<strong>Langkah 3:</strong> Isi: Nama Guru, NIP/NIPK, RA tempat tugas, Kelompok (A/B), dll.<br>
+<strong>Langkah 4:</strong> Klik <strong>Simpan</strong>.
+</div>
+
+<div class="note">
+<strong>Catatan:</strong> Dropdown RA di form guru RA hanya menampilkan madrasah dari kategori RA. Untuk modul Kokurikuler/Ekstrakurikuler/Iklim Madrasah, RA otomatis ikut tampil bersama madrasah umum.
+</div>
+</div>
+
+<div class="section" id="supervisi-ra">
+<h2>10. Supervisi Pembelajaran RA <span class="badge badge-ra">RA</span></h2>
+<p>Instrumen supervisi pembelajaran khusus RA dengan 28 indikator yang berbeda dari jenjang umum.</p>
+<table>
+<tr><th>Komponen</th><th>Jumlah Indikator</th><th>Keterangan</th></tr>
+<tr><td>Perencanaan</td><td>10</td><td>Telaah RPPH/RPPM dan perencanaan kegiatan main</td></tr>
+<tr><td>Pelaksanaan</td><td>10</td><td>Observasi kegiatan pembelajaran/bermain</td></tr>
+<tr><td>Evaluasi</td><td>8</td><td>Asesmen perkembangan anak</td></tr>
+<tr><th>Total</th><th>28 indikator</th><th>Skor maksimal 112</th></tr>
+</table>
+
+<h3>Input Supervisi RA</h3>
+<div class="step">
+<strong>Langkah 1:</strong> Buka <strong>Supervisi Pembelajaran RA &gt; Input Supervisi RA</strong>.<br>
+<strong>Langkah 2:</strong> Pilih guru RA (dropdown khusus guru RA), isi tanggal dan tema kegiatan.<br>
+<strong>Langkah 3:</strong> Beri skor 1-4 untuk komponen Perencanaan, lalu Pelaksanaan, lalu Evaluasi.<br>
+<strong>Langkah 4:</strong> Klik teks indikator untuk melihat panduan penggalian data RA.<br>
+<strong>Langkah 5:</strong> Klik <strong>Simpan</strong>.
+</div>
+
+<h3>Rekap, Cetak Hasil &amp; Laporan RA</h3>
+<ul>
+<li><strong>Rekap Hasil RA</strong> - Tabel rekap khusus supervisi pembelajaran RA</li>
+<li><strong>Cetak Hasil RA</strong> - Cetak instrumen supervisi per guru RA</li>
+<li><strong>Laporan RA</strong> - Cetak laporan lengkap supervisi pembelajaran RA</li>
+</ul>
+
+<div class="warning">
+<strong>Penting:</strong> Data supervisi RA disimpan di key terpisah (<code>supervisi_pembelajaran_ra_v1</code>) sehingga tidak akan tampil di rekap/laporan jenjang umum, dan sebaliknya.
+</div>
 </div>
 
 <div class="section" id="supervisi-kokurikuler">
-<h2>8. Supervisi Kokurikuler</h2>
-<p>Supervisi kegiatan kokurikuler dilakukan per madrasah dengan 12 indikator penilaian.</p>
+<h2>11. Supervisi Kokurikuler <span class="badge badge-uni">Umum + RA</span></h2>
+<p>Supervisi kegiatan kokurikuler dilakukan per madrasah dengan <strong>12 indikator</strong> penilaian. Modul ini berlaku universal sehingga dropdown madrasah berisi gabungan madrasah umum + RA.</p>
 <h3>Input Supervisi Kokurikuler</h3>
 <div class="step">
-<strong>Langkah 1:</strong> Klik menu <strong>Kokurikuler > Input Kokurikuler</strong>.<br>
+<strong>Langkah 1:</strong> Buka <strong>Kokurikuler &gt; Input Kokurikuler</strong>.<br>
 <strong>Langkah 2:</strong> Klik <strong>+ Supervisi Baru</strong> atau pilih madrasah yang sudah ada.<br>
-<strong>Langkah 3:</strong> Pilih madrasah dan isi tanggal supervisi.<br>
-<strong>Langkah 4:</strong> Beri skor 1-4 untuk setiap indikator kokurikuler.<br>
+<strong>Langkah 3:</strong> Pilih madrasah (umum atau RA) dan isi tanggal supervisi.<br>
+<strong>Langkah 4:</strong> Beri skor 1-4 untuk setiap indikator.<br>
 <strong>Langkah 5:</strong> Klik <strong>Simpan</strong>.
 </div>
 <h3>Rekap dan Cetak</h3>
 <ul>
-<li><strong>Rekap</strong> - Menampilkan tabel rekap hasil supervisi kokurikuler semua madrasah</li>
-<li><strong>Cetak Laporan Lengkap</strong> - Mencetak laporan lengkap dengan cover, kata pengantar, BAB I-V, dan lampiran</li>
-<li><strong>Laporan Per Madrasah</strong> - Mencetak laporan untuk madrasah tertentu</li>
+<li><strong>Rekap</strong> - Tabel rekap hasil supervisi kokurikuler semua madrasah</li>
+<li><strong>Cetak Laporan Lengkap</strong> - Laporan lengkap dengan cover, kata pengantar, BAB I-V, lampiran</li>
+<li><strong>Laporan Per Madrasah</strong> - Cetak laporan untuk satu madrasah tertentu</li>
 </ul>
 </div>
 
 <div class="section" id="supervisi-ekstrakurikuler">
-<h2>9. Supervisi Ekstrakurikuler</h2>
-<p>Supervisi kegiatan ekstrakurikuler dilakukan per madrasah dengan 10 indikator penilaian.</p>
+<h2>12. Supervisi Ekstrakurikuler <span class="badge badge-uni">Umum + RA</span></h2>
+<p>Supervisi kegiatan ekstrakurikuler per madrasah dengan <strong>10 indikator</strong>. Dropdown madrasah berisi gabungan umum + RA.</p>
 <h3>Input Supervisi Ekstrakurikuler</h3>
 <div class="step">
-<strong>Langkah 1:</strong> Klik menu <strong>Ekstrakurikuler > Input Ekstrakurikuler</strong>.<br>
+<strong>Langkah 1:</strong> Buka <strong>Ekstrakurikuler &gt; Input Ekstrakurikuler</strong>.<br>
 <strong>Langkah 2:</strong> Klik <strong>+ Supervisi Baru</strong> atau pilih madrasah yang sudah ada.<br>
 <strong>Langkah 3:</strong> Pilih madrasah dan isi tanggal supervisi.<br>
-<strong>Langkah 4:</strong> Beri skor 1-4 untuk setiap indikator ekstrakurikuler.<br>
+<strong>Langkah 4:</strong> Beri skor 1-4 untuk setiap indikator.<br>
 <strong>Langkah 5:</strong> Klik <strong>Simpan</strong>.
 </div>
 <h3>Rekap dan Cetak</h3>
 <ul>
-<li><strong>Rekap</strong> - Menampilkan tabel rekap hasil supervisi ekstrakurikuler semua madrasah</li>
-<li><strong>Cetak Laporan Lengkap</strong> - Mencetak laporan lengkap dengan cover, kata pengantar, BAB I-V, dan lampiran</li>
-<li><strong>Laporan Per Madrasah</strong> - Mencetak laporan untuk madrasah tertentu</li>
+<li><strong>Rekap</strong> - Tabel rekap hasil supervisi ekstrakurikuler</li>
+<li><strong>Cetak Laporan Lengkap</strong> - Laporan lengkap dengan cover, BAB I-V, lampiran</li>
+<li><strong>Laporan Per Madrasah</strong> - Laporan untuk madrasah tertentu</li>
 </ul>
 </div>
 
 <div class="section" id="supervisi-iklim">
-<h2>10. Supervisi Iklim Madrasah</h2>
-<p>Supervisi iklim madrasah menilai kondisi dan suasana madrasah secara keseluruhan.</p>
+<h2>13. Supervisi Iklim Madrasah <span class="badge badge-uni">Umum + RA</span></h2>
+<p>Supervisi iklim madrasah menilai kondisi dan suasana madrasah secara keseluruhan dengan <strong>11 indikator</strong>. Dropdown madrasah berisi gabungan umum + RA.</p>
 <h3>Input Supervisi Iklim Madrasah</h3>
 <div class="step">
-<strong>Langkah 1:</strong> Klik menu <strong>Iklim Madrasah > Input Iklim Madrasah</strong>.<br>
+<strong>Langkah 1:</strong> Buka <strong>Iklim Madrasah &gt; Input Iklim Madrasah</strong>.<br>
 <strong>Langkah 2:</strong> Klik <strong>+ Supervisi Baru</strong> atau pilih madrasah yang sudah ada.<br>
 <strong>Langkah 3:</strong> Pilih madrasah dan isi tanggal supervisi.<br>
-<strong>Langkah 4:</strong> Beri skor 1-4 untuk setiap indikator iklim madrasah.<br>
+<strong>Langkah 4:</strong> Beri skor 1-4 untuk setiap indikator.<br>
 <strong>Langkah 5:</strong> Klik <strong>Simpan</strong>.
 </div>
 <h3>Rekap dan Cetak</h3>
 <ul>
-<li><strong>Rekap</strong> - Menampilkan tabel rekap hasil supervisi iklim madrasah</li>
-<li><strong>Cetak Laporan Lengkap</strong> - Mencetak laporan lengkap dengan cover, kata pengantar, BAB I-V, dan lampiran</li>
-<li><strong>Laporan Per Madrasah</strong> - Mencetak laporan untuk madrasah tertentu</li>
+<li><strong>Rekap</strong> - Tabel rekap hasil supervisi iklim madrasah</li>
+<li><strong>Cetak Laporan Lengkap</strong> - Laporan lengkap dengan cover, BAB I-V, lampiran</li>
+<li><strong>Laporan Per Madrasah</strong> - Laporan untuk madrasah tertentu</li>
 </ul>
 </div>
 
 <div class="section" id="cetak-laporan">
-<h2>11. Cetak Laporan Lengkap</h2>
-<p>Setiap jenis supervisi memiliki fitur cetak laporan lengkap yang menghasilkan dokumen resmi dengan struktur:</p>
+<h2>14. Cetak Laporan Lengkap</h2>
+<p>Setiap modul supervisi memiliki fitur cetak laporan lengkap yang menghasilkan dokumen resmi dengan struktur:</p>
 <ul>
 <li><strong>Cover/Halaman Judul</strong> - Judul laporan, nama pengawas, instansi</li>
-<li><strong>Kata Pengantar</strong> - Pengantar laporan supervisi</li>
+<li><strong>Kata Pengantar</strong></li>
 <li><strong>BAB I - Pendahuluan</strong> - Latar belakang, tujuan, sasaran</li>
-<li><strong>BAB II - Landasan Hukum</strong> - Dasar hukum pelaksanaan supervisi</li>
-<li><strong>BAB III - Pelaksanaan</strong> - Waktu, tempat, metode supervisi</li>
+<li><strong>BAB II - Landasan Hukum</strong></li>
+<li><strong>BAB III - Pelaksanaan</strong> - Waktu, tempat, metode</li>
 <li><strong>BAB IV - Hasil</strong> - Data hasil supervisi dan analisis</li>
 <li><strong>BAB V - Penutup</strong> - Kesimpulan dan rekomendasi</li>
 <li><strong>Lampiran</strong> - Instrumen dan data pendukung</li>
 </ul>
 <div class="step">
 <strong>Cara Cetak:</strong><br>
-1. Buka menu Cetak Laporan Lengkap pada jenis supervisi yang diinginkan.<br>
+1. Buka menu <em>Laporan</em> / <em>Cetak Laporan Lengkap</em> pada modul yang diinginkan.<br>
 2. Pastikan data pengawas dan data supervisi sudah terisi.<br>
 3. Klik tombol <strong>Cetak Laporan</strong>.<br>
-4. Gunakan Ctrl+P atau tombol Print untuk mencetak/menyimpan sebagai PDF.
+4. Gunakan Ctrl+P untuk mencetak atau menyimpan sebagai PDF.
+</div>
+<div class="note">
+<strong>Catatan:</strong> Modul Supervisi Pembelajaran RA punya menu <em>Laporan RA</em> sendiri yang terpisah dari laporan jenjang umum.
 </div>
 </div>
 
 <div class="section" id="laporan-madrasah">
-<h2>12. Laporan Per Madrasah</h2>
-<p>Fitur ini tersedia untuk supervisi Kokurikuler, Ekstrakurikuler, dan Iklim Madrasah. Memungkinkan Anda mencetak laporan khusus untuk satu madrasah tertentu.</p>
+<h2>15. Laporan Per Madrasah</h2>
+<p>Tersedia untuk modul Kokurikuler, Ekstrakurikuler, dan Iklim Madrasah. Memungkinkan cetak laporan khusus untuk satu madrasah (umum maupun RA).</p>
 <div class="step">
-<strong>Langkah 1:</strong> Buka menu <strong>Laporan Per Madrasah</strong> pada jenis supervisi yang diinginkan.<br>
-<strong>Langkah 2:</strong> Pilih madrasah dari daftar dropdown.<br>
+<strong>Langkah 1:</strong> Buka menu <strong>Laporan Per Madrasah</strong> pada modul yang diinginkan.<br>
+<strong>Langkah 2:</strong> Pilih madrasah dari dropdown (gabungan umum + RA).<br>
 <strong>Langkah 3:</strong> Klik <strong>Cetak</strong> atau gunakan Ctrl+P.
 </div>
 </div>
 
-<div class="section" id="ubah-password">
-<h2>13. Ubah Password</h2>
+<div class="section" id="periode">
+<h2>16. Periode Supervisi</h2>
+<p>Atur Tahun Ajaran dan Semester yang akan tampil di seluruh cover laporan, kata pengantar, dan BAB Pelaksanaan. Default: <em>Tahun Ajaran 2025-2026 Semester Ganjil</em>.</p>
 <div class="step">
-<strong>Langkah 1:</strong> Klik menu <strong>Ubah Password</strong> di sidebar.<br>
+<strong>Langkah 1:</strong> Buka menu <strong>Periode</strong> di sidebar (kelompok PENGATURAN).<br>
+<strong>Langkah 2:</strong> Isi <em>Tahun Ajaran</em> (mis. 2025-2026, 2026-2027).<br>
+<strong>Langkah 3:</strong> Pilih <em>Semester</em> (Ganjil/Genap).<br>
+<strong>Langkah 4:</strong> Klik <strong>Simpan Periode</strong>.
+</div>
+<div class="note">
+<strong>Catatan:</strong> Perubahan periode langsung berlaku untuk semua jenis laporan (umum, RA, kokurikuler, ekstrakurikuler, iklim madrasah, per madrasah, dan per KKMA). Tidak perlu input ulang data supervisi.
+</div>
+</div>
+
+<div class="section" id="ubah-password">
+<h2>17. Ubah Password</h2>
+<div class="step">
+<strong>Langkah 1:</strong> Buka menu <strong>Ubah Password</strong> di sidebar.<br>
 <strong>Langkah 2:</strong> Masukkan password lama.<br>
 <strong>Langkah 3:</strong> Masukkan password baru (min. 4 karakter).<br>
 <strong>Langkah 4:</strong> Konfirmasi password baru.<br>
@@ -323,49 +493,52 @@ table tr:nth-child(even){background:#f8fafc}
 </div>
 
 <div class="section" id="backup-restore">
-<h2>14. Export/Backup dan Restore</h2>
-<p>Fitur ini sangat penting untuk mengamankan data Anda karena semua data tersimpan di browser (localStorage).</p>
+<h2>18. Export/Backup dan Restore</h2>
+<p>Fitur ini sangat penting untuk mengamankan data karena semua data tersimpan di browser (localStorage). Backup mencakup seluruh data: madrasah umum, madrasah RA, guru, guru RA, supervisi pembelajaran, supervisi RA, kokurikuler, ekstrakurikuler, dan iklim madrasah.</p>
 <h3>Backup Data</h3>
 <div class="step">
-<strong>Langkah 1:</strong> Klik menu <strong>Export/Backup &amp; Restore</strong> di sidebar.<br>
+<strong>Langkah 1:</strong> Buka <strong>Export/Backup &amp; Restore</strong>.<br>
 <strong>Langkah 2:</strong> Klik tombol <strong>Backup/Export Data</strong>.<br>
-<strong>Langkah 3:</strong> File JSON akan terunduh otomatis. Simpan file ini di tempat yang aman.
+<strong>Langkah 3:</strong> File JSON akan terunduh otomatis. Simpan di tempat yang aman.
 </div>
 <h3>Restore Data</h3>
 <div class="step">
-<strong>Langkah 1:</strong> Klik menu <strong>Export/Backup &amp; Restore</strong> di sidebar.<br>
+<strong>Langkah 1:</strong> Buka <strong>Export/Backup &amp; Restore</strong>.<br>
 <strong>Langkah 2:</strong> Klik tombol <strong>Restore/Import Data</strong>.<br>
-<strong>Langkah 3:</strong> Pilih file backup JSON yang pernah Anda simpan.<br>
-<strong>Langkah 4:</strong> Konfirmasi restore. Data lama akan ditimpa dengan data dari file backup.
+<strong>Langkah 3:</strong> Pilih file backup JSON yang pernah disimpan.<br>
+<strong>Langkah 4:</strong> Konfirmasi restore. Data lama akan ditimpa.
 </div>
 <div class="warning">
-<strong>Perhatian:</strong> Restore akan menimpa SEMUA data yang ada saat ini. Pastikan Anda membackup data terbaru sebelum melakukan restore.
+<strong>Perhatian:</strong> Restore akan menimpa SEMUA data yang ada (umum maupun RA). Backup data terbaru sebelum melakukan restore.
 </div>
 </div>
 
 <div class="section" id="tips">
-<h2>15. Tips dan Catatan Penting</h2>
+<h2>19. Tips dan Catatan Penting</h2>
 <h3>Penyimpanan Data</h3>
 <ul>
 <li>Data tersimpan di <strong>localStorage</strong> browser, bukan di server</li>
-<li>Jika Anda menghapus data browser/cache, data supervisi akan hilang</li>
+<li>Setiap modul memakai key terpisah (mis. <code>supervisi_data_v1</code>, <code>supervisi_pembelajaran_ra_v1</code>, <code>supervisi_kokurikuler</code>, dll)</li>
+<li>Jika data browser/cache dihapus, data supervisi akan hilang</li>
 <li>Data hanya bisa diakses dari browser dan perangkat yang sama</li>
-<li>Lakukan <strong>backup rutin</strong> (minimal seminggu sekali)</li>
+<li>Lakukan <strong>backup rutin</strong> minimal seminggu sekali</li>
 </ul>
 <h3>Kompatibilitas Browser</h3>
 <ul>
 <li>Gunakan browser modern: Chrome, Edge, Firefox, atau Safari versi terbaru</li>
-<li>Pastikan JavaScript diaktifkan</li>
-<li>Aplikasi responsif dan bisa diakses dari HP/tablet</li>
+<li>JavaScript harus aktif</li>
+<li>Aplikasi responsif, bisa diakses dari HP/tablet</li>
 </ul>
 <h3>Tips Penggunaan</h3>
 <ul>
-<li>Isi data pengawas dan data madrasah terlebih dahulu sebelum melakukan supervisi</li>
-<li>Gunakan fitur import Excel untuk input data madrasah dan guru dalam jumlah banyak</li>
-<li>Klik teks indikator (berwarna biru) untuk melihat panduan penggalian data</li>
-<li>Gunakan tombol Reset Skor jika ingin mengulang penilaian dari awal</li>
-<li>Untuk mencetak, gunakan Ctrl+P dan pilih "Save as PDF" jika ingin menyimpan digital</li>
-<li>Indikator dapat diedit/disesuaikan melalui panel Edit Indikator di halaman input supervisi</li>
+<li>Isi <strong>Data Pengawas</strong> terlebih dahulu sebelum mencetak laporan</li>
+<li>Daftarkan madrasah (umum/RA) sebelum input supervisi</li>
+<li>Gunakan import Excel untuk input data madrasah/guru jumlah banyak</li>
+<li>Klik teks indikator (biru) untuk melihat panduan penggalian data</li>
+<li>Gunakan tombol <em>Reset Skor</em> jika ingin mengulang penilaian</li>
+<li>Untuk PDF: Ctrl+P → pilih "Save as PDF"</li>
+<li>Indikator dapat diedit/disesuaikan via panel Edit Indikator di halaman input supervisi</li>
+<li>Untuk supervisi RA gunakan menu khusus RA, bukan menu jenjang umum</li>
 </ul>
 <h3>Troubleshooting</h3>
 <table>
@@ -374,13 +547,16 @@ table tr:nth-child(even){background:#f8fafc}
 <tr><td>Tidak bisa login</td><td>Gunakan akun default admin/admin123 atau daftar akun baru</td></tr>
 <tr><td>Tampilan berantakan di HP</td><td>Gunakan tombol hamburger menu (&#9776;) di kiri atas untuk membuka sidebar</td></tr>
 <tr><td>Cetak tidak sesuai</td><td>Pastikan pengaturan print: margins Normal, tanpa header/footer</td></tr>
+<tr><td>Madrasah RA tidak muncul di Input Supervisi (umum)</td><td>Normal. Untuk RA gunakan <em>Input Supervisi RA</em></td></tr>
+<tr><td>Madrasah RA tidak muncul di Kokurikuler/Ekstra/Iklim</td><td>Pastikan RA sudah didaftarkan di <em>Data Madrasah RA</em>; dropdown akan otomatis menggabungkan umum + RA</td></tr>
+<tr><td>Guru RA tidak muncul di Input Supervisi (umum)</td><td>Normal. Guru RA hanya muncul di <em>Input Supervisi RA</em></td></tr>
 </table>
 </div>
 
 </div>
 
 <div class="footer">
-<p>Aplikasi Supervisi PM-KBC &copy; 2024-2025</p>
+<p>Aplikasi Supervisi PM-KBC &copy; 2024-2026</p>
 <p>Dibuat oleh: Subariyanto - Ketua Pokjawas Madrasah Kab. Jember</p>
 <p>Instrumen disusun oleh: Ida Safiaturrahma - Pengawas Madrasah Kab. Lamongan</p>
 </div>
