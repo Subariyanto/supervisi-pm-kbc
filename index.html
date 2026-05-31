@@ -70,8 +70,9 @@ header p{opacity:.8;font-size:.85rem}
 .instrumen-table .col-no{width:40px}
 .instrumen-table .col-aspek{text-align:left;min-width:200px}
 .instrumen-table .col-skor{width:40px}
-.instrumen-table .col-catatan{min-width:140px;text-align:left}
-.instrumen-table .col-catatan input{width:100%;padding:6px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:.8rem}
+.instrumen-table .col-catatan{min-width:220px;width:30%;text-align:left;vertical-align:top;white-space:normal;word-wrap:break-word}
+.instrumen-table .col-catatan textarea{width:100%;padding:6px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:.8rem;font-family:inherit;line-height:1.4;resize:vertical;overflow:hidden;min-height:38px;box-sizing:border-box;white-space:pre-wrap;word-wrap:break-word}
+.instrumen-table .col-catatan textarea:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 2px rgba(14,165,233,.15)}
 .skor-radio{background:none;border:none;cursor:pointer;font-size:1.1rem;color:#94a3b8;transition:all .2s}
 .skor-radio:hover{color:#0ea5e9}
 .skor-radio.selected{color:#0ea5e9;font-weight:bold}
@@ -954,6 +955,8 @@ function tahunAjaranLabel(){var p=getPeriode();return 'Tahun Ajaran '+p.tahunAja
 // ===== UTILITY =====
 function getPredikat(pct){if(pct>=91)return'Sangat Baik';if(pct>=81)return'Baik';if(pct>=71)return'Cukup';return'Kurang'}
 function getAutoCatatan(skor){if(skor===null||skor===undefined)return'';return SKOR_CATATAN[skor]||''}
+function autoGrowCatatan(el){if(!el)return;el.style.height='auto';el.style.height=(el.scrollHeight+2)+'px'}
+function autoGrowAllCatatan(){var els=document.querySelectorAll('.instrumen-table .col-catatan textarea');for(var i=0;i<els.length;i++){autoGrowCatatan(els[i])}}
 function getPredikatClass(p){return'predikat-'+p.toLowerCase().replace(' ','-')}
 function calcTotal(d){let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].forEach(k=>{const scores=d[k]&&d[k].scores?d[k].scores:[];const itemCount=k==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(k).length;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}});return max>0?(sum/max)*100:0}
 function calcKomponen(d,key){const scores=d[key]&&d[key].scores?d[key].scores:[];const itemCount=key==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(key).length;let sum=0,max=0;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}return max>0?(sum/max)*100:0}
@@ -1063,6 +1066,7 @@ titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':isEkstra?'\u{1F4CB} S
 }
 app.classList.add('fade-in');
 setTimeout(function(){app.classList.remove('fade-in')},300);
+if(typeof autoGrowAllCatatan==='function')setTimeout(autoGrowAllCatatan,0);
 }
 
 // ===== DASHBOARD =====
@@ -1556,7 +1560,7 @@ html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(penggalian?' 
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\''+key+'\','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
 }
-html+='<td class="col-catatan"><input type="text" value="'+escHtml(cat)+'" onchange="setCatatan(\''+key+'\','+i+',this.value)" placeholder="Otomatis"></td></tr>';
+html+='<td class="col-catatan"><textarea rows="2" oninput="autoGrowCatatan(this)" onchange="setCatatan(\''+key+'\','+i+',this.value)" placeholder="Otomatis">'+escHtml(cat)+'</textarea></td></tr>';
 });
 html+='</tbody></table>';
 // Skor summary
@@ -1599,7 +1603,7 @@ html+='<tr><td class="col-no">'+(gi+1)+'</td><td class="col-aspek'+(hasInfo?' cl
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\'pelaksanaan\','+gi+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
 }
-html+='<td class="col-catatan"><input type="text" value="'+escHtml(cat)+'" onchange="setCatatan(\'pelaksanaan\','+gi+',this.value)" placeholder="Otomatis"></td></tr>';
+html+='<td class="col-catatan"><textarea rows="2" oninput="autoGrowCatatan(this)" onchange="setCatatan(\'pelaksanaan\','+gi+',this.value)" placeholder="Otomatis">'+escHtml(cat)+'</textarea></td></tr>';
 idx++;
 });
 html+='</tbody></table>';
@@ -2398,7 +2402,7 @@ html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(hasInfo?' cli
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkorKokurikuler('+idx+','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
 }
-html+='<td class="col-catatan"><input type="text" value="'+escHtml(cat)+'" onchange="setCatatanKokurikuler('+idx+','+i+',this.value)" placeholder="Otomatis"></td></tr>';
+html+='<td class="col-catatan"><textarea rows="2" oninput="autoGrowCatatan(this)" onchange="setCatatanKokurikuler('+idx+','+i+',this.value)" placeholder="Otomatis">'+escHtml(cat)+'</textarea></td></tr>';
 });
 html+='</tbody></table>';
 // Score summary
@@ -2769,7 +2773,7 @@ for(var s=0;s<4;s++){
 var checked=(score===s)?'checked':'';
 html+='<td><input type="radio" name="ekstra_score_'+i+'" value="'+s+'" '+checked+' onchange="setSkorEkstrakurikuler('+idx+','+i+','+s+')"></td>';
 }
-html+='<td><input type="text" value="'+escHtml(cat)+'" onchange="setCatatanEkstrakurikuler('+idx+','+i+',this.value)" style="width:100%;min-width:120px;padding:4px;border:1px solid #ddd;border-radius:4px"></td></tr>';
+html+='<td class="col-catatan"><textarea rows="2" oninput="autoGrowCatatan(this)" onchange="setCatatanEkstrakurikuler('+idx+','+i+',this.value)" placeholder="Otomatis">'+escHtml(cat)+'</textarea></td></tr>';
 });
 html+='</tbody></table></div>';
 var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
@@ -3135,7 +3139,7 @@ for(var s=0;s<4;s++){
 var checked=(score===s)?'checked':'';
 html+='<td><input type="radio" name="iklim_score_'+i+'" value="'+s+'" '+checked+' onchange="setSkorIklimMadrasah('+idx+','+i+','+s+')"></td>';
 }
-html+='<td><input type="text" value="'+escHtml(cat)+'" onchange="setCatatanIklimMadrasah('+idx+','+i+',this.value)" style="width:100%;min-width:120px;padding:4px;border:1px solid #ddd;border-radius:4px"></td></tr>';
+html+='<td class="col-catatan"><textarea rows="2" oninput="autoGrowCatatan(this)" onchange="setCatatanIklimMadrasah('+idx+','+i+',this.value)" placeholder="Otomatis">'+escHtml(cat)+'</textarea></td></tr>';
 });
 html+='</tbody></table></div>';
 var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},0);
