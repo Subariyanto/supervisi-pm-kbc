@@ -65,13 +65,13 @@ header p{opacity:.8;font-size:.85rem}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0ea5e9}
 .form-group textarea{resize:vertical;min-height:80px}
 .instrumen-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:.85rem}
-.instrumen-table th,.instrumen-table td{border:1px solid #e2e8f0;padding:8px 6px;text-align:center;vertical-align:middle}
-.instrumen-table th{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;font-weight:600;font-size:.8rem}
+.instrumen-table th,.instrumen-table td{border:1px solid #e2e8f0;padding:4px 6px;text-align:center;vertical-align:middle;line-height:1.35}
+.instrumen-table th{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;font-weight:600;font-size:.8rem;padding:6px 6px}
 .instrumen-table .col-no{width:40px}
 .instrumen-table .col-aspek{text-align:left;min-width:280px;width:55%}
 .instrumen-table .col-skor{width:36px}
 .instrumen-table .col-catatan{min-width:160px;width:22%;text-align:left;vertical-align:top;white-space:normal;word-wrap:break-word}
-.instrumen-table .col-catatan textarea{width:100%;padding:6px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:.8rem;font-family:inherit;line-height:1.4;resize:vertical;overflow:hidden;min-height:38px;box-sizing:border-box;white-space:pre-wrap;word-wrap:break-word}
+.instrumen-table .col-catatan textarea{width:100%;padding:4px 6px;border:1px solid #e2e8f0;border-radius:4px;font-size:.8rem;font-family:inherit;line-height:1.35;resize:vertical;overflow:hidden;min-height:28px;box-sizing:border-box;white-space:pre-wrap;word-wrap:break-word;display:block}
 .instrumen-table .col-catatan textarea:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 2px rgba(14,165,233,.15)}
 .skor-radio{background:none;border:none;cursor:pointer;font-size:1.1rem;color:#94a3b8;transition:all .2s}
 .skor-radio:hover{color:#0ea5e9}
@@ -955,7 +955,7 @@ function tahunAjaranLabel(){var p=getPeriode();return 'Tahun Ajaran '+p.tahunAja
 // ===== UTILITY =====
 function getPredikat(pct){if(pct>=91)return'Sangat Baik';if(pct>=81)return'Baik';if(pct>=71)return'Cukup';return'Kurang'}
 function getAutoCatatan(skor){if(skor===null||skor===undefined)return'';return SKOR_CATATAN[skor]||''}
-function autoGrowCatatan(el){if(!el)return;el.style.height='auto';el.style.height=(el.scrollHeight+2)+'px'}
+function autoGrowCatatan(el){if(!el)return;el.style.height='auto';el.style.height=el.scrollHeight+'px'}
 function autoGrowAllCatatan(){var els=document.querySelectorAll('.instrumen-table .col-catatan textarea');for(var i=0;i<els.length;i++){autoGrowCatatan(els[i])}}
 function getPredikatClass(p){return'predikat-'+p.toLowerCase().replace(' ','-')}
 function calcTotal(d){let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].forEach(k=>{const scores=d[k]&&d[k].scores?d[k].scores:[];const itemCount=k==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(k).length;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}});return max>0?(sum/max)*100:0}
