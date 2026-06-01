@@ -163,7 +163,7 @@ canvas{max-width:100%;margin:20px 0}
 <ul class="sidebar-menu">
 <li class="active" onclick="navigate('dashboard')" data-nav="dashboard">&#128202; Dashboard</li>
 <li class="menu-section">DATA MADRASAH</li>
-<li onclick="navigate('pengawas')" data-nav="pengawas">&#128100; Data Pengawas</li>
+<li onclick="navigate('pengawas')" data-nav="pengawas">&#128100; Data Pengawas/Kamad</li>
 <li onclick="navigate('madrasah')" data-nav="madrasah">&#127979; Data Madrasah</li>
 <li onclick="navigate('guru')" data-nav="guru">&#128104;&#8205;&#127891; Data Guru</li>
 <li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi')">&#128221; Supervisi Pembelajaran &#9662;</li>
@@ -1326,7 +1326,7 @@ function deleteGuru(idx){if(!confirm('Hapus data guru ini?'))return;var data=get
 // ===== DATA PENGAWAS =====
 function renderPengawasPage(){
 var p=getPengawas();
-var html='<div class="card"><h2 style="margin-bottom:20px">\ud83d\udc64 Data Pengawas</h2>';
+var html='<div class="card"><h2 style="margin-bottom:20px">\ud83d\udc64 Data Pengawas/Kamad</h2>';
 html+='<p style="color:#64748b;margin-bottom:15px">Isi data pengawas agar otomatis terisi saat melakukan supervisi.</p>';
 html+='<div class="grid-2">';
 html+='<div class="form-group"><label>Nama Pengawas</label><input type="text" id="pNama" value="'+escHtml(p.nama||'')+'"></div>';
