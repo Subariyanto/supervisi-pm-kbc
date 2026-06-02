@@ -563,6 +563,18 @@ Modul Kokurikuler, Ekstrakurikuler, dan Iklim Madrasah berlaku universal untuk s
 
 <button class="back-to-top" id="btnTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
 <script>
+function saveWord(){
+var html='<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Panduan Penggunaan - Aplikasi Supervisi PM-KBC</title><style>body{font-family:Segoe UI,Tahoma,sans-serif;line-height:1.6;color:#1e293b}h1,h2{color:#0d9488}h3{color:#1e40af}table{width:100%;border-collapse:collapse}th,td{border:1px solid #cbd5e1;padding:8px;text-align:left;vertical-align:top}th{background:#0d9488;color:#fff}.btn-pdf,.back-to-top{display:none}</style></head><body>'+document.querySelector('.container').innerHTML+document.querySelector('.footer').innerHTML+'</body></html>';
+var blob=new Blob(['\ufeff',html],{type:'application/msword'});
+var url=URL.createObjectURL(blob);
+var a=document.createElement('a');
+a.href=url;
+a.download='Panduan-Supervisi-PM-KBC.doc';
+document.body.appendChild(a);
+a.click();
+a.remove();
+setTimeout(function(){URL.revokeObjectURL(url)},1000);
+}
 window.addEventListener('scroll',function(){
 document.getElementById('btnTop').style.display=window.scrollY>300?'block':'none';
 });
