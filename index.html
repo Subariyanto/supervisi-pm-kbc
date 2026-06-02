@@ -278,7 +278,8 @@ function renderPeriodePage(){
 var p=getPeriode();
 var html='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
 html+='<h2 style="margin:0"> Periode Supervisi</h2>';
-html+='<button class="btn btn-primary" onclick="tambahPeriode()">+ Tambah Periode</button></div>';
+html+='<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" onclick="tambahPeriode()">+ Tambah Periode</button>';
+html+='<button class="btn btn-secondary" onclick="showPilihPeriode()">Pilih Periode</button></div></div>';
 html+='<p style="color:#6B7280;margin-bottom:15px;font-size:.9rem">Atur Tahun Ajaran dan Semester yang akan tampil di seluruh laporan (cover, kata pengantar, BAB Pelaksanaan, dst).</p>';
 html+='<div style="max-width:500px">';
 html+='<div class="form-group"><label>Tahun Ajaran</label><input type="text" id="prTahun" value="'+escHtml(p.tahunAjaran||'')+'" placeholder="Contoh: 2025-2026"></div>';
@@ -298,6 +299,32 @@ if(tahun)tahun.value='';
 if(sem)sem.value='Ganjil';
 if(tahun)tahun.focus();
 }
+
+function showPilihPeriode(){
+var current=getPeriode();
+var list=getPeriodeList();
+if(!list.some(function(p){return p.tahunAjaran===current.tahunAjaran&&p.semester===current.semester})){list.unshift(current)}
+var html='<div class="modal-overlay" id="modal-periode" style="display:flex" onclick="if(event.target===this)closePeriodeModal()">';
+html+='<div class="modal" onclick="event.stopPropagation()"><h3>Pilih Periode</h3>';
+if(list.length===0){html+='<p>Belum ada periode tersimpan.</p>';}else{
+html+='<div style="display:flex;flex-direction:column;gap:8px;margin:12px 0">';
+list.forEach(function(p,i){var aktif=(p.tahunAjaran===current.tahunAjaran&&p.semester===current.semester);html+='<button class="btn '+(aktif?'btn-primary':'btn-secondary')+'" style="text-align:left" onclick="pilihPeriode('+i+')">'+escHtml(p.tahunAjaran)+' - Semester '+escHtml(p.semester||'')+(aktif?' (Aktif)':'')+'</button>';});
+html+='</div>';}
+html+='<div class="btn-group"><button class="btn btn-secondary" onclick="closePeriodeModal()">Tutup</button></div>';
+html+='</div></div>';
+document.body.insertAdjacentHTML('beforeend',html);
+}
+
+function pilihPeriode(idx){
+var list=getPeriodeList();
+var p=list[idx];
+if(!p)return;
+savePeriode(p);
+closePeriodeModal();
+render();
+}
+
+function closePeriodeModal(){var el=document.getElementById('modal-periode');if(el)el.remove();}
 
 function savePeriodeForm(){
 var t=document.getElementById('prTahun').value.trim();
@@ -354,6 +381,7 @@ const GURU_KEY_RA='supervisi_guru_ra';
 const PENGAWAS_KEY='supervisi_pengawas';
 const INDIKATOR_KEY='supervisi_indikator';
 const PERIODE_KEY='supervisi_periode';
+const PERIODE_LIST_KEY='supervisi_periode_list';
 const CLEAR_MADRASAH_DEFAULT_KEY='supervisi_clear_madrasah_default_v1';
 function clearDefaultMadrasahOnce(){
 if(localStorage.getItem(CLEAR_MADRASAH_DEFAULT_KEY))return;
@@ -849,7 +877,14 @@ function saveGuru(d){localStorage.setItem(getActiveGuruKey(),JSON.stringify(d))}
 function getPengawas(){try{return JSON.parse(localStorage.getItem(PENGAWAS_KEY))||{}}catch(e){return{}}}
 function savePengawas(d){localStorage.setItem(PENGAWAS_KEY,JSON.stringify(d))}
 function getPeriode(){try{var p=JSON.parse(localStorage.getItem(PERIODE_KEY));if(p&&p.tahunAjaran)return p;}catch(e){}return{tahunAjaran:'2025-2026',semester:'Ganjil'};}
-function savePeriode(d){localStorage.setItem(PERIODE_KEY,JSON.stringify(d))}
+function getPeriodeList(){try{return JSON.parse(localStorage.getItem(PERIODE_LIST_KEY))||[]}catch(e){return[]}}
+function savePeriodeList(d){localStorage.setItem(PERIODE_LIST_KEY,JSON.stringify(d))}
+function savePeriode(d){
+localStorage.setItem(PERIODE_KEY,JSON.stringify(d));
+var list=getPeriodeList();
+var exists=list.some(function(p){return p.tahunAjaran===d.tahunAjaran&&p.semester===d.semester});
+if(!exists){list.push({tahunAjaran:d.tahunAjaran,semester:d.semester});savePeriodeList(list)}
+}
 function periodeLabel(){var p=getPeriode();return 'Tahun Ajaran '+p.tahunAjaran+(p.semester?' - Semester '+p.semester:'');}
 function tahunAjaranLabel(){var p=getPeriode();return 'Tahun Ajaran '+p.tahunAjaran+(p.semester?' Semester '+p.semester:'');}
 
