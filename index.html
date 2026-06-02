@@ -925,7 +925,7 @@ function autoGrowCatatan(el){if(!el)return;el.style.height='auto';el.style.heigh
 function autoGrowAllCatatan(){var els=document.querySelectorAll('.instrumen-table .col-catatan textarea');for(var i=0;i<els.length;i++){autoGrowCatatan(els[i])}}
 function scoreUnlockKey(scope,idx){return String(scope)+':'+idx}
 function isScoreUnlocked(scope,idx){return !!(state.unlockedScores&&state.unlockedScores[scoreUnlockKey(scope,idx)])}
-function unlockScore(scope,idx){if(!state.unlockedScores)state.unlockedScores={};state.unlockedScores[scoreUnlockKey(scope,idx)]=true}
+function unlockScore(scope,idx){if(!state.unlockedScores)state.unlockedScores={};state.unlockedScores[scoreUnlockKey(scope,idx)]=true;setTimeout(render,0)}
 function requireScoreUnlocked(scope,idx){if(isScoreUnlocked(scope,idx))return true;alert('Klik indikator terlebih dahulu sebelum memberi skor.');return false}
 function getPredikatClass(p){return'predikat-'+p.toLowerCase().replace(' ','-')}
 function calcTotal(d){let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].forEach(k=>{const scores=d[k]&&d[k].scores?d[k].scores:[];const itemCount=k==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(k).length;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}});return max>0?(sum/max)*100:0}
