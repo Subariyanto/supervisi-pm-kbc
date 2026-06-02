@@ -948,7 +948,7 @@ if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('op
 render();
 }
 function updateSubmenuParentActive(view){
-document.querySelectorAll('.submenu-toggle[data-submenu-parent]').forEach(function(li){var key=li.dataset.submenuParent;li.classList.toggle('active-group',view===key||view.indexOf(key+'-')===0)});
+document.querySelectorAll('.submenu-toggle[data-submenu-parent]').forEach(function(li){var key=li.dataset.submenuParent;var active=(view===key||view.indexOf(key+'-')===0||view.indexOf('rekap-'+key)===0||view.indexOf('laporan-'+key)===0);li.classList.toggle('active-group',active);});
 }
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
 
