@@ -2234,9 +2234,9 @@ var pct=max>0?(sum/max)*100:0;
 var pred=getPredikat(pct);
 html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+escHtml(d.tanggal||'-')+'</td>';
 html+='<td>'+pct.toFixed(0)+'%</td><td><span class="rekap-predikat '+getPredikatClass(pred)+'">'+pred+'</span></td>';
-html+='<td><button class="btn btn-sm btn-secondary" onclick="editKokurikuler('+i+')"></button> ';
-html+='<button class="btn btn-sm btn-info" onclick="cetakKokurikuler('+i+')"></button> ';
-html+='<button class="btn btn-sm btn-danger" onclick="deleteKokurikuler('+i+')"></button></td></tr>';
+html+='<td><button class="btn btn-sm btn-primary" onclick="editKokurikuler('+i+')">&#9998;</button> ';
+html+='<button class="btn btn-sm btn-info" onclick="cetakKokurikuler('+i+')">&#128424;</button> ';
+html+='<button class="btn btn-sm btn-danger" onclick="deleteKokurikuler('+i+')">&#128465;</button></td></tr>';
 });
 html+='</tbody></table></div>';
 }
