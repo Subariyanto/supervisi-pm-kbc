@@ -1036,9 +1036,14 @@ items+='<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();d
 items+='</div></div>';
 });
 }
-let html=stats+'<div class="card"><h2 style="margin-bottom:20px">Daftar Supervisi</h2>'+items;
+var isInputSupervisi=(state.view==='supervisi'||state.view==='supervisi-ra');
+var isDashboard=(state.view==='dashboard');
+let html=stats;
+if(!isDashboard){
+html+='<div class="card"><h2 style="margin-bottom:20px">Daftar Supervisi</h2>'+items;
 html+='<div style="text-align:center;margin-top:20px"><button class="btn btn-primary" onclick="newForm()">+ Supervisi Baru</button></div></div>';
-if(data.length>0)html+=renderChart(data);
+}
+if(data.length>0&&!isInputSupervisi)html+=renderChart(data);
 return html;
 }
 
