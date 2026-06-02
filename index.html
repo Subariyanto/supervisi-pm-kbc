@@ -1071,10 +1071,12 @@ return html;
 }
 
 function showMadrasahModal(idx){
+closeModal();
 var m=(idx!==undefined)?getMadrasah()[idx]:{};
 var isEdit=(idx!==undefined);
-var modal='<div class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal()">';
-modal+='<div class="modal"><h3>'+(isEdit?'Edit':'Tambah')+' Madrasah</h3>';
+var labelMadrasah=isRAJenjang()?'Madrasah RA':'Madrasah';
+var modal='<div class="modal-overlay" id="modal-madrasah" style="display:flex" onclick="if(event.target===this)closeModal()">';
+modal+='<div class="modal" onclick="event.stopPropagation()"><h3>'+(isEdit?'Edit':'Tambah')+' '+labelMadrasah+'</h3>';
 modal+='<div class="form-group"><label>Nama Madrasah</label><input id="m-nama" value="'+escHtml(m.nama||'')+'"></div>';
 modal+='<div class="form-group"><label>NPSN</label><input id="m-npsn" value="'+escHtml(m.npsn||'')+'"></div>';
 modal+='<div class="form-group"><label>Alamat</label><input id="m-alamat" value="'+escHtml(m.alamat||'')+'"></div>';
@@ -1084,7 +1086,11 @@ modal+='<div class="form-group"><label>NIP Kepala</label><input id="m-nipkepala"
 modal+='<div class="btn-group"><button class="btn btn-success" onclick="saveMadrasahForm('+(isEdit?idx:'null')+')">Simpan</button>';
 modal+='<button class="btn btn-secondary" onclick="closeModal()">Batal</button></div>';
 modal+='</div></div>';
-document.getElementById('modal-container').innerHTML=modal;
+var container=document.getElementById('modal-container');
+if(container)container.innerHTML=modal;
+else document.body.insertAdjacentHTML('beforeend',modal);
+var first=document.getElementById('m-nama');
+if(first)first.focus();
 }
 
 function saveMadrasahForm(idx){
@@ -1107,7 +1113,7 @@ saveMadrasah(data);closeModal();render();
 
 function editMadrasah(idx){showMadrasahModal(idx)}
 function deleteMadrasah(idx){if(!confirm('Hapus data madrasah ini?'))return;var data=getMadrasah();data.splice(idx,1);saveMadrasah(data);render();}
-function closeModal(){var mc=document.getElementById('modal-container');if(mc)mc.innerHTML='';}
+function closeModal(){var mc=document.getElementById('modal-container');if(mc)mc.innerHTML='';var mm=document.getElementById('modal-madrasah');if(mm)mm.remove();}
 
 // ===== IMPORT EXCEL MADRASAH =====
 function importMadrasahExcel(){document.getElementById('importMadrasahFile').click();}
