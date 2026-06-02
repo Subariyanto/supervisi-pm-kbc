@@ -143,7 +143,7 @@ document.getElementById('authOverlay').style.display='none';
 document.getElementById('appLayout').style.display='';
 document.querySelector('.mobile-toggle').style.display='';
 var userEl=document.getElementById('sidebarUser');
-if(userEl)userEl.innerHTML='<strong>👤 '+escHtml(session.nama)+'</strong>';
+if(userEl)userEl.innerHTML='<strong> '+escHtml(session.nama)+'</strong>';
 }
 
 function hideApp(){
@@ -155,7 +155,7 @@ document.querySelector('.mobile-toggle').style.display='none';
 function showLogin(){
 hideApp();
 var card=document.getElementById('authCard');
-card.innerHTML='<h2>🔐 Login</h2>'+
+card.innerHTML='<h2> Login</h2>'+
 '<p class="auth-subtitle">Supervisi Pembelajaran PM-KBC</p>'+
 '<div class="auth-error" id="authError"></div>'+
 '<div class="form-group"><label>Username</label><input type="text" id="loginUsername" placeholder="Masukkan username" autocomplete="username"></div>'+
@@ -175,7 +175,7 @@ if(userEl)userEl.onkeydown=function(e){if(e.key==='Enter')document.getElementByI
 function showRegister(){
 hideApp();
 var card=document.getElementById('authCard');
-card.innerHTML='<h2>📝 Daftar Akun</h2>'+
+card.innerHTML='<h2> Daftar Akun</h2>'+
 '<p class="auth-subtitle">Buat akun baru untuk mengakses aplikasi</p>'+
 '<div class="auth-error" id="authError"></div>'+
 '<div class="auth-success" id="authSuccess"></div>'+
@@ -258,31 +258,31 @@ showLogin();
 }
 
 function renderUbahPassword(){
-var html='<div class="card"><h2 style="margin-bottom:20px">🔐 Ubah Password</h2>';
+var html='<div class="card"><h2 style="margin-bottom:20px"> Ubah Password</h2>';
 html+='<div class="auth-error" id="ubahError" style="display:none"></div>';
 html+='<div class="auth-success" id="ubahSuccess" style="display:none"></div>';
 html+='<div style="max-width:400px">';
 html+='<div class="form-group"><label>Password Lama</label><input type="password" id="oldPass" placeholder="Masukkan password lama"></div>';
 html+='<div class="form-group"><label>Password Baru</label><input type="password" id="newPass" placeholder="Masukkan password baru"></div>';
 html+='<div class="form-group"><label>Konfirmasi Password Baru</label><input type="password" id="confirmNewPass" placeholder="Ulangi password baru"></div>';
-html+='<button class="btn btn-primary" onclick="doUbahPassword()">💾 Simpan Password</button>';
+html+='<button class="btn btn-primary" onclick="doUbahPassword()"> Simpan Password</button>';
 html+='</div></div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 return html;
 }
 
 function renderPeriodePage(){
 var p=getPeriode();
-var html='<div class="card"><h2 style="margin-bottom:20px">🗓️ Periode Supervisi</h2>';
+var html='<div class="card"><h2 style="margin-bottom:20px"> Periode Supervisi</h2>';
 html+='<p style="color:#6B7280;margin-bottom:15px;font-size:.9rem">Atur Tahun Ajaran dan Semester yang akan tampil di seluruh laporan (cover, kata pengantar, BAB Pelaksanaan, dst).</p>';
 html+='<div style="max-width:500px">';
 html+='<div class="form-group"><label>Tahun Ajaran</label><input type="text" id="prTahun" value="'+escHtml(p.tahunAjaran||'')+'" placeholder="Contoh: 2025-2026"></div>';
 html+='<div class="form-group"><label>Semester</label><select id="prSem"><option value="Ganjil"'+(p.semester==='Ganjil'?' selected':'')+'>Ganjil</option><option value="Genap"'+(p.semester==='Genap'?' selected':'')+'>Genap</option></select></div>';
-html+='<button class="btn btn-primary" onclick="savePeriodeForm()">💾 Simpan Periode</button>';
+html+='<button class="btn btn-primary" onclick="savePeriodeForm()"> Simpan Periode</button>';
 html+='</div>';
 html+='<div class="note" style="background:#F3F4F6;border-left:4px solid #1E2A5A;padding:12px 16px;border-radius:0 8px 8px 0;margin-top:20px;font-size:.9rem"><b>Aktif sekarang:</b> '+escHtml(periodeLabel())+'</div>';
 html+='</div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 return html;
 }
 
@@ -666,7 +666,7 @@ render();
 function renderEditPanelFlat(key){
 var items=getIndikator(key);
 var html='<div id="edit-indikator-panel" class="no-print" style="background:#F3F4F6;border:2px solid #1E2A5A;border-radius:12px;padding:20px;margin-bottom:20px">';
-html+='<h3 style="margin-bottom:15px;color:#D4AF37">✏️ Edit Indikator - '+key.charAt(0).toUpperCase()+key.slice(1)+'</h3>';
+html+='<h3 style="margin-bottom:15px;color:#D4AF37"> Edit Indikator - '+key.charAt(0).toUpperCase()+key.slice(1)+'</h3>';
 html+='<p style="font-size:.8rem;color:#6B7280;margin-bottom:12px">Edit teks, hapus, tambah, atau ubah urutan indikator.</p>';
 items.forEach(function(item,i){
 html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px" id="indikator-row-'+i+'">';
@@ -679,9 +679,9 @@ html+='</div>';
 });
 html+='<div class="btn-group" style="margin-top:15px">';
 html+='<button class="btn btn-sm btn-primary" onclick="addIndikatorItem(\''+key+'\')">&plus; Tambah Indikator</button>';
-html+='<button class="btn btn-sm btn-success" onclick="saveEditIndikatorFlat(\''+key+'\')">💾 Simpan</button>';
+html+='<button class="btn btn-sm btn-success" onclick="saveEditIndikatorFlat(\''+key+'\')"> Simpan</button>';
 html+='<button class="btn btn-sm btn-secondary" onclick="cancelEditIndikator()">Batal</button>';
-html+='<button class="btn btn-sm btn-warning" onclick="resetIndikatorConfirm(\''+key+'\')">↺ Reset Default</button>';
+html+='<button class="btn btn-sm btn-warning" onclick="resetIndikatorConfirm(\''+key+'\')"> Reset Default</button>';
 html+='</div></div>';
 return html;
 }
@@ -689,7 +689,7 @@ return html;
 function renderEditPanelGrouped(){
 var items=getIndikatorPelaksanaanFlat();
 var html='<div id="edit-indikator-panel" class="no-print" style="background:#F3F4F6;border:2px solid #1E2A5A;border-radius:12px;padding:20px;margin-bottom:20px">';
-html+='<h3 style="margin-bottom:15px;color:#D4AF37">✏️ Edit Indikator - Pelaksanaan</h3>';
+html+='<h3 style="margin-bottom:15px;color:#D4AF37"> Edit Indikator - Pelaksanaan</h3>';
 html+='<p style="font-size:.8rem;color:#6B7280;margin-bottom:12px">Edit teks, hapus, tambah, atau ubah urutan indikator.</p>';
 items.forEach(function(item,i){
 html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">';
@@ -702,9 +702,9 @@ html+='</div>';
 });
 html+='<div style="margin-top:8px"><button class="btn btn-sm btn-primary" onclick="addIndikatorItem(\'pelaksanaan\')">&plus; Tambah</button></div>';
 html+='<div class="btn-group" style="margin-top:15px">';
-html+='<button class="btn btn-sm btn-success" onclick="saveEditIndikatorFlat(\'pelaksanaan\')">💾 Simpan</button>';
+html+='<button class="btn btn-sm btn-success" onclick="saveEditIndikatorFlat(\'pelaksanaan\')"> Simpan</button>';
 html+='<button class="btn btn-sm btn-secondary" onclick="cancelEditIndikator()">Batal</button>';
-html+='<button class="btn btn-sm btn-warning" onclick="resetIndikatorConfirm(\'pelaksanaan\')">↺ Reset Default</button>';
+html+='<button class="btn btn-sm btn-warning" onclick="resetIndikatorConfirm(\'pelaksanaan\')"> Reset Default</button>';
 html+='</div></div>';
 return html;
 }
@@ -1053,7 +1053,7 @@ else{
 html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Nama Madrasah</th><th>NPSN</th><th>Alamat</th><th>Kab/Kota</th><th>Kepala Madrasah</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 html+='</div><div id="modal-container"></div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 return html;
 }
 
@@ -1162,7 +1162,7 @@ else{
 html+='<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>No</th><th>Nama Guru</th><th>NIP</th><th>Mata Pelajaran</th><th>Madrasah</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 html+='</div><div id="modal-container"></div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 return html;
 }
 
@@ -1216,7 +1216,7 @@ html+='<div class="form-group"><label>Jumlah Binaan/Jumlah Guru</label><input ty
 html+='</div>';
 html+='<div style="margin-top:15px"><button class="btn btn-primary" onclick="updatePengawas()">\ud83d\udcbe Simpan</button></div>';
 html+='</div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 return html;
 }
 
@@ -1273,12 +1273,12 @@ html+='<td><span class="rekap-predikat '+getPredikatClass(pred)+'">'+pred+'</spa
 html+='</tr>';
 });
 html+='</tbody></table>';
-html+='<div class="btn-group" style="margin-top:10px"><button class="btn btn-sm btn-secondary" onclick="printRekapMadrasah(\''+escHtml(mName)+'\')">🖨️ Cetak Rekap</button></div>';
+html+='<div class="btn-group" style="margin-top:10px"><button class="btn btn-sm btn-secondary" onclick="printRekapMadrasah(\''+escHtml(mName)+'\')"> Cetak Rekap</button></div>';
 html+='</div>';
 });
 }
 html+='</div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 return html;
 }
 
@@ -1427,9 +1427,9 @@ var html='';
 if(editIndikatorState.active===key){
 html+=renderEditPanelFlat(key);
 }else if(!isRAJenjang()){
-html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\''+key+'\')">✏️ Edit Indikator</button> <button class="btn btn-sm btn-warning" onclick="resetSkor(\''+key+'\')">🔄 Reset Skor</button></div>';
+html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\''+key+'\')"> Edit Indikator</button> <button class="btn btn-sm btn-warning" onclick="resetSkor(\''+key+'\')"> Reset Skor</button></div>';
 }else{
-html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-warning" onclick="resetSkor(\''+key+'\')">🔄 Reset Skor</button></div>';
+html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-warning" onclick="resetSkor(\''+key+'\')"> Reset Skor</button></div>';
 }
 html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Indikator</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
 items.forEach(function(item,i){
@@ -1467,9 +1467,9 @@ var html='';
 if(editIndikatorState.active==='pelaksanaan'){
 html+=renderEditPanelGrouped();
 }else if(!isRAJenjang()){
-html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\'pelaksanaan\')">✏️ Edit Indikator</button> <button class="btn btn-sm btn-warning" onclick="resetSkor(\'pelaksanaan\')">🔄 Reset Skor</button></div>';
+html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="showEditIndikator(\'pelaksanaan\')"> Edit Indikator</button> <button class="btn btn-sm btn-warning" onclick="resetSkor(\'pelaksanaan\')"> Reset Skor</button></div>';
 }else{
-html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-warning" onclick="resetSkor(\'pelaksanaan\')">🔄 Reset Skor</button></div>';
+html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-warning" onclick="resetSkor(\'pelaksanaan\')"> Reset Skor</button></div>';
 }
 var idx=0;
 var pelItems=getIndikatorPelaksanaanFlat();
@@ -1796,7 +1796,7 @@ function viewDetail(idx){state.detailIdx=idx;state.view=isRAJenjang()?'detail-ra
 // ===== CETAK HASIL SUPERVISI PAGE =====
 function renderCetakPage(){
 var data=getData();
-var html='<div class="card"><h2 style="margin-bottom:20px">🖨️ Cetak Hasil Supervisi</h2>';
+var html='<div class="card"><h2 style="margin-bottom:20px"> Cetak Hasil Supervisi</h2>';
 if(data.length===0){
 html+='<div class="empty-state"><p>Belum ada data supervisi untuk dicetak.</p></div>';
 }else{
@@ -1804,19 +1804,19 @@ html+='<p style="color:#6B7280;margin-bottom:15px">Pilih data supervisi dan hala
 data.forEach(function(d,i){
 var pct=calcTotal(d);
 html+='<div class="cetak-item" style="border:1px solid #E5E7EB;border-radius:12px;padding:16px;margin-bottom:12px">';
-html+='<h4 style="margin-bottom:8px">'+(d.identitas.namaGuru||'(Tanpa Nama)')+' — '+(d.identitas.namaMadrasah||'-')+'</h4>';
-html+='<p style="color:#6B7280;font-size:.85rem;margin-bottom:12px">'+(d.identitas.mataPelajaran||'-')+' • '+(d.identitas.tanggalSupervisi||'-')+' • '+pct.toFixed(0)+'%</p>';
+html+='<h4 style="margin-bottom:8px">'+(d.identitas.namaGuru||'(Tanpa Nama)')+'  '+(d.identitas.namaMadrasah||'-')+'</h4>';
+html+='<p style="color:#6B7280;font-size:.85rem;margin-bottom:12px">'+(d.identitas.mataPelajaran||'-')+'  '+(d.identitas.tanggalSupervisi||'-')+'  '+pct.toFixed(0)+'%</p>';
 html+='<div class="btn-group">';
-html+='<button class="btn btn-sm btn-primary" onclick="cetakPilihan('+i+',\'perencanaan\')">📄 Perencanaan</button>';
-html+='<button class="btn btn-sm btn-info" onclick="cetakPilihan('+i+',\'pelaksanaan\')">📄 Pelaksanaan</button>';
-html+='<button class="btn btn-sm btn-warning" onclick="cetakPilihan('+i+',\'asesmen\')">📄 Asesmen</button>';
-html+='<button class="btn btn-sm btn-success" onclick="cetakPilihan('+i+',\'rekap\')">📄 Rekap</button>';
-html+='<button class="btn btn-sm btn-secondary" onclick="cetakPilihan('+i+',\'semua\')">📄 Semua</button>';
+html+='<button class="btn btn-sm btn-primary" onclick="cetakPilihan('+i+',\'perencanaan\')"> Perencanaan</button>';
+html+='<button class="btn btn-sm btn-info" onclick="cetakPilihan('+i+',\'pelaksanaan\')"> Pelaksanaan</button>';
+html+='<button class="btn btn-sm btn-warning" onclick="cetakPilihan('+i+',\'asesmen\')"> Asesmen</button>';
+html+='<button class="btn btn-sm btn-success" onclick="cetakPilihan('+i+',\'rekap\')"> Rekap</button>';
+html+='<button class="btn btn-sm btn-secondary" onclick="cetakPilihan('+i+',\'semua\')"> Semua</button>';
 html+='</div></div>';
 });
 }
 html+='</div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 return html;
 }
 
@@ -2191,7 +2191,7 @@ function renderKokurikulerPage(){
 var data=getKokurikuler();
 var madrasahList=getMadrasah();
 var html='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
-html+='<h2>📋 Instrumen Kokurikuler</h2>';
+html+='<h2> Instrumen Kokurikuler</h2>';
 html+='<button class="btn btn-primary" onclick="showAddKokurikuler()">+ Tambah Penilaian</button></div>';
 if(data.length===0){
 html+='<div class="empty-state"><p>Belum ada data penilaian kokurikuler.<br>Klik tombol di atas untuk mulai.</p></div>';
@@ -2205,14 +2205,14 @@ var pct=max>0?(sum/max)*100:0;
 var pred=getPredikat(pct);
 html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+escHtml(d.tanggal||'-')+'</td>';
 html+='<td>'+pct.toFixed(0)+'%</td><td><span class="rekap-predikat '+getPredikatClass(pred)+'">'+pred+'</span></td>';
-html+='<td><button class="btn btn-sm btn-secondary" onclick="editKokurikuler('+i+')">✏️</button> ';
-html+='<button class="btn btn-sm btn-info" onclick="cetakKokurikuler('+i+')">🖨️</button> ';
-html+='<button class="btn btn-sm btn-danger" onclick="deleteKokurikuler('+i+')">🗑️</button></td></tr>';
+html+='<td><button class="btn btn-sm btn-secondary" onclick="editKokurikuler('+i+')"></button> ';
+html+='<button class="btn btn-sm btn-info" onclick="cetakKokurikuler('+i+')"></button> ';
+html+='<button class="btn btn-sm btn-danger" onclick="deleteKokurikuler('+i+')"></button></td></tr>';
 });
 html+='</tbody></table></div>';
 }
 html+='</div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 html+='<div id="modal-container"></div>';
 return html;
 }
@@ -2270,9 +2270,9 @@ var d=data[idx];
 var scores=d.scores||[];
 var catatan=d.catatan||[];
 var html='<div class="card">';
-html+='<h2 style="margin-bottom:5px">📋 Instrumen Kokurikuler</h2>';
+html+='<h2 style="margin-bottom:5px"> Instrumen Kokurikuler</h2>';
 html+='<p style="color:#6B7280;margin-bottom:20px">'+escHtml(d.madrasahNama)+' &bull; '+escHtml(d.tanggal)+'</p>';
-html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-warning" onclick="resetSkorKokurikuler('+idx+')">🔄 Reset Skor</button></div>';
+html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-warning" onclick="resetSkorKokurikuler('+idx+')"> Reset Skor</button></div>';
 html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Indikator</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
 KOKURIKULER.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
@@ -2300,9 +2300,9 @@ html+='<textarea rows="4" onchange="setRekapKokurikuler('+idx+',\'catatan\',this
 html+='<div class="form-group"><label>Rencana Tindak Lanjut</label>';
 html+='<textarea rows="4" onchange="setRekapKokurikuler('+idx+',\'tindakLanjut\',this.value)">'+escHtml(rekap.tindakLanjut||'')+'</textarea></div>';
 html+='<div class="btn-group no-print" style="justify-content:center">';
-html+='<button class="btn btn-primary" onclick="navigate(\'kokurikuler\')">✔ Simpan</button>';
-html+='<button class="btn btn-info" onclick="cetakKokurikuler('+idx+')">🖨️ Cetak</button>';
-html+='<button class="btn btn-danger" onclick="navigate(\'kokurikuler\')">✕ Tutup</button>';
+html+='<button class="btn btn-primary" onclick="navigate(\'kokurikuler\')"> Simpan</button>';
+html+='<button class="btn btn-info" onclick="cetakKokurikuler('+idx+')"> Cetak</button>';
+html+='<button class="btn btn-danger" onclick="navigate(\'kokurikuler\')"> Tutup</button>';
 html+='</div></div>';
 return html;
 }
@@ -2426,7 +2426,7 @@ document.getElementById('modalPenggalian').style.display='flex';
 function renderRekapKokurikulerPage(){
 var data=getKokurikuler();
 var pengawas=getPengawas();
-var html='<div class="card"><h2 style="margin-bottom:20px">📊 Rekap Kokurikuler</h2>';
+var html='<div class="card"><h2 style="margin-bottom:20px"> Rekap Kokurikuler</h2>';
 if(data.length===0){
 html+='<div class="empty-state"><p>Belum ada data kokurikuler.</p></div>';
 }else{
@@ -2442,13 +2442,13 @@ html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+escHtml(d
 html+='<td style="text-align:left;font-size:.8rem;max-width:200px">'+escHtml(rekap.catatan||'-')+'</td>';
 html+='<td style="text-align:left;font-size:.8rem;max-width:200px">'+escHtml(rekap.tindakLanjut||'-')+'</td>';
 html+='<td>'+pred+'</td>';
-html+='<td class="no-print"><button class="btn btn-sm btn-info" onclick="cetakKokurikuler('+i+')">🖨️</button></td></tr>';
+html+='<td class="no-print"><button class="btn btn-sm btn-info" onclick="cetakKokurikuler('+i+')"></button></td></tr>';
 });
 html+='</tbody></table></div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:center"><button class="btn btn-secondary" onclick="printRekapKokurikuler()">🖨️ Cetak Rekap</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:center"><button class="btn btn-secondary" onclick="printRekapKokurikuler()"> Cetak Rekap</button></div>';
 }
 html+='</div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 return html;
 }
 
