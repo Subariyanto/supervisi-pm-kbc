@@ -20,12 +20,12 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);min-height:10
 </style>
 </head>
 <body>
-<div class="modal-overlay" id="modalPenggalian" onclick="document.getElementById('modalPenggalian').style.display='none'">
+<div class="modal-overlay" id="modalPenggalian" onclick="closePenggalianModal()">
 <div class="modal-box" onclick="event.stopPropagation()">
-<button class="modal-close" onclick="document.getElementById('modalPenggalian').style.display='none'">&times;</button>
+<button class="modal-close" onclick="closePenggalianModal()">&times;</button>
 <h3 id="modalTitle">Penggalian Data</h3>
 <div id="modalContent"></div>
-<div id="modalActions" style="margin-top:16px;text-align:right"><button class="btn btn-primary" onclick="document.getElementById('modalPenggalian').style.display='none'">Tutup</button></div>
+<div id="modalActions" style="margin-top:16px;text-align:right"><button class="btn btn-primary" onclick="closePenggalianModal()">Tutup</button></div>
 </div>
 </div>
 <!-- AUTH OVERLAY -->
@@ -856,11 +856,12 @@ return null;
 }
 function getPenggalian(key,idx){var custom=getPenggalianCustom();var id=getPenggalianId(key,idx);return custom[id]||getPenggalianBase(key,idx)}
 function getPenggalianExternal(moduleName,idx,base){var custom=getPenggalianCustom();var id=getPenggalianExternalKey(moduleName,idx);return custom[id]||base||''}
+function closePenggalianModal(){var m=document.getElementById('modalPenggalian');if(m)m.style.display='none'}
 function openPenggalianModal(title,content,editKey){
 currentPenggalianEdit={key:editKey,content:content||''};
 document.getElementById('modalTitle').innerHTML=title;
 document.getElementById('modalContent').innerHTML=content||'<p>Tidak ada data penggalian.</p>';
-document.getElementById('modalActions').innerHTML='<button class="btn btn-secondary" onclick="editPenggalianModal()">Edit</button> <button class="btn btn-primary" onclick="closeModal()">Tutup</button>';
+document.getElementById('modalActions').innerHTML='<button class="btn btn-secondary" onclick="editPenggalianModal()">Edit</button> <button class="btn btn-primary" onclick="closePenggalianModal()">Tutup</button>';
 document.getElementById('modalPenggalian').style.display='flex';
 }
 function editPenggalianModal(){
@@ -873,10 +874,10 @@ if(!currentPenggalianEdit)return;
 var val=document.getElementById('penggalianEditText').value;
 var custom=getPenggalianCustom();custom[currentPenggalianEdit.key]=val;savePenggalianCustom(custom);currentPenggalianEdit.content=val;
 document.getElementById('modalContent').innerHTML=val||'<p>Tidak ada data penggalian.</p>';
-document.getElementById('modalActions').innerHTML='<button class="btn btn-secondary" onclick="editPenggalianModal()">Edit</button> <button class="btn btn-primary" onclick="closeModal()">Tutup</button>';
+document.getElementById('modalActions').innerHTML='<button class="btn btn-secondary" onclick="editPenggalianModal()">Edit</button> <button class="btn btn-primary" onclick="closePenggalianModal()">Tutup</button>';
 }
-function cancelEditPenggalianModal(){if(!currentPenggalianEdit)return;document.getElementById('modalContent').innerHTML=currentPenggalianEdit.content||'<p>Tidak ada data penggalian.</p>';document.getElementById('modalActions').innerHTML='<button class="btn btn-secondary" onclick="editPenggalianModal()">Edit</button> <button class="btn btn-primary" onclick="closeModal()">Tutup</button>'}
-function resetPenggalianModal(){if(!currentPenggalianEdit||!confirm('Reset penggalian data ini ke default?'))return;var custom=getPenggalianCustom();delete custom[currentPenggalianEdit.key];savePenggalianCustom(custom);closeModal();render()}
+function cancelEditPenggalianModal(){if(!currentPenggalianEdit)return;document.getElementById('modalContent').innerHTML=currentPenggalianEdit.content||'<p>Tidak ada data penggalian.</p>';document.getElementById('modalActions').innerHTML='<button class="btn btn-secondary" onclick="editPenggalianModal()">Edit</button> <button class="btn btn-primary" onclick="closePenggalianModal()">Tutup</button>'}
+function resetPenggalianModal(){if(!currentPenggalianEdit||!confirm('Reset penggalian data ini ke default?'))return;var custom=getPenggalianCustom();delete custom[currentPenggalianEdit.key];savePenggalianCustom(custom);closePenggalianModal();render()}
 
 // ===== STORAGE =====
 function getActiveAppKey(){return isRAJenjang()?APP_KEY_RA:APP_KEY;}
