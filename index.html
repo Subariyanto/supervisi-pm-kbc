@@ -959,6 +959,7 @@ titleEl.innerHTML=isKoku?'\u{1F4CB} Supervisi Kokurikuler':isEkstra?'\u{1F4CB} S
 app.classList.add('fade-in');
 setTimeout(function(){app.classList.remove('fade-in')},300);
 if(typeof autoGrowAllCatatan==='function')setTimeout(autoGrowAllCatatan,0);
+if(typeof bindIdentitasDropdowns==='function')setTimeout(bindIdentitasDropdowns,0);
 }
 
 // ===== DASHBOARD =====
@@ -1378,13 +1379,13 @@ var madrasahList=getMadrasah();
 var guruList=getGuru();
 var html='<div class="grid-2">';
 // Madrasah dropdown
-html+='<div class="form-group"><label>Pilih Madrasah (dari data)</label><select onchange="selectMadrasah(this.value)"><option value="">-- Pilih atau isi manual --</option>';
+html+='<div class="form-group"><label>Pilih Madrasah (dari data)</label><select id="selectMadrasahIdentitas"><option value="">-- Pilih atau isi manual --</option>';
 madrasahList.forEach(function(m,i){html+='<option value="'+i+'" '+(id.selectedMadrasahIdx==i?'selected':'')+'>'+escHtml(m.nama)+'</option>';});
 html+='</select></div>';
 // Guru dropdown
 var filteredGuru=guruList;
 if(id.namaMadrasah){filteredGuru=guruList.filter(function(g){return g.madrasah===id.namaMadrasah});}
-html+='<div class="form-group"><label>Pilih Guru (dari data)</label><select onchange="selectGuru(this.value)"><option value="">-- Pilih atau isi manual --</option>';
+html+='<div class="form-group"><label>Pilih Guru (dari data)</label><select id="selectGuruIdentitas"><option value="">-- Pilih atau isi manual --</option>';
 filteredGuru.forEach(function(g,i){
 var gIdx=guruList.indexOf(g);
 html+='<option value="'+gIdx+'" '+(id.selectedGuruIdx==gIdx?'selected':'')+'>'+escHtml(g.nama)+' - '+escHtml(g.mataPelajaran)+'</option>';
@@ -1404,6 +1405,13 @@ html+='<div class="form-group"><label>'+f[1]+'</label><input type="text" value="
 html+='<div class="form-group"><label>Tanggal Supervisi</label><input type="date" value="'+(id.tanggalSupervisi||'')+'" onchange="updateIdentitas(\'tanggalSupervisi\',this.value)"></div>';
 html+='</div>';
 return html;
+}
+
+function bindIdentitasDropdowns(){
+var m=document.getElementById('selectMadrasahIdentitas');
+if(m)m.onchange=function(){selectMadrasah(this.value)};
+var g=document.getElementById('selectGuruIdentitas');
+if(g)g.onchange=function(){selectGuru(this.value)};
 }
 
 function selectMadrasah(idx){
