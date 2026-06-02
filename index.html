@@ -899,7 +899,6 @@ state.jenjang=isRAView(view)?'ra':'umum';
 document.querySelectorAll('.sidebar-menu li').forEach(function(li){li.classList.toggle('active',li.dataset.nav===view)});
 document.querySelectorAll('.submenu li').forEach(function(li){li.classList.toggle('active',li.dataset.nav===view)});
 if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('open');
-if((view==='supervisi'||view==='supervisi-ra')&&(!state.formData||!state.formData.identitas||!state.formData.identitas.namaGuru)){newForm();return;}
 render();
 }
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
@@ -913,7 +912,8 @@ case 'pengawas':app.innerHTML=renderPengawasPage();break;
 case 'madrasah':app.innerHTML=renderMadrasahPage();break;
 case 'madrasah-ra':app.innerHTML=renderMadrasahPage();break;
 case 'guru':app.innerHTML=renderGuruPage();break;
-case 'supervisi':case 'form':app.innerHTML=renderForm();break;
+case 'supervisi':app.innerHTML=renderDashboard();setTimeout(drawChart,100);break;
+case 'form':app.innerHTML=renderForm();break;
 case 'detail':app.innerHTML=renderDetail();break;
 case 'rekap':app.innerHTML=renderRekapAllPage();break;
 case 'cetak':app.innerHTML=renderCetakPage();break;
@@ -939,7 +939,8 @@ case 'laporan-iklim-madrasah-kkma':app.innerHTML=renderLaporanIklimMadrasahPerKK
 case 'ubah-password':app.innerHTML=renderUbahPassword();break;
 case 'periode':app.innerHTML=renderPeriodePage();break;
 case 'backup-restore':app.innerHTML=renderBackupRestore();break;
-case 'supervisi-ra':case 'supervisi-ra-form':case 'form-ra':app.innerHTML=renderForm();break;
+case 'supervisi-ra':app.innerHTML=renderDashboard();setTimeout(drawChart,100);break;
+case 'supervisi-ra-form':case 'form-ra':app.innerHTML=renderForm();break;
 case 'guru-ra':app.innerHTML=renderGuruPage();break;
 case 'detail-ra':app.innerHTML=renderDetail();break;
 case 'rekap-ra':app.innerHTML=renderRekapAllPage();break;
@@ -1786,7 +1787,7 @@ function saveForm(){
 var data=getData();
 if(state.editId!==null){data[state.editId]=state.formData;}
 else{data.push(state.formData);}
-saveData(data);state.view='dashboard';render();
+saveData(data);state.view=isRAJenjang()?'supervisi-ra':'supervisi';render();
 }
 
 function editItem(idx){
