@@ -276,7 +276,9 @@ return html;
 
 function renderPeriodePage(){
 var p=getPeriode();
-var html='<div class="card"><h2 style="margin-bottom:20px"> Periode Supervisi</h2>';
+var html='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
+html+='<h2 style="margin:0"> Periode Supervisi</h2>';
+html+='<button class="btn btn-primary" onclick="tambahPeriode()">+ Tambah Periode</button></div>';
 html+='<p style="color:#6B7280;margin-bottom:15px;font-size:.9rem">Atur Tahun Ajaran dan Semester yang akan tampil di seluruh laporan (cover, kata pengantar, BAB Pelaksanaan, dst).</p>';
 html+='<div style="max-width:500px">';
 html+='<div class="form-group"><label>Tahun Ajaran</label><input type="text" id="prTahun" value="'+escHtml(p.tahunAjaran||'')+'" placeholder="Contoh: 2025-2026"></div>';
@@ -287,6 +289,14 @@ html+='<div class="note" style="background:#F3F4F6;border-left:4px solid #1E2A5A
 html+='</div>';
 html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px"> Tutup</button></div>';
 return html;
+}
+
+function tambahPeriode(){
+var tahun=document.getElementById('prTahun');
+var sem=document.getElementById('prSem');
+if(tahun)tahun.value='';
+if(sem)sem.value='Ganjil';
+if(tahun)tahun.focus();
 }
 
 function savePeriodeForm(){
