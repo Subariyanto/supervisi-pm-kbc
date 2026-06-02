@@ -41,6 +41,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);min-height:10
 <li class="active" onclick="navigate('dashboard')" data-nav="dashboard">&#128202; Dashboard</li>
 <li class="menu-section">DATA MADRASAH</li>
 <li onclick="navigate('pengawas')" data-nav="pengawas">&#128100; Data Pengawas/Kamad</li>
+<li onclick="navigate('madrasah')" data-nav="madrasah">&#127979; Data Madrasah</li>
 <li onclick="navigate('guru')" data-nav="guru">&#128104;&#8205;&#127891; Data Guru</li>
 <li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi')">&#128221; Supervisi Pembelajaran &#9662;</li>
 <ul class="submenu" id="sub-supervisi">
@@ -76,6 +77,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);min-height:10
 <li class="menu-section">DATA RA (RAUDHATUL ATHFAL)</li>
 <li class="submenu-toggle" onclick="toggleSubmenu('sub-data-ra')">Data RA &#9662;</li>
 <ul class="submenu" id="sub-data-ra">
+<li onclick="navigate('madrasah-ra')" data-nav="madrasah-ra">&#127979; Data Madrasah RA</li>
 <li onclick="navigate('guru-ra')" data-nav="guru-ra">&#128104;&#8205;&#127891; Data Guru RA</li>
 </ul>
 <li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi-ra')">Supervisi Pembelajaran RA &#9662;</li>
@@ -339,6 +341,14 @@ const GURU_KEY_RA='supervisi_guru_ra';
 const PENGAWAS_KEY='supervisi_pengawas';
 const INDIKATOR_KEY='supervisi_indikator';
 const PERIODE_KEY='supervisi_periode';
+const CLEAR_MADRASAH_DEFAULT_KEY='supervisi_clear_madrasah_default_v1';
+function clearDefaultMadrasahOnce(){
+if(localStorage.getItem(CLEAR_MADRASAH_DEFAULT_KEY))return;
+localStorage.removeItem(MADRASAH_KEY);
+localStorage.removeItem(MADRASAH_KEY_RA);
+localStorage.setItem(CLEAR_MADRASAH_DEFAULT_KEY,'1');
+}
+clearDefaultMadrasahOnce();
 
 const PERENCANAAN=[
 'Dalam identifikasi Rencana Pembelajaran berorientasi pada penanaman karakter sesuai DPL dan nilai 5 cinta',
