@@ -90,6 +90,9 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);min-height:10
 </ul>
 <li class="menu-section">PENGATURAN</li>
 <li onclick="navigate('periode')" data-nav="periode">&#128197; Periode</li>
+<li onclick="navigate('lisensi')" data-nav="lisensi">&#128273; Lisensi / Aktivasi</li>
+<li id="menuKodeAktivasi" onclick="navigate('kode-aktivasi')" data-nav="kode-aktivasi" style="display:none">&#127919; Kelola Kode (Admin)</li>
+<li id="menuKelolaUser" onclick="navigate('kelola-user')" data-nav="kelola-user" style="display:none">&#128101; Kelola User (Admin)</li>
 <li onclick="navigate('ubah-password')" data-nav="ubah-password">&#128274; Ubah Password</li>
 <li onclick="navigate('backup-restore')" data-nav="backup-restore">&#128190; Export/Backup &amp; Restore</li>
 <li onclick="window.open('panduan.html?v=saveword','_blank')" style="border-top:1px solid rgba(255,255,255,.1);margin-top:10px">&#128214; Panduan</li>
@@ -110,6 +113,93 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);min-height:10
 // ===== AUTH SYSTEM =====
 const USERS_KEY='supervisi_users';
 const SESSION_KEY='supervisi_session';
+const ACTIVATION_KEY='supervisi_activation_codes';
+const DEFAULT_ACTIVATION_CODE='POKJAWAS-PMKBC-2026';
+const TRIAL_DAYS=5;
+const TRIAL_MAX_SUPERVISI=10;
+
+// ===== TRIAL / LICENSE =====
+function getActivationCodes(){try{return JSON.parse(localStorage.getItem(ACTIVATION_KEY))||[]}catch(e){return[]}}
+function saveActivationCodes(c){localStorage.setItem(ACTIVATION_KEY,JSON.stringify(c))}
+function findActivationCode(code){
+if(!code)return null;
+var c=String(code).trim().toUpperCase();
+if(c===DEFAULT_ACTIVATION_CODE)return{code:c,tier:'full',master:true};
+var list=getActivationCodes();
+return list.find(function(x){return x.code===c&&!x.usedBy&&!x.revoked})||null;
+}
+function isValidActivationCode(code){return !!findActivationCode(code)}
+function consumeActivationCode(code,username){
+var c=String(code).trim().toUpperCase();
+if(c===DEFAULT_ACTIVATION_CODE)return;
+var list=getActivationCodes();
+var idx=list.findIndex(function(x){return x.code===c});
+if(idx>=0){list[idx].usedBy=username;list[idx].usedAt=new Date().toISOString();saveActivationCodes(list);}
+}
+function genActivationCode(prefix){
+var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+var p=function(n){var s='';for(var i=0;i<n;i++)s+=chars[Math.floor(Math.random()*chars.length)];return s};
+var pfx=prefix?String(prefix).toUpperCase()+'-':'FULL-';
+return pfx+p(4)+'-'+p(4)+'-'+p(4);
+}
+function isAdminSession(){var s=getSession();return s&&s.username==='admin'}
+function getCurrentUser(){
+var s=getSession();if(!s)return null;
+if(s.username==='admin')return{nama:'Administrator',username:'admin',tier:'full'};
+var users=getUsers();
+return users.find(function(u){return u.username===s.username})||null;
+}
+function getTrialStatus(){
+var u=getCurrentUser();
+if(!u)return{tier:'full',isTrial:false,isExpired:false,daysLeft:Infinity,supervisiCount:0,limitReached:false};
+if(u.username==='admin')return{tier:'admin',isTrial:false,isExpired:false,daysLeft:Infinity,supervisiCount:0,limitReached:false};
+var tier=u.tier||'full';
+if(tier!=='trial')return{tier:'full',isTrial:false,isExpired:false,daysLeft:Infinity,supervisiCount:0,limitReached:false};
+var count=0;try{var u1=JSON.parse(localStorage.getItem('supervisi_data_v1'))||[];count=u1.length;}catch(e){}
+var daysLeft=Infinity;var isExpired=false;
+if(u.trialExpiresAt){
+var ms=new Date(u.trialExpiresAt).getTime()-Date.now();
+daysLeft=Math.ceil(ms/86400000);isExpired=ms<=0;
+}
+return{tier:'trial',isTrial:true,isExpired:isExpired,daysLeft:Math.max(0,daysLeft),supervisiCount:count,limitReached:count>=TRIAL_MAX_SUPERVISI};
+}
+function canMutate(action){
+var t=getTrialStatus();
+if(!t.isTrial)return{ok:true};
+if(t.isExpired)return{ok:false,reason:'Masa trial '+TRIAL_DAYS+' hari sudah habis. Hubungi Admin (WA 0823-3064-7698) untuk Kode Aktivasi FULL.'};
+if(action==='create-supervisi'&&t.limitReached)return{ok:false,reason:'Trial dibatasi maksimal '+TRIAL_MAX_SUPERVISI+' data supervisi. Hubungi Admin untuk upgrade ke FULL.'};
+return{ok:true};
+}
+function guardMutation(action){
+var c=canMutate(action);
+if(!c.ok){alert('🔒 '+c.reason);return false;}
+return true;
+}
+function upgradeUserToFull(username){
+var users=getUsers();
+var idx=users.findIndex(function(u){return u.username===username});
+if(idx<0)return false;
+users[idx].tier='full';delete users[idx].trialExpiresAt;
+users[idx].upgradedAt=new Date().toISOString();
+saveUsers(users);return true;
+}
+function downgradeUserToTrial(username){
+var users=getUsers();
+var idx=users.findIndex(function(u){return u.username===username});
+if(idx<0)return false;
+users[idx].tier='trial';
+users[idx].trialExpiresAt=new Date(Date.now()+TRIAL_DAYS*86400000).toISOString();
+users[idx].downgradedAt=new Date().toISOString();
+saveUsers(users);return true;
+}
+function redeemActivationCode(code){
+var s=getSession();if(!s||s.username==='admin')return{ok:false,reason:'Login sebagai user dulu'};
+var c=findActivationCode(code);
+if(!c)return{ok:false,reason:'Kode aktivasi tidak valid atau sudah dipakai'};
+upgradeUserToFull(s.username);
+consumeActivationCode(c.code,s.username);
+return{ok:true};
+}
 
 function getUsers(){
 try{return JSON.parse(localStorage.getItem(USERS_KEY))||[]}catch(e){return[]}
@@ -153,6 +243,9 @@ document.getElementById('appLayout').style.display='';
 document.querySelector('.mobile-toggle').style.display='';
 var userEl=document.getElementById('sidebarUser');
 if(userEl)userEl.innerHTML='<strong> '+escHtml(session.nama)+'</strong>';
+var isAdmin=session&&session.username==='admin';
+var mKode=document.getElementById('menuKodeAktivasi');if(mKode)mKode.style.display=isAdmin?'':'none';
+var mUser=document.getElementById('menuKelolaUser');if(mUser)mUser.style.display=isAdmin?'':'none';
 }
 
 function hideApp(){
@@ -194,6 +287,7 @@ card.innerHTML='<img class="auth-logo" src="logo-kemenag.png" alt="Logo Kemenag"
 '<div class="form-group"><label>Username</label><input type="text" id="regUsername" placeholder="Masukkan username" autocomplete="username"></div>'+
 '<div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Masukkan password" autocomplete="new-password"></div>'+
 '<div class="form-group"><label>Konfirmasi Password</label><input type="password" id="regConfirm" placeholder="Ulangi password" autocomplete="new-password"></div>'+
+'<div class="form-group"><label>Kode Aktivasi <span style="font-weight:400;color:#64748b;font-size:.8rem">(opsional)</span></label><input type="text" id="regKode" placeholder="Kosongkan jika hanya ingin TRIAL" style="text-transform:uppercase" autocomplete="off"><small style="color:#64748b">Punya kode FULL? Isi di sini agar akun langsung aktif penuh. Jika kosong, otomatis dapat TRIAL '+TRIAL_DAYS+' hari (max '+TRIAL_MAX_SUPERVISI+' supervisi).</small></div>'+
 '<button class="btn-auth" onclick="doRegister()">Daftar</button>'+
 '<div class="auth-link">Sudah punya akun? <a onclick="showLogin()">Login</a></div>';
 setTimeout(function(){document.getElementById('regNama').focus()},100);
@@ -255,9 +349,20 @@ if(exists){
 errEl.textContent='Username sudah digunakan.';
 errEl.style.display='block';return;
 }
-users.push({nama:nama,username:username,password:password});
+var kode=(document.getElementById('regKode')?document.getElementById('regKode').value:'').trim().toUpperCase();
+var tier='trial';
+var trialExpiresAt=null;
+if(kode){
+var c=findActivationCode(kode);
+if(!c){errEl.textContent='Kode aktivasi tidak valid atau sudah dipakai.';errEl.style.display='block';return;}
+tier='full';
+}else{
+trialExpiresAt=new Date(Date.now()+TRIAL_DAYS*86400000).toISOString();
+}
+users.push({nama:nama,username:username,password:password,activatedWith:kode||'(self-trial)',registeredAt:new Date().toISOString(),tier:tier,trialExpiresAt:trialExpiresAt});
 saveUsers(users);
-sucEl.textContent='Registrasi berhasil! Silakan login.';
+if(kode)consumeActivationCode(kode,username);
+sucEl.textContent=tier==='full'?'Registrasi sukses sebagai FULL. Silakan login.':'Registrasi sukses sebagai TRIAL ('+TRIAL_DAYS+' hari, max '+TRIAL_MAX_SUPERVISI+' supervisi). Silakan login.';
 sucEl.style.display='block';
 setTimeout(function(){showLogin()},1500);
 }
@@ -1022,6 +1127,9 @@ case 'laporan-iklim-madrasah':app.innerHTML=renderLaporanIklimMadrasahPage();bre
 case 'laporan-iklim-madrasah-madrasah':app.innerHTML=renderLaporanIklimMadrasahPerMadrasahPage();break;
 case 'laporan-iklim-madrasah-kkma':app.innerHTML=renderLaporanIklimMadrasahPerKKMAPage();break;
 case 'ubah-password':app.innerHTML=renderUbahPassword();break;
+case 'lisensi':app.innerHTML=renderLisensiPage();break;
+case 'kode-aktivasi':app.innerHTML=isAdminSession()?renderKodeAktivasiPage():'<div class="card"><p>Hanya admin yang dapat mengakses halaman ini.</p></div>';break;
+case 'kelola-user':app.innerHTML=isAdminSession()?renderKelolaUserPage():'<div class="card"><p>Hanya admin yang dapat mengakses halaman ini.</p></div>';break;
 case 'periode':app.innerHTML=renderPeriodePage();break;
 case 'backup-restore':app.innerHTML=renderBackupRestore();break;
 case 'supervisi-ra':app.innerHTML=renderDashboard();setTimeout(drawChart,100);break;
@@ -1048,11 +1156,120 @@ if(typeof bindIdentitasDropdowns==='function')setTimeout(bindIdentitasDropdowns,
 }
 
 // ===== DASHBOARD =====
+function renderLisensiBanner(){
+var t=getTrialStatus();
+if(t.tier==='admin')return '';
+if(t.tier==='full')return '<div style="background:#dcfce7;border-left:4px solid #16a34a;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:14px;font-size:.9rem"><b>✅ Lisensi FULL</b> aktif. Semua fitur terbuka.</div>';
+var warn,bg,bd;
+if(t.isExpired){bg='#fee2e2';bd='#dc2626';warn='⛔ <b>Trial habis.</b> Anda hanya dapat melihat data lama. Aktivasi kode FULL untuk melanjutkan.';}
+else if(t.limitReached){bg='#fef3c7';bd='#d97706';warn='⚠️ <b>Limit trial '+TRIAL_MAX_SUPERVISI+' supervisi tercapai.</b> Aktivasi kode FULL untuk menambah data.';}
+else{bg='#fef3c7';bd='#d97706';warn='🆓 Mode <b>TRIAL</b> - sisa <b>'+t.daysLeft+' hari</b> · sudah pakai <b>'+t.supervisiCount+'/'+TRIAL_MAX_SUPERVISI+'</b> supervisi.';}
+return '<div style="background:'+bg+';border-left:4px solid '+bd+';padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:14px;font-size:.9rem;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span>'+warn+'</span><button class="btn btn-sm btn-primary" onclick="navigate(\'lisensi\')">Aktivasi FULL</button></div>';
+}
+
+function renderLisensiPage(){
+var t=getTrialStatus();
+var u=getCurrentUser();
+var html='<div class="card"><h2 style="margin-bottom:14px">🔑 Lisensi / Aktivasi</h2>';
+html+='<div style="background:#f1f5f9;padding:12px 14px;border-radius:8px;margin-bottom:16px;font-size:.92rem">';
+html+='<b>Status:</b> '+(t.tier==='full'?'<span style="color:#16a34a">FULL ✅</span>':(t.tier==='admin'?'Admin':'TRIAL '+(t.isExpired?'(habis)':'')))+ '<br>';
+if(t.isTrial){html+='<b>Sisa hari:</b> '+t.daysLeft+'<br><b>Pemakaian:</b> '+t.supervisiCount+' / '+TRIAL_MAX_SUPERVISI+' supervisi<br>';}
+if(u&&u.activatedWith)html+='<b>Aktivasi:</b> '+escHtml(u.activatedWith)+'<br>';
+html+='</div>';
+if(t.tier==='full'||t.tier==='admin'){html+='<p style="color:#16a34a">Akun Anda sudah aktif penuh. Tidak perlu kode aktivasi.</p>';}
+else{
+html+='<div class="form-group"><label>Kode Aktivasi FULL</label><input type="text" id="redeemKode" placeholder="FULL-XXXX-XXXX-XXXX" style="text-transform:uppercase"></div>';
+html+='<button class="btn btn-primary" onclick="doRedeemKode()">🔓 Aktifkan</button>';
+html+='<div style="margin-top:18px;padding:12px;background:#fff7ed;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;font-size:.85rem"><b>Belum punya kode FULL?</b><br>Hubungi admin via WA <b>0823-3064-7698</b> untuk pembelian.</div>';
+}
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">Tutup</button></div>';
+html+='</div>';
+return html;
+}
+
+function doRedeemKode(){
+var el=document.getElementById('redeemKode');
+var kode=el?el.value.trim().toUpperCase():'';
+if(!kode){alert('Masukkan kode aktivasi.');return;}
+var r=redeemActivationCode(kode);
+if(!r.ok){alert('❌ '+r.reason);return;}
+alert('✅ Aktivasi sukses! Akun Anda sekarang FULL.');
+render();
+}
+
+function renderKodeAktivasiPage(){
+var list=getActivationCodes();
+var html='<div class="card"><h2 style="margin-bottom:14px">🎟️ Kelola Kode Aktivasi</h2>';
+html+='<p style="color:#64748b;font-size:.9rem;margin-bottom:14px">Generate kode FULL satu-pakai untuk dijual ke user. Kode master <code>'+escHtml(DEFAULT_ACTIVATION_CODE)+'</code> tetap berlaku untuk admin.</p>';
+html+='<button class="btn btn-primary" onclick="doGenKode(1)">+ Generate 1 Kode</button> ';
+html+='<button class="btn btn-secondary" onclick="doGenKode(5)">+ Generate 5 Kode</button>';
+html+='<table style="width:100%;margin-top:16px;font-size:.85rem;border-collapse:collapse"><thead><tr style="background:#f1f5f9"><th style="padding:8px;border:1px solid #e5e7eb;text-align:left">Kode</th><th style="padding:8px;border:1px solid #e5e7eb">Tier</th><th style="padding:8px;border:1px solid #e5e7eb">Dibuat</th><th style="padding:8px;border:1px solid #e5e7eb">Dipakai</th><th style="padding:8px;border:1px solid #e5e7eb">Aksi</th></tr></thead><tbody>';
+if(list.length===0)html+='<tr><td colspan="5" style="padding:14px;text-align:center;color:#64748b">Belum ada kode di-generate.</td></tr>';
+list.slice().reverse().forEach(function(c){
+html+='<tr><td style="padding:8px;border:1px solid #e5e7eb;font-family:monospace">'+escHtml(c.code)+'</td><td style="padding:8px;border:1px solid #e5e7eb;text-align:center">'+escHtml(c.tier||'full')+'</td><td style="padding:8px;border:1px solid #e5e7eb;font-size:.8rem">'+escHtml((c.createdAt||'').slice(0,10))+'</td><td style="padding:8px;border:1px solid #e5e7eb;font-size:.8rem">'+(c.usedBy?escHtml(c.usedBy)+'<br><span style="color:#64748b">'+escHtml((c.usedAt||'').slice(0,10))+'</span>':'<span style="color:#64748b">-</span>')+'</td><td style="padding:8px;border:1px solid #e5e7eb;text-align:center">'+(c.usedBy?'-':'<button class="btn btn-sm btn-danger" onclick="doRevokeKode(\''+escHtml(c.code)+'\')">🗑</button>')+'</td></tr>';
+});
+html+='</tbody></table>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">Tutup</button></div>';
+html+='</div>';
+return html;
+}
+function doGenKode(n){
+var list=getActivationCodes();
+var made=[];
+for(var i=0;i<n;i++){var k=genActivationCode('FULL');list.push({code:k,tier:'full',createdAt:new Date().toISOString()});made.push(k);}
+saveActivationCodes(list);
+alert('✅ '+n+' kode dibuat:\n\n'+made.join('\n'));
+render();
+}
+function doRevokeKode(code){
+if(!confirm('Hapus kode '+code+'?'))return;
+var list=getActivationCodes();
+list=list.filter(function(x){return x.code!==code});
+saveActivationCodes(list);
+render();
+}
+
+function renderKelolaUserPage(){
+var users=getUsers();
+var html='<div class="card"><h2 style="margin-bottom:14px">👥 Kelola User</h2>';
+html+='<table style="width:100%;font-size:.85rem;border-collapse:collapse"><thead><tr style="background:#f1f5f9"><th style="padding:8px;border:1px solid #e5e7eb">Nama</th><th style="padding:8px;border:1px solid #e5e7eb">Username</th><th style="padding:8px;border:1px solid #e5e7eb">Tier</th><th style="padding:8px;border:1px solid #e5e7eb">Trial Expires</th><th style="padding:8px;border:1px solid #e5e7eb">Aktivasi</th><th style="padding:8px;border:1px solid #e5e7eb">Aksi</th></tr></thead><tbody>';
+users.forEach(function(u){
+if(u.username==='admin'){html+='<tr><td style="padding:8px;border:1px solid #e5e7eb">'+escHtml(u.nama)+'</td><td style="padding:8px;border:1px solid #e5e7eb">'+escHtml(u.username)+'</td><td colspan="4" style="padding:8px;border:1px solid #e5e7eb;color:#64748b">Administrator</td></tr>';return;}
+var daysLeft='-';if(u.trialExpiresAt){var ms=new Date(u.trialExpiresAt).getTime()-Date.now();daysLeft=ms<=0?'<span style="color:#dc2626">expired</span>':Math.ceil(ms/86400000)+'d';}
+html+='<tr>';
+html+='<td style="padding:8px;border:1px solid #e5e7eb">'+escHtml(u.nama||'')+'</td>';
+html+='<td style="padding:8px;border:1px solid #e5e7eb">'+escHtml(u.username)+'</td>';
+html+='<td style="padding:8px;border:1px solid #e5e7eb;text-align:center"><b>'+escHtml(u.tier||'full')+'</b></td>';
+html+='<td style="padding:8px;border:1px solid #e5e7eb;text-align:center">'+daysLeft+'</td>';
+html+='<td style="padding:8px;border:1px solid #e5e7eb;font-family:monospace;font-size:.75rem">'+escHtml(u.activatedWith||'-')+'</td>';
+html+='<td style="padding:8px;border:1px solid #e5e7eb;text-align:center;white-space:nowrap">';
+if((u.tier||'full')==='full')html+='<button class="btn btn-sm btn-secondary" onclick="doDowngrade(\''+escHtml(u.username)+'\')">⬇ Trial</button> ';
+else html+='<button class="btn btn-sm btn-primary" onclick="doUpgrade(\''+escHtml(u.username)+'\')">⬆ Full</button> ';
+html+='</td></tr>';
+});
+html+='</tbody></table>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">Tutup</button></div>';
+html+='</div>';
+return html;
+}
+function doUpgrade(username){
+if(!confirm('Upgrade '+username+' ke FULL?'))return;
+upgradeUserToFull(username);
+alert('✅ '+username+' sekarang FULL.');
+render();
+}
+function doDowngrade(username){
+if(!confirm('Downgrade '+username+' ke TRIAL '+TRIAL_DAYS+' hari?\nData lama tidak dihapus.'))return;
+downgradeUserToTrial(username);
+alert('✅ '+username+' di-downgrade ke TRIAL.');
+render();
+}
+
 function renderDashboard(){
 const data=getData();
 const madrasahCount=getMadrasah().length;
 const guruCount=getGuru().length;
-let stats='<div class="grid-3" style="margin-bottom:20px">';
+let stats=renderLisensiBanner()+'<div class="grid-3" style="margin-bottom:20px">';
 stats+='<div class="stat-card"><div class="stat-number">'+data.length+'</div><div class="stat-label">Total Supervisi</div></div>';
 stats+='<div class="stat-card"><div class="stat-number">'+madrasahCount+'</div><div class="stat-label">Data Madrasah</div></div>';
 stats+='<div class="stat-card"><div class="stat-number">'+guruCount+'</div><div class="stat-label">Data Guru</div></div>';
@@ -1184,6 +1401,7 @@ if(first)first.focus();
 }
 
 function saveMadrasahForm(idx){
+if(!guardMutation('save-madrasah'))return;
 var obj={
 nama:document.getElementById('m-nama').value.trim(),
 npsn:document.getElementById('m-npsn').value.trim(),
@@ -1202,7 +1420,7 @@ saveMadrasah(data);closeModal();render();
 }
 
 function editMadrasah(idx){showMadrasahModal(idx)}
-function deleteMadrasah(idx){if(!confirm('Hapus data madrasah ini?'))return;var data=getMadrasah();data.splice(idx,1);saveMadrasah(data);render();}
+function deleteMadrasah(idx){if(!guardMutation('delete-madrasah'))return;if(!confirm('Hapus data madrasah ini?'))return;var data=getMadrasah();data.splice(idx,1);saveMadrasah(data);render();}
 function closeModal(){var mc=document.getElementById('modal-container');if(mc)mc.innerHTML='';var mm=document.getElementById('modal-madrasah');if(mm)mm.remove();}
 
 // ===== IMPORT EXCEL MADRASAH =====
@@ -1294,6 +1512,7 @@ document.getElementById('modal-container').innerHTML=modal;
 }
 
 function saveGuruForm(idx){
+if(!guardMutation('save-guru'))return;
 var obj={
 nama:document.getElementById('g-nama').value.trim(),
 nip:document.getElementById('g-nip').value.trim(),
@@ -1307,7 +1526,7 @@ saveGuru(data);closeModal();render();
 }
 
 function editGuru(idx){showGuruModal(idx)}
-function deleteGuru(idx){if(!confirm('Hapus data guru ini?'))return;var data=getGuru();data.splice(idx,1);saveGuru(data);render();}
+function deleteGuru(idx){if(!guardMutation('delete-guru'))return;if(!confirm('Hapus data guru ini?'))return;var data=getGuru();data.splice(idx,1);saveGuru(data);render();}
 
 // ===== DATA PENGAWAS =====
 function renderPengawasPage(){
@@ -1897,6 +2116,8 @@ if(field==='tindakLanjut')state.formData.rekap[komp].manualTindakLanjut=true;
 }
 
 function saveForm(){
+var isCreate=(state.editId===null);
+if(!guardMutation(isCreate?'create-supervisi':'edit-supervisi'))return;
 var data=getData();
 if(state.editId!==null){data[state.editId]=state.formData;}
 else{data.push(state.formData);}
@@ -1912,6 +2133,7 @@ state.currentStep=0;render();
 }
 
 function deleteItem(idx){
+if(!guardMutation('delete-supervisi'))return;
 if(!confirm('Hapus data supervisi ini?'))return;
 var data=getData();data.splice(idx,1);saveData(data);render();
 }
